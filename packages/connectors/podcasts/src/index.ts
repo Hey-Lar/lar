@@ -1,2 +1,2 @@
-export { searchPodcast, type PodcastSeed } from './itunes-podcasts';
+export { searchPodcast, type PodcastSeed, type PodcastPlatform } from './itunes-podcasts';
 export { resolvePodcast, buildPodcastLinks, type PodcastResolution } from './resolve';

@@ -37,6 +37,7 @@ describe('buildPodcastLinks', () => {
     expect(links['apple_podcasts']).toBe(seedWithFeed.applePodcastsUrl);
     expect(links['rss']).toBe(seedWithFeed.feedUrl);
     expect(links['spotify']).toContain('open.spotify.com/search');
+    expect(links['spotify']).toContain('/podcasts');
     expect(links['spotify']).toContain(encodeURIComponent('The Daily'));
     expect(links['youtube']).toContain('youtube.com/results');
     expect(links['youtube']).toContain(encodeURIComponent('The Daily podcast'));
@@ -47,6 +48,7 @@ describe('buildPodcastLinks', () => {
     expect(links['apple_podcasts']).toBe(seedWithoutFeed.applePodcastsUrl);
     expect(links['rss']).toBeUndefined();
     expect(links['spotify']).toContain('open.spotify.com/search');
+    expect(links['spotify']).toContain('/podcasts');
     expect(links['youtube']).toContain('youtube.com/results');
     expect(Object.keys(links)).not.toContain('rss');
   });
@@ -89,6 +91,36 @@ describe('resolvePodcast', () => {
   it('rejects when iTunes returns no results', async () => {
     const emptyFetch = fakeFetch([['itunes.apple.com', { resultCount: 0, results: [] }]]);
     await expect(resolvePodcast(action, emptyFetch)).rejects.toThrow();
+  });
+
+  it('rejects with HTTP 500 when iTunes returns a non-ok response', async () => {
+    const errorFetch = vi.fn(async () => ({
+      ok: false,
+      status: 500,
+      json: async () => ({}),
+    })) as unknown as typeof fetch;
+    await expect(resolvePodcast(action, errorFetch)).rejects.toThrow('HTTP 500');
+  });
+
+  it('falls back to artworkUrl100 when artworkUrl600 is absent', async () => {
+    const artworkFetch = fakeFetch([
+      [
+        'itunes.apple.com',
+        {
+          resultCount: 1,
+          results: [
+            {
+              collectionName: 'The Daily',
+              artistName: 'The New York Times',
+              collectionViewUrl: 'https://podcasts.apple.com/us/podcast/the-daily/id1200361736',
+              artworkUrl100: 'https://art/100x100.jpg',
+            },
+          ],
+        },
+      ],
+    ]);
+    const r = await resolvePodcast(action, artworkFetch);
+    expect(r.artworkUrl).toBe('https://art/100x100.jpg');
   });
 
   // Live end-to-end (no key). Run with: LAR_LIVE=1 npm test

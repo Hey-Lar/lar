@@ -5,8 +5,7 @@
  * Bright-line: resolves + builds links only, never streams/proxies audio.
  */
 import type { LarAction } from '@lar/shared';
-import { searchPodcast } from './itunes-podcasts';
-import type { PodcastSeed } from './itunes-podcasts';
+import { searchPodcast, type PodcastSeed, type PodcastPlatform } from './itunes-podcasts';
 
 export interface PodcastResolution {
   title: string;
@@ -15,14 +14,14 @@ export interface PodcastResolution {
   applePodcastsUrl: string;
   feedUrl?: string;
   genre?: string;
-  links: Record<string, string>;
+  links: Partial<Record<PodcastPlatform, string>>;
 }
 
 /** Pure: builds outward links from a seed. No network — unit-testable. */
-export function buildPodcastLinks(seed: PodcastSeed): Record<string, string> {
-  const links: Record<string, string> = {
+export function buildPodcastLinks(seed: PodcastSeed): Partial<Record<PodcastPlatform, string>> {
+  const links: Partial<Record<PodcastPlatform, string>> = {
     apple_podcasts: seed.applePodcastsUrl,
-    spotify: `https://open.spotify.com/search/${encodeURIComponent(seed.title)}`,
+    spotify: `https://open.spotify.com/search/${encodeURIComponent(seed.title)}/podcasts`,
     youtube: `https://www.youtube.com/results?search_query=${encodeURIComponent(seed.title + ' podcast')}`,
   };
   if (seed.feedUrl) {
