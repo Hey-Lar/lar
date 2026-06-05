@@ -35,4 +35,24 @@ describe('parseIntentDeterministic', () => {
     expect(a.platform).toBe('auto');
     expect(a.entity.query).toBe('despacito');
   });
+
+  it('strips "find" and domain word from "find the Lex Fridman podcast"', () => {
+    const a = parseIntentDeterministic('find the Lex Fridman podcast');
+    expect(a.domain).toBe('podcast');
+    expect(a.entity.type).toBe('show');
+    expect(a.entity.query).toBe('lex fridman');
+  });
+
+  it('strips "search for" from "search for despacito"', () => {
+    const a = parseIntentDeterministic('search for despacito');
+    expect(a.entity.query).toBe('despacito');
+  });
+
+  it('strips "show me" and routes platform from "show me something calm on Spotify"', () => {
+    const a = parseIntentDeterministic('show me something calm on Spotify');
+    expect(a.platform).toBe('spotify');
+    expect(a.modifiers).toContain('calm');
+    expect(a.entity.query).not.toMatch(/\bshow\b/);
+    expect(a.entity.query).not.toMatch(/\bme\b/);
+  });
 });
