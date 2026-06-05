@@ -1,6 +1,6 @@
 # Music Block — Reference Architecture
 
-The music block is a **control + intelligence layer**, never a player. The AI decides *what* and *where*; official apps do the streaming and DRM. Everything degrades gracefully down a fixed hierarchy so it works on day one and gets richer as access allows. **This is the reference implementation — every other block is this pattern with different data sources and adapters.**
+The music block is a **control + intelligence layer**, never a player. The AI decides _what_ and _where_; official apps do the streaming and DRM. Everything degrades gracefully down a fixed hierarchy so it works on day one and gets richer as access allows. **This is the reference implementation — every other block is this pattern with different data sources and adapters.**
 
 ---
 
@@ -21,28 +21,28 @@ The brain never touches audio or scrapes catalog data — it emits a **structure
 
 ## 2. Command hierarchy (try top → bottom, per service)
 
-| Rung | Mechanism | What it does | Limit |
-|------|-----------|--------------|-------|
-| 1 | Deep link | Launch app to a track/artist | Free, universal, launch-only |
-| 2 | MediaController (Android system session) | Read now-playing + play/pause/skip to any app | Free, Android, needs notification access |
-| 3 | Official remote API (Spotify Connect, MusicKit) | Search, queue, transfer, full control | Needs auth + often Premium |
-| 4 | AI UI automation (AccessibilityService) | Model taps the screen | Brittle, ToS gray — last resort |
+| Rung | Mechanism                                       | What it does                                  | Limit                                    |
+| ---- | ----------------------------------------------- | --------------------------------------------- | ---------------------------------------- |
+| 1    | Deep link                                       | Launch app to a track/artist                  | Free, universal, launch-only             |
+| 2    | MediaController (Android system session)        | Read now-playing + play/pause/skip to any app | Free, Android, needs notification access |
+| 3    | Official remote API (Spotify Connect, MusicKit) | Search, queue, transfer, full control         | Needs auth + often Premium               |
+| 4    | AI UI automation (AccessibilityService)         | Model taps the screen                         | Brittle, ToS gray — last resort          |
 
 ---
 
 ## 3. Per-service routing matrix
 
-| Service | Deep link | MediaController | Rich API | Recommendation data |
-|---|:---:|:---:|:---:|---|
-| Spotify | ✓ | ✓ | ✓ (Premium; hostile to new apps) | ✗ use own |
-| Apple Music | ✓ | ✓ | ✓ MusicKit (most open) | partial; prefer own |
-| Tidal | ✓ | ✓ | ~ partner/limited | ✗ use own |
-| YouTube Music | ✓ | ✓ | ✗ none → rung 2/4 | ✗ use own |
-| SoundCloud | ✓ | ✓ | ~ closed to new apps | own + public meta |
-| Podcasts | ✓ | ✓ | open RSS — fully ownable | ✓ trivially yours |
-| Audiobooks | ✓ | ✓ | ✗ → deep link + UI | own meta |
+| Service       | Deep link | MediaController |             Rich API             | Recommendation data |
+| ------------- | :-------: | :-------------: | :------------------------------: | ------------------- |
+| Spotify       |     ✓     |        ✓        | ✓ (Premium; hostile to new apps) | ✗ use own           |
+| Apple Music   |     ✓     |        ✓        |      ✓ MusicKit (most open)      | partial; prefer own |
+| Tidal         |     ✓     |        ✓        |        ~ partner/limited         | ✗ use own           |
+| YouTube Music |     ✓     |        ✓        |        ✗ none → rung 2/4         | ✗ use own           |
+| SoundCloud    |     ✓     |        ✓        |       ~ closed to new apps       | own + public meta   |
+| Podcasts      |     ✓     |        ✓        |     open RSS — fully ownable     | ✓ trivially yours   |
+| Audiobooks    |     ✓     |        ✓        |        ✗ → deep link + UI        | own meta            |
 
-**Launch + system control covers ~everything on Android.** Recommendation data is *always* your own.
+**Launch + system control covers ~everything on Android.** Recommendation data is _always_ your own.
 
 ---
 

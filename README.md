@@ -1,19 +1,20 @@
 # Lar
 
-**The guardian of your home.** — *"Hey Lar."*
+**The guardian of your home.** — _"Hey Lar."_
 
-Lar is a glassmorphic, AI-driven control surface for the home — built on Android (AOSP), not a from-scratch OS. It unifies your media, money, health, and home into one fluid, voice-driven interface where **you control the algorithm**, and where Lar routes you *outward* to the best place for each thing instead of locking you in.
+Lar is a glassmorphic, AI-driven control surface for the home — built on Android (AOSP), not a from-scratch OS. It unifies your media, money, health, and home into one fluid, voice-driven interface where **you control the algorithm**, and where Lar routes you _outward_ to the best place for each thing instead of locking you in.
 
 > **Brand:** Lar · **Domain:** heylar.ai · **Wake word:** "Hey Lar"
-> *(holding/dev domain: larorg.com)*
+> _(holding/dev domain: larorg.com)_
 
 ---
 
 ## Why Lar can exist
 
-Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is building a home hub that pulls you *into* their walled garden — that's their business model. Lar is the opposite: a neutral, user-owned layer that sits *above* all the gardens, knows what's where, and routes you to the best one — with a voice agent that does multi-step actions across platforms that Siri/Alexa structurally can't.
+Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is building a home hub that pulls you _into_ their walled garden — that's their business model. Lar is the opposite: a neutral, user-owned layer that sits _above_ all the gardens, knows what's where, and routes you to the best one — with a voice agent that does multi-step actions across platforms that Siri/Alexa structurally can't.
 
 **The defensible core:**
+
 1. Cross-platform, user-controlled discovery & routing (music, film/TV, podcasts, books).
 2. A voice agent ("Hey Lar") that does real multi-step actions across apps.
 3. A neutral money + home + health dashboard that aggregates rather than captures.
@@ -22,21 +23,21 @@ Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is b
 
 ## Repo map
 
-| Path | What |
-|---|---|
-| [`docs/01-master-spec.md`](docs/01-master-spec.md) | Full ecosystem architecture — every block, OS/hardware, design system, integrations |
-| [`docs/02-music-architecture.md`](docs/02-music-architecture.md) | Reference implementation: the brain → dispatcher → adapter pattern |
-| [`docs/03-governance.md`](docs/03-governance.md) | Governance model + the bright-lines (read-only finance, no advice, no data sale) |
-| [`docs/04-budget-roadmap.md`](docs/04-budget-roadmap.md) | €4k / 2-year phased budget (€1k now) + roadmap |
-| [`docs/05-brand.md`](docs/05-brand.md) | Name, voice, domain, visual identity decisions |
-| [`docs/06-stack-deployment.md`](docs/06-stack-deployment.md) | Tech stack + how each surface deploys (Next.js · Supabase · Kotlin) |
-| [`docs/07-repo-structure.md`](docs/07-repo-structure.md) | Monorepo layout + when (and what) to split into separate repos |
-| [`docs/08-build-guide.md`](docs/08-build-guide.md) | **Phase 1 build playbook — hand this to Claude Code** |
-| [`docs/09-differentiation.md`](docs/09-differentiation.md) | The moat, sharpened — why incumbents structurally can't copy this |
-| [`docs/10-lumina-integration.md`](docs/10-lumina-integration.md) | How the existing "Lumina" build folds in as the money/dashboard pillar |
-| [`CLAUDE.md`](CLAUDE.md) | Auto-loaded Claude Code rules (stack, conventions, bright-lines) |
-| [`prototype/index.html`](prototype/index.html) | **Phase 0 working prototype** — open in a browser |
-| `design/` | Whiteboard exports, screenshots, mockups (drop yours here) |
+| Path                                                             | What                                                                                |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [`docs/01-master-spec.md`](docs/01-master-spec.md)               | Full ecosystem architecture — every block, OS/hardware, design system, integrations |
+| [`docs/02-music-architecture.md`](docs/02-music-architecture.md) | Reference implementation: the brain → dispatcher → adapter pattern                  |
+| [`docs/03-governance.md`](docs/03-governance.md)                 | Governance model + the bright-lines (read-only finance, no advice, no data sale)    |
+| [`docs/04-budget-roadmap.md`](docs/04-budget-roadmap.md)         | €4k / 2-year phased budget (€1k now) + roadmap                                      |
+| [`docs/05-brand.md`](docs/05-brand.md)                           | Name, voice, domain, visual identity decisions                                      |
+| [`docs/06-stack-deployment.md`](docs/06-stack-deployment.md)     | Tech stack + how each surface deploys (Next.js · Supabase · Kotlin)                 |
+| [`docs/07-repo-structure.md`](docs/07-repo-structure.md)         | Monorepo layout + when (and what) to split into separate repos                      |
+| [`docs/08-build-guide.md`](docs/08-build-guide.md)               | **Phase 1 build playbook — hand this to Claude Code**                               |
+| [`docs/09-differentiation.md`](docs/09-differentiation.md)       | The moat, sharpened — why incumbents structurally can't copy this                   |
+| [`docs/10-lumina-integration.md`](docs/10-lumina-integration.md) | How the existing "Lumina" build folds in as the money/dashboard pillar              |
+| [`CLAUDE.md`](CLAUDE.md)                                         | Auto-loaded Claude Code rules (stack, conventions, bright-lines)                    |
+| [`prototype/index.html`](prototype/index.html)                   | **Phase 0 working prototype** — open in a browser                                   |
+| `design/`                                                        | Whiteboard exports, screenshots, mockups (drop yours here)                          |
 
 ---
 
@@ -69,4 +70,4 @@ See [`docs/04-budget-roadmap.md`](docs/04-budget-roadmap.md) for the full roadma
 
 ---
 
-*Proprietary & confidential. See [LICENSE](LICENSE).*
+_Proprietary & confidential. See [LICENSE](LICENSE)._
