@@ -62,6 +62,12 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
 auto` to kill Windows CRLF churn); `next build` clean.**
   `docs/09-differentiation.md`, `docs/10-lumina-integration.md`, and
   `docs/plans/2026-06-05-podcasts-block.md` written.
+- **Security/governance layer (branch `feat/v2-security-foundation`):**
+  `SECURITY.md` (threat model, vuln reporting, incident rule) ·
+  `docs/11-secrets-and-env.md` (env contract, server-only boundary, rotation) ·
+  `apps/portal/.env.example` (placeholder-only) · `docs/03-governance.md`
+  updated (Security row implemented, four security bright-lines, dep-risk stub) ·
+  `CLAUDE.md` + `HANDOFF.md` restated to match.
 - **Known minor follow-ups** (non-blocking, flagged in final review): the portal
   blocks inline-duplicate their resolution types + carry a couple of dead `??`
   fallbacks (matches the MusicBlock pattern); `PodcastsBlock`'s Copy-RSS
@@ -110,8 +116,20 @@ Run the portal: `cd apps/portal && npx next dev -p 4200` (or `next start` after
 Everything NOT in this table is buildable now (keyless). The Music wedge +
 finance-via-Lumina already work without any key.
 
-## BRIGHT-LINES (never cross — docs/03)
+See `docs/11-secrets-and-env.md` for the full env contract, naming convention,
+and rotation guidance. Copy `apps/portal/.env.example` → `.env.local` to start.
+
+## BRIGHT-LINES (never cross — docs/03 + SECURITY.md)
 
 Read-only finance (no money movement) · no financial/medical advice · never
 host/stream others' content (controller/router only) · no selling/training on
 user data · never depend on Spotify's recommendation endpoints.
+
+**Security bright-lines (implemented — see SECURITY.md + docs/11):**
+
+1. **Refuse to disable the safety gate.** Never `git commit --no-verify` or bypass gitleaks. The gate cannot be talked around.
+2. **Never paste a real key or secret into a chat with any LLM.** Transcripts persist.
+3. **AGPL/GPL/MPL source: external CLI over stdout/JSON only — never imported or vendored into shipped code.**
+4. **Keep CLAUDE.md + HANDOFF.md accurate in the same commit that changes structure.**
+
+**Security infrastructure now in place:** `@lar/crypto` WebCrypto vault · gitleaks pre-commit + CI gate · hardened `.gitignore` · `SECURITY.md` · `docs/11-secrets-and-env.md` · `apps/portal/.env.example`.

@@ -8,7 +8,8 @@
     "services/*",
     "packages/shared",
     "packages/ui",
-    "packages/connectors/*"
+    "packages/connectors/*",
+    "packages/crypto"
   ],
   "engines": {
     "node": ">=20"
