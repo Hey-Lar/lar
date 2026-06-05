@@ -126,7 +126,6 @@ export function PodcastsBlock() {
             <div>
               <div className="np-title">{res.title}</div>
               <div className="np-artist">{res.author}</div>
-              {res.genre && <div className="np-route">{res.genre}</div>}
             </div>
           </div>
 
