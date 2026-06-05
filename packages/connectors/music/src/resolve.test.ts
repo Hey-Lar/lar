@@ -79,13 +79,21 @@ describe('resolveMusic', () => {
   });
 
   it('auto-picks by user priority', async () => {
-    const r = await resolveMusic(action('auto'), { platformPriority: ['spotify', 'tidal'] }, fetchImpl);
+    const r = await resolveMusic(
+      action('auto'),
+      { platformPriority: ['spotify', 'tidal'] },
+      fetchImpl,
+    );
     expect(r.chosenPlatform).toBe('spotify');
     expect(r.openUrl).toContain('open.spotify.com');
   });
 
   it('falls back when the requested platform is not in the link set', async () => {
-    const r = await resolveMusic(action('apple_music'), { platformPriority: ['tidal', 'spotify'] }, fetchImpl);
+    const r = await resolveMusic(
+      action('apple_music'),
+      { platformPriority: ['tidal', 'spotify'] },
+      fetchImpl,
+    );
     expect(r.chosenPlatform).toBe('tidal');
   });
 

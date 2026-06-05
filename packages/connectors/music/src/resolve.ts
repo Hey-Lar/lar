@@ -78,9 +78,15 @@ export async function resolveMusic(
 
   // 3. pick platform + build the open-URL
   const available = Object.keys(resolved.links) as Platform[];
-  const chosen = pickPlatform(action.platform, prefs.platformPriority ?? DEFAULT_PRIORITY, available);
+  const chosen = pickPlatform(
+    action.platform,
+    prefs.platformPriority ?? DEFAULT_PRIORITY,
+    available,
+  );
   const openUrl =
-    chosen === 'odesli' ? resolved.odesliPageUrl : (resolved.links[chosen] ?? resolved.odesliPageUrl);
+    chosen === 'odesli'
+      ? resolved.odesliPageUrl
+      : (resolved.links[chosen] ?? resolved.odesliPageUrl);
 
   return {
     title: resolved.title ?? seedMeta.title ?? action.entity.query,
