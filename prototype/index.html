@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lar — Phase 0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#26303c; --ink-soft:#5a6573; --ink-faint:#8b96a4;
+    --amber:#d98a2b; --amber-lo:#f0b357; --amber-glow:rgba(217,138,43,.32);
+    --teal:#3aa6a0;
+    --glass:rgba(255,255,255,.55);
+    --glass-2:rgba(255,255,255,.42);
+    --stroke:rgba(255,255,255,.65);
+    --shadow:0 18px 50px -20px rgba(40,52,68,.45), 0 6px 18px -10px rgba(40,52,68,.25);
+    --radius:30px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Manrope',system-ui,sans-serif;
+    color:var(--ink);
+    background:#eef1f6;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ----- ambient mesh background ----- */
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:linear-gradient(135deg,#f6efe7 0%,#eef0f7 45%,#e9f3ef 100%)}
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.7;animation:drift 26s var(--ease) infinite alternate}
+  .b1{width:46vw;height:46vw;background:radial-gradient(circle at 30% 30%,#ffd9a8,#ffb86b00 70%);top:-12vw;left:-8vw}
+  .b2{width:42vw;height:42vw;background:radial-gradient(circle at 50% 50%,#c9c1ff,#b6a8ff00 70%);bottom:-14vw;left:22vw;animation-delay:-8s}
+  .b3{width:40vw;height:40vw;background:radial-gradient(circle at 50% 50%,#a8ead9,#8fe3cd00 70%);top:-6vw;right:-10vw;animation-delay:-14s}
+  .b4{width:34vw;height:34vw;background:radial-gradient(circle at 50% 50%,#ffc6c0,#ffb1aa00 70%);bottom:-10vw;right:6vw;animation-delay:-4s}
+  @keyframes drift{to{transform:translate3d(4vw,3vw,0) scale(1.12)}}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  /* ----- shell ----- */
+  .app{position:relative;z-index:2;display:grid;grid-template-columns:96px 1fr;gap:22px;height:100vh;padding:22px}
+
+  /* glass primitive */
+  .glass{
+    background:var(--glass);
+    backdrop-filter:blur(26px) saturate(170%);
+    -webkit-backdrop-filter:blur(26px) saturate(170%);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .glass::before{ /* specular sheen */
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(255,255,255,0) 38%);
+    mix-blend-mode:screen;
+  }
+
+  /* ----- rail ----- */
+  .rail{display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:8px}
+  .mark{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;margin-bottom:14px;
+    background:linear-gradient(150deg,var(--amber-lo),var(--amber));box-shadow:0 8px 20px -6px var(--amber-glow)}
+  .mark svg{width:24px;height:24px}
+  .nav{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;flex:1}
+  .navbtn{width:64px;height:62px;border:none;background:transparent;border-radius:20px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--ink-faint);
+    transition:all .35s var(--ease);position:relative}
+  .navbtn svg{width:22px;height:22px;transition:transform .35s var(--ease)}
+  .navbtn span{font-size:10px;font-weight:600;letter-spacing:.02em}
+  .navbtn:hover{color:var(--ink-soft);background:rgba(255,255,255,.4)}
+  .navbtn.active{color:var(--amber);background:rgba(255,255,255,.62);box-shadow:0 8px 18px -10px var(--amber-glow)}
+  .navbtn.active svg{transform:translateY(-1px) scale(1.06)}
+  .navbtn.active::after{content:"";position:absolute;left:-9px;top:50%;transform:translateY(-50%);
+    width:4px;height:26px;border-radius:4px;background:var(--amber)}
+  .avatar{width:42px;height:42px;border-radius:50%;margin-top:8px;
+    background:linear-gradient(150deg,#cdd6e4,#aeb9cc);display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px}
+
+  /* ----- stage ----- */
+  .stage{position:relative;overflow:hidden;border-radius:36px}
+  .stage-pad{position:absolute;inset:0;padding:30px 34px;overflow:auto}
+  .block{position:absolute;inset:0;padding:30px 34px;opacity:0;transform:translateY(14px) scale(.992);
+    pointer-events:none;transition:opacity .5s var(--ease),transform .5s var(--ease);overflow:auto}
+  .block.active{opacity:1;transform:none;pointer-events:auto}
+  .block::-webkit-scrollbar{width:8px}.block::-webkit-scrollbar-thumb{background:rgba(120,130,145,.25);border-radius:8px}
+
+  /* header row */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--ink-soft);letter-spacing:.04em}
+  .h1{font-family:'Fraunces',serif;font-size:38px;font-weight:500;line-height:1.05;letter-spacing:-.01em;margin-top:2px}
+  .clock{font-family:'Fraunces',serif;font-size:30px;font-weight:500;text-align:right;line-height:1}
+  .clock small{display:block;font-family:'Manrope';font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:6px;letter-spacing:.02em}
+
+  /* entrance stagger */
+  .block.active .st{animation:rise .6s var(--ease) both}
+  .block.active .st:nth-child(1){animation-delay:.04s}
+  .block.active .st:nth-child(2){animation-delay:.10s}
+  .block.active .st:nth-child(3){animation-delay:.16s}
+  .block.active .st:nth-child(4){animation-delay:.22s}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .grid{display:grid;gap:18px}
+  .card{padding:22px;border-radius:26px}
+  .card-t{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+
+  /* HOME */
+  .home-grid{grid-template-columns:1.3fr 1fr;grid-auto-rows:min-content}
+  .weather{display:flex;align-items:center;gap:18px}
+  .temp{font-family:'Fraunces',serif;font-size:60px;font-weight:500;line-height:.9}
+  .scenes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  .scene{padding:16px 16px;border-radius:20px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.5);
+    cursor:pointer;transition:all .3s var(--ease);display:flex;flex-direction:column;gap:10px}
+  .scene:hover{background:rgba(255,255,255,.62);transform:translateY(-2px)}
+  .scene .ic{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--amber-glow);color:var(--amber)}
+  .scene b{font-size:14px;font-weight:700}
+  .scene em{font-style:normal;font-size:11px;color:var(--ink-soft);font-weight:600}
+  .ctrl{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(120,130,145,.13)}
+  .ctrl:last-child{border:none}
+  .ctrl .lbl{font-size:14px;font-weight:600}
+  .ctrl .sub{font-size:11px;color:var(--ink-faint);font-weight:600}
+  .toggle{width:48px;height:28px;border-radius:20px;background:rgba(120,130,145,.28);position:relative;cursor:pointer;transition:background .3s var(--ease);border:none}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:left .3s var(--ease)}
+  .toggle.on{background:var(--amber)}.toggle.on::after{left:23px}
+
+  /* MUSIC */
+  .music-grid{grid-template-columns:1.1fr 1fr}
+  .np{display:flex;flex-direction:column;gap:18px}
+  .cover{width:100%;aspect-ratio:1.9;border-radius:22px;background:
+    radial-gradient(120% 140% at 20% 10%,#ffd9a8,#d98a2b 55%,#7a3f9e 110%);position:relative;overflow:hidden}
+  .cover::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 80% 90%,rgba(58,166,160,.55),transparent)}
+  .np-meta b{font-family:'Fraunces',serif;font-size:24px;font-weight:500;display:block}
+  .np-meta span{font-size:13px;color:var(--ink-soft);font-weight:600}
+  .transport{display:flex;align-items:center;gap:18px;margin-top:4px}
+  .tbtn{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.5);cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .25s var(--ease)}
+  .tbtn:hover{background:rgba(255,255,255,.8)}
+  .play{width:58px;height:58px;background:linear-gradient(150deg,var(--amber-lo),var(--amber));color:#fff;box-shadow:0 10px 22px -8px var(--amber-glow)}
+  .play:hover{transform:scale(1.05)}
+  .avail{margin-top:6px}
+  .avail .card-t{margin-bottom:10px}
+  .pills{display:flex;flex-wrap:wrap;gap:9px}
+  .pill{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:14px;background:rgba(255,255,255,.46);
+    border:1px solid rgba(255,255,255,.55);font-size:13px;font-weight:700;cursor:pointer;transition:all .28s var(--ease)}
+  .pill:hover{background:#fff;transform:translateY(-2px)}
+  .pill.best{border-color:var(--amber);background:rgba(217,138,43,.12);color:var(--amber)}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .rec{display:flex;gap:14px;align-items:center;padding:12px;border-radius:18px;transition:background .25s var(--ease);cursor:pointer}
+  .rec:hover{background:rgba(255,255,255,.45)}
+  .rec .thumb{width:46px;height:46px;border-radius:13px;flex:none}
+  .rec b{font-size:14px;display:block}.rec span{font-size:12px;color:var(--ink-soft);font-weight:600}
+
+  /* NET WORTH */
+  .nw-grid{grid-template-columns:1.4fr 1fr}
+  .big{font-family:'Fraunces',serif;font-size:52px;font-weight:500;line-height:1;letter-spacing:-.01em}
+  .delta{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--teal);margin-top:8px}
+  .spark{width:100%;height:120px;margin-top:18px}
+  .acct{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(120,130,145,.13)}
+  .acct:last-child{border:none}
+  .acct .nm{font-size:14px;font-weight:700}.acct .ty{font-size:11px;color:var(--ink-faint);font-weight:600}
+  .acct .val{font-family:'Fraunces',serif;font-size:18px;font-weight:500}
+
+  /* HEALTH */
+  .hl-grid{grid-template-columns:1fr 1.2fr}
+  .rings{display:grid;place-items:center;padding:6px}
+  .stat3{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .stat{padding:18px;border-radius:20px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.5)}
+  .stat .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+  .stat .v{font-family:'Fraunces',serif;font-size:30px;font-weight:500;margin-top:6px}
+  .stat .u{font-size:12px;color:var(--ink-soft);font-weight:600}
+
+  .foot{position:absolute;bottom:14px;left:34px;font-size:11px;color:var(--ink-faint);font-weight:600;letter-spacing:.03em;z-index:3}
+  @media (max-width:880px){.home-grid,.music-grid,.nw-grid,.hl-grid{grid-template-columns:1fr}.app{grid-template-columns:80px 1fr}}
+  /* wordmark + voice */
+  .wm{font-family:'Fraunces',serif;font-size:18px;font-weight:600;line-height:1;color:var(--ink);margin-bottom:14px;letter-spacing:.01em}
+  .wm sup{font-family:'Manrope';font-size:8px;font-weight:800;color:var(--amber);vertical-align:super;margin-left:1px;letter-spacing:.04em}
+  .voice{position:absolute;right:26px;bottom:24px;z-index:6;display:flex;align-items:center;gap:12px}
+  .voice .bubble{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .45s var(--ease),opacity .35s var(--ease),padding .45s var(--ease);
+    font-size:13px;font-weight:600;color:var(--ink);background:var(--glass);backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid var(--stroke);border-radius:16px;padding:0;box-shadow:var(--shadow)}
+  .voice.live .bubble{max-width:320px;opacity:1;padding:13px 17px}
+  .mic{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;flex:none;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(150deg,var(--amber-lo),var(--amber));box-shadow:0 12px 26px -8px var(--amber-glow);transition:transform .25s var(--ease)}
+  .mic:hover{transform:scale(1.06)}.mic svg{width:24px;height:24px}
+  .voice.live .mic{animation:pulse 1.5s var(--ease) infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 var(--amber-glow)}70%{box-shadow:0 0 0 18px rgba(217,138,43,0)}100%{box-shadow:0 0 0 0 rgba(217,138,43,0)}}
+</style>
+</head>
+<body>
+  <div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+  <div class="grain"></div>
+
+  <div class="app">
+    <!-- RAIL -->
+    <aside class="glass rail">
+      <div class="mark" title="Lar">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 4l8 7.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10.5V19h12v-8.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="14.5" r="2.2" fill="#fff"/></svg>
+      </div>
+      <div class="wm">lar<sup>ai</sup></div>
+      <nav class="nav">
+        <button class="navbtn active" data-go="home"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Home</span></button>
+        <button class="navbtn" data-go="music"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18V6l10-2v12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.9"/><circle cx="16.5" cy="16" r="2.5" stroke="currentColor" stroke-width="1.9"/></svg><span>Music</span></button>
+        <button class="navbtn" data-go="wealth"><svg viewBox="0 0 24 24" fill="none"><path d="M4 18l5-5 3 3 7-8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 8h4v4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Wealth</span></button>
+        <button class="navbtn" data-go="health"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.3-7-9.2A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7-1.2C19 11.7 12 20 12 20Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Health</span></button>
+      </nav>
+      <div class="avatar">A</div>
+    </aside>
+
+    <!-- STAGE -->
+    <main class="glass stage">
+      <!-- HOME -->
+      <section class="block active" id="home">
+        <div class="head">
+          <div><div class="eyebrow" id="greet">Good evening</div><div class="h1">Welcome home, Alberto</div></div>
+          <div class="clock"><span id="time">—</span><small id="date">—</small></div>
+        </div>
+        <div class="grid home-grid">
+          <div class="glass card st">
+            <div class="card-t">Dublin · Now</div>
+            <div class="weather">
+              <div class="temp">11°</div>
+              <div><div style="font-weight:700;font-size:15px">Light rain</div><div style="color:var(--ink-soft);font-size:13px;font-weight:600">Feels 9° · 78% humidity</div></div>
+            </div>
+            <div class="scenes">
+              <div class="scene"><div class="ic">🎬</div><b>Movie Night</b><em>Dim · TV on · 21°</em></div>
+              <div class="scene"><div class="ic">🌙</div><b>Wind Down</b><em>Warm light · quiet</em></div>
+              <div class="scene"><div class="ic">☀️</div><b>Focus</b><em>Bright · lo-fi</em></div>
+              <div class="scene"><div class="ic">🍳</div><b>Morning</b><em>Blinds · news · coffee</em></div>
+            </div>
+          </div>
+          <div class="glass card st">
+            <div class="card-t">Quick controls</div>
+            <div class="ctrl"><div><div class="lbl">Living room lights</div><div class="sub">3 bulbs · 60%</div></div><button class="toggle on"></button></div>
+            <div class="ctrl"><div><div class="lbl">Thermostat</div><div class="sub">Heating to 21°</div></div><button class="toggle on"></button></div>
+            <div class="ctrl"><div><div class="lbl">Front door</div><div class="sub">Locked</div></div><button class="toggle"></button></div>
+            <div class="ctrl"><div><div class="lbl">Do not disturb</div><div class="sub">Until 7:00</div></div><button class="toggle"></button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MUSIC -->
+      <section class="block" id="music">
+        <div class="head">
+          <div><div class="eyebrow">Now playing · your algorithm</div><div class="h1">Music</div></div>
+        </div>
+        <div class="grid music-grid">
+          <div class="glass card np st">
+            <div class="cover"></div>
+            <div class="np-meta"><b>Strange Loops</b><span>Mild Orange · Looking for Space</span></div>
+            <div class="transport">
+              <button class="tbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 6v12M19 6l-9 6 9 6z"/></svg></button>
+              <button class="tbtn play" id="play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></button>
+              <button class="tbtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 6v12M5 6l9 6-9 6z"/></svg></button>
+            </div>
+            <div class="avail">
+              <div class="card-t">Available on · open where you like</div>
+              <div class="pills">
+                <div class="pill best"><span class="dot" style="background:#1db954"></span>Spotify</div>
+                <div class="pill"><span class="dot" style="background:#fa57c1"></span>Apple Music</div>
+                <div class="pill"><span class="dot" style="background:#000"></span>Tidal</div>
+                <div class="pill"><span class="dot" style="background:#ff0000"></span>YT Music</div>
+              </div>
+            </div>
+          </div>
+          <div class="glass card st">
+            <div class="card-t">Because you valued · quiet discovery</div>
+            <div class="rec"><div class="thumb" style="background:linear-gradient(135deg,#a8ead9,#3aa6a0)"></div><div><b>Men I Trust</b><span>Dream pop · 4 platforms</span></div></div>
+            <div class="rec"><div class="thumb" style="background:linear-gradient(135deg,#ffd9a8,#d98a2b)"></div><div><b>Khruangbin</b><span>Psych funk · 5 platforms</span></div></div>
+            <div class="rec"><div class="thumb" style="background:linear-gradient(135deg,#c9c1ff,#7a3f9e)"></div><div><b>Nilüfer Yanya</b><span>Indie · 4 platforms</span></div></div>
+            <div class="rec"><div class="thumb" style="background:linear-gradient(135deg,#ffc6c0,#e8645a)"></div><div><b>Crumb</b><span>Neo-psych · 3 platforms</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WEALTH -->
+      <section class="block" id="wealth">
+        <div class="head">
+          <div><div class="eyebrow">Read-only · aggregated</div><div class="h1">Net Worth</div></div>
+        </div>
+        <div class="grid nw-grid">
+          <div class="glass card st">
+            <div class="card-t">Total · all accounts</div>
+            <div class="big">€84,260</div>
+            <div class="delta">▲ €1,940 (2.4%) this month</div>
+            <svg class="spark" viewBox="0 0 400 120" preserveAspectRatio="none">
+              <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa6a0" stop-opacity=".35"/><stop offset="1" stop-color="#3aa6a0" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,86 L40,80 L80,90 L120,66 L160,72 L200,52 L240,60 L280,38 L320,44 L360,26 L400,30 L400,120 L0,120 Z" fill="url(#g)"/>
+              <path d="M0,86 L40,80 L80,90 L120,66 L160,72 L200,52 L240,60 L280,38 L320,44 L360,26 L400,30" fill="none" stroke="#3aa6a0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="glass card st">
+            <div class="card-t">Accounts</div>
+            <div class="acct"><div><div class="nm">AIB Current</div><div class="ty">Open banking</div></div><div class="val">€4,120</div></div>
+            <div class="acct"><div><div class="nm">Revolut Savings</div><div class="ty">Open banking</div></div><div class="val">€18,400</div></div>
+            <div class="acct"><div><div class="nm">Trading 212</div><div class="ty">Brokerage</div></div><div class="val">€51,240</div></div>
+            <div class="acct"><div><div class="nm">Pension</div><div class="ty">Linked</div></div><div class="val">€10,500</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HEALTH -->
+      <section class="block" id="health">
+        <div class="head">
+          <div><div class="eyebrow">Private · on device</div><div class="h1">Health</div></div>
+        </div>
+        <div class="grid hl-grid">
+          <div class="glass card st rings">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+              <g fill="none" stroke-linecap="round" transform="rotate(-90 100 100)">
+                <circle cx="100" cy="100" r="84" stroke="rgba(217,138,43,.15)" stroke-width="14"/>
+                <circle cx="100" cy="100" r="84" stroke="#d98a2b" stroke-width="14" stroke-dasharray="528" stroke-dashoffset="120"/>
+                <circle cx="100" cy="100" r="64" stroke="rgba(58,166,160,.15)" stroke-width="14"/>
+                <circle cx="100" cy="100" r="64" stroke="#3aa6a0" stroke-width="14" stroke-dasharray="402" stroke-dashoffset="70"/>
+                <circle cx="100" cy="100" r="44" stroke="rgba(232,100,90,.15)" stroke-width="14"/>
+                <circle cx="100" cy="100" r="44" stroke="#e8645a" stroke-width="14" stroke-dasharray="276" stroke-dashoffset="120"/>
+              </g>
+              <text x="100" y="96" text-anchor="middle" font-family="Fraunces" font-size="30" fill="#26303c">78%</text>
+              <text x="100" y="116" text-anchor="middle" font-family="Manrope" font-weight="700" font-size="11" fill="#8b96a4">DAILY GOAL</text>
+            </svg>
+          </div>
+          <div class="glass card st">
+            <div class="card-t">Today</div>
+            <div class="stat3">
+              <div class="stat"><div class="k">Steps</div><div class="v">8,420</div><div class="u">goal 10,000</div></div>
+              <div class="stat"><div class="k">Resting HR</div><div class="v">58<span class="u"> bpm</span></div></div>
+              <div class="stat"><div class="k">Sleep</div><div class="v">7h 12m</div><div class="u">82% quality</div></div>
+              <div class="stat"><div class="k">Energy</div><div class="v">540<span class="u"> kcal</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="foot">Lar · “Hey Lar” — the guardian of your home</div>
+      <div class="voice" id="voice">
+        <div class="bubble" id="vbubble">“Hey Lar…”</div>
+        <button class="mic" id="mic" title="Hey Lar">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // nav switching
+  const btns=document.querySelectorAll('.navbtn');
+  const blocks=document.querySelectorAll('.block');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const id=b.dataset.go==='wealth'?'wealth':b.dataset.go;
+    blocks.forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }));
+
+  // toggles
+  document.querySelectorAll('.toggle').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+
+  // play/pause
+  const play=document.getElementById('play');
+  let playing=true;
+  const ICONS={pause:'<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+               play:'<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>'};
+  play.innerHTML=ICONS.pause;
+  play.addEventListener('click',()=>{playing=!playing;play.innerHTML=playing?ICONS.pause:ICONS.play;});
+
+  // clock + greeting
+  function tick(){
+    const n=new Date();
+    const h=n.getHours();
+    document.getElementById('time').textContent=n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('date').textContent=n.toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
+    document.getElementById('greet').textContent= h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  }
+  tick();setInterval(tick,1000);
+
+  // "Hey Lar" voice flow — wake → resolve → route to platform
+  const voice=document.getElementById('voice'), mic=document.getElementById('mic'), vb=document.getElementById('vbubble');
+  function go(id){document.querySelector('.navbtn[data-go="'+id+'"]').click();}
+  const flow=[
+    {t:'Listening…',d:1000},
+    {t:'“Hey Lar — play something calm on Tidal”',d:1800},
+    {t:'Resolving track · choosing platform…',d:1200,act:()=>go('music')},
+    {t:'▶ Routing to Tidal — now playing',d:1700}
+  ];
+  let busy=false;
+  mic.addEventListener('click',async()=>{
+    if(busy)return; busy=true; voice.classList.add('live');
+    for(const s of flow){ vb.textContent=s.t; if(s.act)s.act(); await new Promise(r=>setTimeout(r,s.d)); }
+    voice.classList.remove('live'); vb.textContent='“Hey Lar…”'; busy=false;
+  });
+</script>
+</body>
+</html>
