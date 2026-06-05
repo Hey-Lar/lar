@@ -53,12 +53,8 @@ Promise<PodcastSeed>` — GET
 applePodcastsUrl; feedUrl?; genre?; links: Record<string,string>; }`
   - `export async function resolvePodcast(action: LarAction, fetchImpl = fetch):
 Promise<PodcastResolution>` — uses `action.entity.query` → `searchPodcast` →
-    builds `links`:
-    - `apple_podcasts`: the `applePodcastsUrl` (direct).
-    - `rss`: the `feedUrl` if present (the ownable artifact).
-    - `spotify`: `https://open.spotify.com/search/<enc query>` (find-on search).
-    - `youtube`: `https://www.youtube.com/results?search_query=<enc query>+podcast`.
-      Only include keys whose URL exists. Bright-line comment: links only, no audio.
+    builds `links`: - `apple_podcasts`: the `applePodcastsUrl` (direct). - `rss`: the `feedUrl` if present (the ownable artifact). - `spotify`: `https://open.spotify.com/search/<enc query>` (find-on search). - `youtube`: `https://www.youtube.com/results?search_query=<enc query>+podcast`.
+    Only include keys whose URL exists. Bright-line comment: links only, no audio.
   - `export function buildPodcastLinks(seed: PodcastSeed): Record<string,string>`
     — pure helper (so it is unit-testable without network).
 - `src/index.ts` — export `searchPodcast`, `resolvePodcast`, `buildPodcastLinks`,
