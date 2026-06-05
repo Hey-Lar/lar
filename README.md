@@ -32,6 +32,8 @@ Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is b
 | [`docs/06-stack-deployment.md`](docs/06-stack-deployment.md) | Tech stack + how each surface deploys (Next.js · Supabase · Kotlin) |
 | [`docs/07-repo-structure.md`](docs/07-repo-structure.md) | Monorepo layout + when (and what) to split into separate repos |
 | [`docs/08-build-guide.md`](docs/08-build-guide.md) | **Phase 1 build playbook — hand this to Claude Code** |
+| [`docs/09-differentiation.md`](docs/09-differentiation.md) | The moat, sharpened — why incumbents structurally can't copy this |
+| [`docs/10-lumina-integration.md`](docs/10-lumina-integration.md) | How the existing "Lumina" build folds in as the money/dashboard pillar |
 | [`CLAUDE.md`](CLAUDE.md) | Auto-loaded Claude Code rules (stack, conventions, bright-lines) |
 | [`prototype/index.html`](prototype/index.html) | **Phase 0 working prototype** — open in a browser |
 | `design/` | Whiteboard exports, screenshots, mockups (drop yours here) |
