@@ -1,0 +1,42 @@
+title = "Lar gitleaks config"
+
+# Inherit the full gitleaks default ruleset (AWS keys, GitHub PATs, private
+# keys, high-entropy strings, etc.).  Custom rules are added via [[rules]]
+# below; anything that would self-match this config file is handled by the
+# allowlist instead.
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Allowlist — paths and regex patterns that are safe to skip.
+# ---------------------------------------------------------------------------
+[allowlist]
+description = "Safe paths and known placeholder patterns"
+
+# Paths whose contents should never be scanned (docs, test fixtures, this
+# config file itself, and the lock file which contains many URL-like strings).
+paths = [
+  '''\.md$''',
+  '''\.env\.example$''',
+  '''(^|/)\.gitleaks\.toml$''',
+  '''\.test\.(ts|mjs)$''',
+  '''(^|/)package-lock\.json$''',
+]
+
+# Regex patterns for placeholder values / env-var NAMES that look like
+# secrets but contain no actual secret material.
+regexes = [
+  # Generic placeholder strings used in docs/examples.
+  '''paste-the-key-here''',
+  '''<your-api-key>''',
+  # Redacted / obfuscated values (4+ x's).
+  '''xxxx+''',
+  # Labelled test/sample/dummy/example keys.
+  '''test-key|sample-key|dummy-key|EXAMPLE''',
+  # Env-var NAMES used in this repo — these are variable names, not values.
+  '''LAR_ANTHROPIC_KEY''',
+  '''LUMINA_API_BASE''',
+  '''LAR_LIVE''',
+  '''T212_API_KEY''',
+  '''SUPABASE_''',
+]
