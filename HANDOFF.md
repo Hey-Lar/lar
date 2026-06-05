@@ -4,7 +4,7 @@ Single source of continuity for **Lar** (heylar.ai). A fresh session reads this
 and resumes with zero loss. Kept current as work proceeds.
 
 > **Lar** = the guardian of your home. A neutral, voice-driven control surface
-> that routes you *outward* to the best place for each thing. Read `README.md`,
+> that routes you _outward_ to the best place for each thing. Read `README.md`,
 > `docs/01-master-spec.md`, `docs/02-music-architecture.md`, and
 > `docs/09-differentiation.md` for the why; `CLAUDE.md` for the rules.
 
@@ -25,38 +25,50 @@ use **npm workspaces + Turborepo** for now — identical topology; switching to
 pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
 
 **Built + green (Phase 1 keyless core):**
+
 - `packages/shared` — the **LarAction** structured-action contract (zod) every
   surface speaks. 5 tests.
 - `packages/connectors/music` — the **Music wedge, keyless + live-proven**:
   deterministic intent parser → iTunes search → Odesli cross-platform → platform
   pick (explicit wins, else user priority ∩ availability) → deep link. 12 tests
-  + a live smoke (`LAR_LIVE=1`) confirmed end-to-end (text → Odesli → Tidal
-  deep link, ~1.3s). Bright-line honored: links only, never audio.
+  - a live smoke (`LAR_LIVE=1`) confirmed end-to-end (text → Odesli → Tidal
+    deep link, ~1.3s). Bright-line honored: links only, never audio.
 - `packages/connectors/finance` — **read-only** snapshot client that **consumes
   Lumina's `/snapshot`** (`normalizeSnapshot` + `fetchFinanceSnapshot`). 6 tests.
   GET only, no write path; isolated for a future AISP swap + repo split.
 - `packages/ui` — Lar design tokens (amber "hearth" + glass) + a Tailwind
   preset; descends from the Lumina "ember" theme.
-- **24 tests green; typecheck + prettier clean.** `docs/09-differentiation.md`
-  and `docs/10-lumina-integration.md` written.
+- `apps/portal` — **Next.js 15 glass dashboard, BUILT + browser-verified**.
+  Left rail (Home/Music/Wealth/Health), "Liquid-Glass-but-ours" warm mesh.
+  **Music block is fully wired + live**: type/say a request → `POST /api/lar`
+  (deterministic parse → `resolveMusic`) → result card with cover, "Routing
+  to <platform>", "Open in <platform> →", and an "Available on" cross-platform
+  row. Mic via Web Speech API (falls back to text). Wealth block calls
+  `/api/finance` → real net worth when `LUMINA_API_BASE` is set, else a styled
+  "connect Lumina" shell. `next build` clean; screenshot-verified on :4200.
+- **24 unit tests green; portal builds + type-checks clean; prettier clean.**
+  `docs/09-differentiation.md` and `docs/10-lumina-integration.md` written.
 
 ## NEXT increment (do this next)
 
-**`apps/portal` — the Next.js glass dashboard + the wired Music wedge.**
-- `create-next-app` (App Router, TS, Tailwind) in `apps/portal`; use the
-  `@lar/ui` preset; port the look from `prototype/index.html` (left rail; Home /
-  Music / Wealth / Health blocks; "Liquid-Glass-but-ours", amber hearth).
-- Music block functional: mic (Web Speech API) → POST transcript to a route
-  handler `/api/lar` → **deterministic parse (keyless)**, escalate to the Claude
-  API only if `LAR_ANTHROPIC_KEY` is set and confidence is low → `resolveMusic`
-  → return `{action, openUrl}` → client opens the deep link + renders the glass
-  now-playing + "Available on" row.
-- Wealth block reads `connectors/finance` → set `LUMINA_API_BASE` to your running
-  Lumina API (`http://localhost:3001`) to see real money; else show the styled
-  shell.
-- Add `transpilePackages: ['@lar/shared','@lar/ui','@lar/connector-music','@lar/connector-finance']` in `next.config`.
-- Verify: `npm run dev` (or build) → screenshot via Chrome MCP at a wide
-  viewport. Then `apps/marketing` (the "wow" landing) per `docs/08` §8.
+Pick up any of these (all build on the working core):
+
+1. **`apps/marketing` — the "wow" landing** (`docs/08` §8): the hearth story,
+   a live "Available on" cross-platform demo, glass in motion, anti-lock-in
+   pitch, email waitlist. The design centerpiece; keyless except the waitlist
+   store (which needs Supabase — gate).
+2. **Wire real money:** run the Lumina API and set `LUMINA_API_BASE` so the
+   Wealth block shows live net worth (proves the harvest end-to-end). Then
+   absorb `quiet-margin`'s richer finance views into `connectors/finance`.
+3. **Cloud intent escalation:** in `/api/lar`, when `LAR_ANTHROPIC_KEY` is set
+   and the deterministic parse is low-confidence, call the Claude API to emit a
+   `LarAction` (validate with `safeParseLarAction`). Keyless path already works.
+4. **Supabase auth + RLS** (`services/supabase`): sign-in, `preferences` +
+   `play_history` tables, RLS so each user owns their data → feed
+   `platformPriority` into `/api/lar` from the user's row.
+
+Run the portal: `cd apps/portal && npx next dev -p 4200` (or `next start` after
+`next build`). Verify in browser via Chrome MCP.
 
 ## Build / verify / push
 
@@ -68,13 +80,13 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
 
 ## Credential gates (need YOUR account/keys — like GitHub auth was)
 
-| To finish | Needs |
-|---|---|
-| Sign-in + per-user prefs/history (RLS) | **Supabase** project (URL + anon/service keys) → `services/supabase` |
-| Cloud intent escalation (hard/ambiguous voice) | **Anthropic API key** (`LAR_ANTHROPIC_KEY`, server-only) |
-| Real money in the Wealth block | a running **Lumina API** (`LUMINA_API_BASE`) — already exists |
-| Reliable explicit-Spotify routing | a Spotify-auth seed (Odesli misses Spotify from an Apple seed) |
-| GitHub remote + Vercel CI | `gh repo create lar --private` (account action — confirm first) |
+| To finish                                      | Needs                                                                |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| Sign-in + per-user prefs/history (RLS)         | **Supabase** project (URL + anon/service keys) → `services/supabase` |
+| Cloud intent escalation (hard/ambiguous voice) | **Anthropic API key** (`LAR_ANTHROPIC_KEY`, server-only)             |
+| Real money in the Wealth block                 | a running **Lumina API** (`LUMINA_API_BASE`) — already exists        |
+| Reliable explicit-Spotify routing              | a Spotify-auth seed (Odesli misses Spotify from an Apple seed)       |
+| GitHub remote + Vercel CI                      | `gh repo create lar --private` (account action — confirm first)      |
 
 Everything NOT in this table is buildable now (keyless). The Music wedge +
 finance-via-Lumina already work without any key.
