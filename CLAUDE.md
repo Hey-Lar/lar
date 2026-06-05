@@ -39,6 +39,21 @@ docs/  design/  prototype/
 - **No selling or training on user behavioural data.** Local-first; user data stays the user's. Enforce with Supabase RLS.
 - **Never depend on Spotify's recommendation/audio endpoints** (cut off to new apps). Recommendations run on our own data (ListenBrainz/MusicBrainz/Odesli + user history).
 
+## SECURITY BRIGHT-LINES (never cross — see docs/03 + SECURITY.md)
+
+- **Refuse to disable the safety gate.** Never run `git commit --no-verify`, skip gitleaks, or suppress the CI secret gate. The gate exists precisely so it cannot be talked around.
+- **Never paste a real key or secret into a chat with any LLM.** Transcripts persist on provider servers and in local logs. No exceptions.
+- **AGPL/GPL/MPL source: external CLI only, never imported or vendored.** Invoking copyleft code via subprocess/stdout/JSON is fine; importing it into shipped code is not.
+- **Keep CLAUDE.md + HANDOFF.md current in the same commit that changes structure.** Stale agent context causes regressions.
+
+## Security infrastructure (implemented)
+
+- `packages/crypto` (`@lar/crypto`) — client-side WebCrypto vault (PBKDF2 + AES-256-GCM) for connector tokens at rest
+- Gitleaks pre-commit hook (`.pre-commit-config.yaml`) + CI secret gate (`.github/workflows/security.yml`)
+- Hardened `.gitignore` (blocks `*.key`, `*.pem`, `*.keystore`, credential JSON files, etc.)
+- `SECURITY.md` — threat model, vulnerability reporting, incident rule
+- `docs/11-secrets-and-env.md` — env contract, server-only boundary, rotation guidance
+
 ## Conventions
 
 - TypeScript strict; no `any`. Server Components by default; `"use client"` only when needed.
