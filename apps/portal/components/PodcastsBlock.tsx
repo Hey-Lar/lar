@@ -2,34 +2,23 @@
 
 import { useState } from 'react';
 
-interface Resolution {
+interface PodcastResolution {
   title: string;
-  artist: string;
-  chosenPlatform: string;
-  openUrl: string;
-  links: Record<string, string>;
-  odesliPageUrl: string;
+  author: string;
   artworkUrl?: string;
+  applePodcastsUrl: string;
+  feedUrl?: string;
+  genre?: string;
+  links: Partial<Record<'apple_podcasts' | 'rss' | 'spotify' | 'youtube', string>>;
 }
 
-const LABELS: Record<string, string> = {
-  spotify: 'Spotify',
-  apple_music: 'Apple Music',
-  tidal: 'Tidal',
-  youtube_music: 'YouTube Music',
-  soundcloud: 'SoundCloud',
-  deezer: 'Deezer',
-  amazon_music: 'Amazon Music',
-  odesli: 'Songlink',
-};
-const label = (p: string) => LABELS[p] ?? p;
-
-export function MusicBlock() {
-  const [text, setText] = useState('play something calm on Tidal');
+export function PodcastsBlock() {
+  const [text, setText] = useState('find the Lex Fridman podcast');
   const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState<Resolution | null>(null);
+  const [res, setRes] = useState<PodcastResolution | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   async function run(transcript: string) {
     if (!transcript.trim()) return;
@@ -40,16 +29,14 @@ export function MusicBlock() {
       const r = await fetch('/api/lar', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ transcript }),
+        body: JSON.stringify({ transcript, forceDomain: 'podcast' }),
       });
       const d = await r.json();
       if (!d.ok) throw new Error(d.error ?? 'request failed');
-      if (d.kind === 'music') {
-        setRes(d.resolution ?? null);
-        if (!d.resolution) setMsg(d.note ?? 'Nothing to route.');
+      if (d.kind === 'podcast' && d.resolution) {
+        setRes(d.resolution);
       } else {
-        setRes(null);
-        setMsg(d.note ?? 'That looks like a different kind of request — try the matching tab.');
+        setMsg(d.note ?? 'Nothing to route.');
       }
     } catch (e) {
       setMsg((e as Error).message);
@@ -83,18 +70,30 @@ export function MusicBlock() {
     rec.start();
   }
 
+  async function copyRss(feedUrl: string) {
+    try {
+      await navigator.clipboard.writeText(feedUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setMsg('Could not copy — please copy the URL manually.');
+    }
+  }
+
+  const feedUrl = res?.links.rss ?? res?.feedUrl;
+  const appleUrl = res?.links.apple_podcasts ?? res?.applePodcastsUrl;
+
   return (
     <div className="block-pad">
       <div className="head">
         <div>
           <div className="eyebrow">Hey Lar</div>
-          <h1 className="h1">Music</h1>
+          <h1 className="h1">Podcasts</h1>
         </div>
       </div>
       <p className="lead">
-        Say or type what you want. Lar finds the track and routes you to the best place to play it —
-        your platform, your choice. Lar never plays the audio itself; it takes you to the official
-        app.
+        Say or type a podcast you want. Lar finds it and routes you to Apple Podcasts or your feed
+        reader — it never streams audio itself.
       </p>
 
       <div className="ask">
@@ -104,7 +103,7 @@ export function MusicBlock() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') void run(text);
           }}
-          placeholder="play something calm on Tidal"
+          placeholder="find the Lex Fridman podcast"
           aria-label="Ask Lar"
         />
         <button className={`mic ${listening ? 'on' : ''}`} onClick={mic} aria-label="Speak to Lar">
@@ -126,25 +125,44 @@ export function MusicBlock() {
             ) : null}
             <div>
               <div className="np-title">{res.title}</div>
-              <div className="np-artist">{res.artist}</div>
-              <div className="np-route">
-                Routing to <b>{label(res.chosenPlatform)}</b>
-              </div>
+              <div className="np-artist">{res.author}</div>
             </div>
           </div>
-          <a className="open" href={res.openUrl} target="_blank" rel="noreferrer">
-            Open in {label(res.chosenPlatform)} →
-          </a>
-          <div className="avail">
-            <span className="avail-l">Available on</span>
-            {Object.entries(res.links).map(([p, url]) => (
-              <a key={p} href={url} target="_blank" rel="noreferrer" className="chip">
-                {label(p)}
-              </a>
-            ))}
-          </div>
+
+          {appleUrl && (
+            <a className="open" href={appleUrl} target="_blank" rel="noreferrer">
+              Open in Apple Podcasts →
+            </a>
+          )}
+
+          {feedUrl && (
+            <button
+              className="chip"
+              style={{ alignSelf: 'flex-start', cursor: 'pointer', border: 'none' }}
+              onClick={() => void copyRss(feedUrl)}
+            >
+              {copied ? 'Copied ✓' : 'Copy RSS feed'}
+            </button>
+          )}
+
+          {(res.links.spotify || res.links.youtube) && (
+            <div className="avail">
+              <span className="avail-l">Find on</span>
+              {res.links.spotify && (
+                <a href={res.links.spotify} target="_blank" rel="noreferrer" className="chip">
+                  Spotify
+                </a>
+              )}
+              {res.links.youtube && (
+                <a href={res.links.youtube} target="_blank" rel="noreferrer" className="chip">
+                  YouTube
+                </a>
+              )}
+            </div>
+          )}
+
           <div className="note">
-            Lar resolves + routes — it never hosts or streams audio. Read-only · your algorithm.
+            Lar routes you out — it never streams audio. Read-only · your algorithm.
           </div>
         </div>
       )}
