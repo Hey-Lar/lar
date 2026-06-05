@@ -11,6 +11,27 @@ secrets/
 *.key
 *.pem
 
+# secrets / credentials (hardened)
+# Enterprise, Android, TLS, and cloud credential file types.
+# Re-include exceptions below keep example/template files committable.
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa*
+*.crt
+*.cer
+*-service-account*.json
+*credentials*.json
+*.secret
+*token*.json
+
+# Re-include example / template files that match the patterns above.
+!.env.example
+!**/.env.example
+!*.template.*
+!**/*.template.*
+
 # build output
 dist/
 build/

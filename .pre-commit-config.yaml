@@ -1,0 +1,37 @@
+# pre-commit hooks — run before every `git commit` once installed.
+#
+# One-time setup:
+#   pip install pre-commit         # or `brew install pre-commit`
+#   pre-commit install             # registers the hook in .git/hooks/
+#
+# After that, every `git commit` runs the checks below against staged files.
+# To run on the whole repo on demand:
+#   pre-commit run --all-files
+#
+# To bypass (e.g. mid-merge): `git commit --no-verify` — use sparingly.
+
+repos:
+  # -------------------------------------------------------------------------
+  # Hygiene — whitespace, line endings, file size, YAML/JSON validity.
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: \.github/workflows/.*\.yml$  # GH Actions ${{ }} is not valid standalone YAML
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: detect-private-key
+
+  # -------------------------------------------------------------------------
+  # Secret scanning — same ruleset CI uses, so leaks die before push.
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
