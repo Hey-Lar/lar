@@ -12,6 +12,7 @@
   "dependencies": {
     "@lar/connector-finance": "*",
     "@lar/connector-music": "*",
+    "@lar/connector-podcasts": "*",
     "@lar/shared": "*",
     "@lar/ui": "*",
     "next": "^15.1.6",

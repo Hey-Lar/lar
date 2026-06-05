@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { Platform } from '@lar/shared';
 import { parseIntentDeterministic, resolveMusic } from '@lar/connector-music';
+import { resolvePodcast } from '@lar/connector-podcasts';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 
 /**
@@ -13,7 +14,11 @@ import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
  */
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { transcript?: string; platformPriority?: Platform[] };
+    const body = (await req.json()) as {
+      transcript?: string;
+      platformPriority?: Platform[];
+      forceDomain?: 'music' | 'podcast';
+    };
     const transcript = body.transcript?.trim();
     if (!transcript) {
       return NextResponse.json({ ok: false, error: 'empty transcript' }, { status: 400 });
@@ -21,27 +26,41 @@ export async function POST(req: Request) {
 
     const action = parseIntentDeterministic(transcript);
 
+    // Allow the client to override the parsed domain (e.g. PodcastsBlock always
+    // forces 'podcast' so the same deterministic parser routes correctly).
+    const routed = body.forceDomain ? { ...action, domain: body.forceDomain } : action;
+
     // Phase 1 handles media-launch intents; transport (pause/next) arrives with
     // the Android MediaController phase, so we surface a note rather than guess.
+    // Domain must also be routable (music/podcast) — film/book actions fall
+    // through to the note branch even when the intent looks launchable.
     const launchable =
-      action.domain === 'music' &&
-      (action.intent === 'play' ||
-        action.intent === 'open' ||
-        action.intent === 'recommend' ||
-        action.intent === 'queue');
+      (routed.domain === 'music' || routed.domain === 'podcast') &&
+      (routed.intent === 'play' ||
+        routed.intent === 'open' ||
+        routed.intent === 'recommend' ||
+        routed.intent === 'queue');
+
     if (!launchable) {
       return NextResponse.json({
         ok: true,
-        action,
+        kind: routed.domain,
+        action: routed,
         resolution: null,
-        note: `"${action.intent}" on ${action.domain} arrives with the Android phase (system control). Phase 1 routes music launches.`,
+        note: `"${routed.intent}" on ${routed.domain} arrives with the Android phase (system control). Phase 1 routes music launches.`,
       });
     }
 
-    const resolution = await resolveMusic(action, {
+    if (routed.domain === 'podcast') {
+      const resolution = await resolvePodcast(routed);
+      return NextResponse.json({ ok: true, kind: 'podcast', action: routed, resolution });
+    }
+
+    // Default: music routing (back-compat — resolution field always present).
+    const resolution = await resolveMusic(routed, {
       platformPriority: body.platformPriority ?? DEFAULT_PLATFORM_PRIORITY,
     });
-    return NextResponse.json({ ok: true, action, resolution });
+    return NextResponse.json({ ok: true, kind: 'music', action: routed, resolution });
   } catch (e) {
     return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 });
   }
