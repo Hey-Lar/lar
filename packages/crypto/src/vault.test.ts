@@ -118,4 +118,20 @@ describe('createVaultStore', () => {
     expect(vault.load('to-delete')).toBeNull();
     expect(vault.listProviders()).not.toContain('to-delete');
   });
+
+  it('load returns null for tampered JSON missing required fields', () => {
+    const storage = makeMemStorage();
+    const vault = createVaultStore(storage);
+    // seed a structurally invalid JSON object directly into the backing store
+    storage.setItem('lar.vault.tampered', '{"not":"a record"}');
+    expect(vault.load('tampered')).toBeNull();
+  });
+
+  it('load returns null for non-JSON garbage without throwing', () => {
+    const storage = makeMemStorage();
+    const vault = createVaultStore(storage);
+    storage.setItem('lar.vault.garbage', 'not json at all }{');
+    expect(() => vault.load('garbage')).not.toThrow();
+    expect(vault.load('garbage')).toBeNull();
+  });
 });

@@ -31,6 +31,19 @@ export interface VaultStore {
   listProviders(): string[];
 }
 
+function isStoredEntry(v: unknown): v is StoredEntry {
+  if (typeof v !== 'object' || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r['salt'] === 'string' &&
+    r['salt'].length > 0 &&
+    typeof r['iv'] === 'string' &&
+    r['iv'].length > 0 &&
+    typeof r['ct'] === 'string' &&
+    r['ct'].length > 0
+  );
+}
+
 /**
  * Create a namespaced vault store backed by the given VaultStorage.
  *
@@ -55,7 +68,14 @@ export function createVaultStore(storage: VaultStorage, prefix = 'lar.vault.'): 
 
     load(id: string): StoredEntry | null {
       const raw = storage.getItem(prefix + id);
-      return raw ? (JSON.parse(raw) as StoredEntry) : null;
+      if (!raw) return null;
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        return null;
+      }
+      return isStoredEntry(parsed) ? parsed : null;
     },
 
     remove(id: string): void {
