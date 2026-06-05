@@ -7,6 +7,8 @@
 
 const ITUNES_SEARCH = 'https://itunes.apple.com/search';
 
+export type PodcastPlatform = 'apple_podcasts' | 'rss' | 'spotify' | 'youtube';
+
 export interface PodcastSeed {
   title: string;
   author: string;
