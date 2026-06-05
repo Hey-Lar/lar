@@ -35,6 +35,8 @@ Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is b
 | [`docs/08-build-guide.md`](docs/08-build-guide.md)               | **Phase 1 build playbook — hand this to Claude Code**                               |
 | [`docs/09-differentiation.md`](docs/09-differentiation.md)       | The moat, sharpened — why incumbents structurally can't copy this                   |
 | [`docs/10-lumina-integration.md`](docs/10-lumina-integration.md) | How the existing "Lumina" build folds in as the money/dashboard pillar              |
+| [`docs/11-secrets-and-env.md`](docs/11-secrets-and-env.md)       | Env contract, server-only boundary, secret naming convention, rotation guidance     |
+| [`SECURITY.md`](SECURITY.md)                                     | Vulnerability reporting, threat model, bright-lines, enforcement controls           |
 | [`CLAUDE.md`](CLAUDE.md)                                         | Auto-loaded Claude Code rules (stack, conventions, bright-lines)                    |
 | [`prototype/index.html`](prototype/index.html)                   | **Phase 0 working prototype** — open in a browser                                   |
 | `design/`                                                        | Whiteboard exports, screenshots, mockups (drop yours here)                          |
