@@ -36,18 +36,32 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
 - `packages/connectors/finance` — **read-only** snapshot client that **consumes
   Lumina's `/snapshot`** (`normalizeSnapshot` + `fetchFinanceSnapshot`). 6 tests.
   GET only, no write path; isolated for a future AISP swap + repo split.
+- `packages/connectors/podcasts` — **Lar's second media block (keyless)**: iTunes
+  podcast search → resolve a show → outward links (Apple Podcasts direct + the
+  RSS feed + Spotify/YouTube "find on" search). 6 tests + gated live. Bright-line:
+  links only. Built via subagent-driven development (per-task spec + quality
+  review) and merged from `feat/podcasts-block` — see
+  `docs/plans/2026-06-05-podcasts-block.md`.
 - `packages/ui` — Lar design tokens (amber "hearth" + glass) + a Tailwind
   preset; descends from the Lumina "ember" theme.
 - `apps/portal` — **Next.js 15 glass dashboard, BUILT + browser-verified**.
   Left rail (Home/Music/Wealth/Health), "Liquid-Glass-but-ours" warm mesh.
-  **Music block is fully wired + live**: type/say a request → `POST /api/lar`
-  (deterministic parse → `resolveMusic`) → result card with cover, "Routing
-  to <platform>", "Open in <platform> →", and an "Available on" cross-platform
-  row. Mic via Web Speech API (falls back to text). Wealth block calls
-  `/api/finance` → real net worth when `LUMINA_API_BASE` is set, else a styled
-  "connect Lumina" shell. `next build` clean; screenshot-verified on :4200.
-- **24 unit tests green; portal builds + type-checks clean; prettier clean.**
-  `docs/09-differentiation.md` and `docs/10-lumina-integration.md` written.
+  **Music + Podcasts blocks fully wired + live**: type/say a request → `POST
+/api/lar` (deterministic parse, `kind` discriminator + `forceDomain`) →
+  `resolveMusic` (cover, "Routing to <platform>", "Open in <platform> →",
+  cross-platform "Available on" row) or `resolvePodcast` (show art, "Open in
+  Apple Podcasts →", "Copy RSS feed", "Find on" Spotify/YouTube). Mic via Web
+  Speech API (falls back to text). Wealth block calls `/api/finance` → real net
+  worth when `LUMINA_API_BASE` is set, else a styled "connect Lumina" shell.
+  `next build` clean; both blocks screenshot-verified on :4200.
+- **34 unit tests green (+2 gated live); typecheck + prettier clean; `next build`
+  clean.** `docs/09-differentiation.md`, `docs/10-lumina-integration.md`, and
+  `docs/plans/2026-06-05-podcasts-block.md` written.
+- **Known minor follow-ups** (non-blocking, flagged in final review): the portal
+  blocks inline-duplicate their resolution types + carry a couple of dead `??`
+  fallbacks (matches the MusicBlock pattern); `PodcastsBlock`'s Copy-RSS
+  `setTimeout` isn't cleared on unmount; neither ask-bar guards against
+  overlapping in-flight requests (an `AbortController` would fix both blocks).
 
 ## NEXT increment (do this next)
 
