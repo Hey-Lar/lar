@@ -76,7 +76,29 @@ auto` to kill Windows CRLF churn); `next build` clean.**
 
 ## NEXT increment (do this next)
 
-Pick up any of these (all build on the working core):
+**V2 program** (full plan: `docs/plans/2026-06-05-v2-security-merge.md`, from a
+5-agent research synthesis). **Phase 0 — security foundation: ✅ MERGED**
+(`@lar/crypto` encryption vault · gitleaks pre-commit + fail-closed CI secret
+gate · hardened `.gitignore` · `SECURITY.md` + `docs/11` env conventions ·
+governance bright-lines). **Do next, in order:**
+
+- **Phase 1 — harvest the read-only finance core from `D:\Claude\invest-bot-personal`**
+  (the founder's own repo — direct harvest OK; tracked files only, never its
+  `data/`): B1 Intl format helpers → B2 BrokerAdapter/DataAdapter **read-only**
+  contracts → B4 finance math (FIRE Monte-Carlo, drift, next-contribution — port
+  tests) → B3 read-only data adapters + RecordingAdapter fixtures (KEYLESS) → B6
+  fail-closed gate lib → B5 read-only MCP service (`services/mcp`, SKIP
+  `orders.ts`/write paths).
+- **Phase 2 — Dashboard V2** (build on Overview/Wealth/Music/Podcasts): B9 glass
+  tokens → D1 tri-theme toggle → B7 read-only finance UI (HoldingsTable/donut/
+  KPI strip) → B8 read-only RSC portfolio page → D2 markets block → D4 watchlist/
+  hero chart → D5 agenda → **D6 connector-token vault UI** (uses `@lar/crypto`).
+- **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
+  then Android (Tink + Keystore). Adopt only the **permissive-licensed** external
+  libs in the plan's Section C (gitleaks/age/dotenvx/Nosecone/T212-api/SnapTrade/
+  Tink); copyleft (trufflehog/SOPS/Ghostfolio) is **external-CLI/reference only**.
+
+Other available tracks (independent of V2):
 
 1. **`apps/marketing` — the "wow" landing** (`docs/08` §8): the hearth story,
    a live "Available on" cross-platform demo, glass in motion, anti-lock-in
