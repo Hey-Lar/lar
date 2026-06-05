@@ -1,0 +1,32 @@
+{
+  "name": "lar",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lar — the guardian of your home. A neutral, voice-driven control surface that routes you outward to the best place for each thing.",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/shared",
+    "packages/ui",
+    "packages/connectors/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.6.2",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.4",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
