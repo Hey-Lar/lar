@@ -26,7 +26,24 @@ export interface FinanceSnapshot {
   emergencyFundMonths: number | null;
   alerts: Array<{ severity: 'RED' | 'AMBER' | 'GREEN'; title: string; detail: string }>;
   generatedAt: string | null;
-  source: 'lumina-snapshot';
+  source: 'lumina-snapshot' | 'demo';
+}
+
+/** One allocation slice for the segmented bar — positive buckets only. */
+export interface AllocationSlice {
+  key: keyof FinanceSnapshot['buckets'];
+  value: number;
+  /** share of the positive total, 0..1 */
+  pct: number;
+}
+
+/** Pure: positive buckets → proportional slices (unit-testable, UI-agnostic). */
+export function allocationSlices(buckets: FinanceSnapshot['buckets']): AllocationSlice[] {
+  const entries = (
+    Object.entries(buckets) as Array<[keyof FinanceSnapshot['buckets'], number]>
+  ).filter(([, v]) => v > 0);
+  const total = entries.reduce((sum, [, v]) => sum + v, 0) || 1;
+  return entries.map(([key, value]) => ({ key, value, pct: value / total }));
 }
 
 /** The raw Lumina `/snapshot` data shape (only the fields we read). */
