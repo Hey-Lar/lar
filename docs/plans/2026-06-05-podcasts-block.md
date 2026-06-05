@@ -40,9 +40,9 @@ of `@lar/connector-music`.
   `rootDir src`, `lib: ["ES2022","DOM"]`, exclude tests.
 - `src/itunes-podcasts.ts`:
   - `export interface PodcastSeed { title; author; artworkUrl?; applePodcastsUrl;
-    feedUrl?; genre?; }`
+feedUrl?; genre?; }`
   - `export async function searchPodcast(query: string, fetchImpl = fetch):
-    Promise<PodcastSeed>` — GET
+Promise<PodcastSeed>` — GET
     `https://itunes.apple.com/search?media=podcast&entity=podcast&limit=1&term=<enc>`.
     Map `collectionName`→title, `artistName`→author, `artworkUrl600||artworkUrl100`
     →artworkUrl, `collectionViewUrl`→applePodcastsUrl, `feedUrl`→feedUrl,
@@ -50,15 +50,15 @@ of `@lar/connector-music`.
     or no `collectionViewUrl`. Non-2xx → throw `iTunes podcast search failed: HTTP <status>`.
 - `src/resolve.ts`:
   - `export interface PodcastResolution { title; author; artworkUrl?;
-    applePodcastsUrl; feedUrl?; genre?; links: Record<string,string>; }`
+applePodcastsUrl; feedUrl?; genre?; links: Record<string,string>; }`
   - `export async function resolvePodcast(action: LarAction, fetchImpl = fetch):
-    Promise<PodcastResolution>` — uses `action.entity.query` → `searchPodcast` →
+Promise<PodcastResolution>` — uses `action.entity.query` → `searchPodcast` →
     builds `links`:
     - `apple_podcasts`: the `applePodcastsUrl` (direct).
     - `rss`: the `feedUrl` if present (the ownable artifact).
     - `spotify`: `https://open.spotify.com/search/<enc query>` (find-on search).
     - `youtube`: `https://www.youtube.com/results?search_query=<enc query>+podcast`.
-    Only include keys whose URL exists. Bright-line comment: links only, no audio.
+      Only include keys whose URL exists. Bright-line comment: links only, no audio.
   - `export function buildPodcastLinks(seed: PodcastSeed): Record<string,string>`
     — pure helper (so it is unit-testable without network).
 - `src/index.ts` — export `searchPodcast`, `resolvePodcast`, `buildPodcastLinks`,
