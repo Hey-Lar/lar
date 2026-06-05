@@ -51,11 +51,16 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   `resolveMusic` (cover, "Routing to <platform>", "Open in <platform> →",
   cross-platform "Available on" row) or `resolvePodcast` (show art, "Open in
   Apple Podcasts →", "Copy RSS feed", "Find on" Spotify/YouTube). Mic via Web
-  Speech API (falls back to text). Wealth block calls `/api/finance` → real net
-  worth when `LUMINA_API_BASE` is set, else a styled "connect Lumina" shell.
-  `next build` clean; both blocks screenshot-verified on :4200.
-- **34 unit tests green (+2 gated live); typecheck + prettier clean; `next build`
-  clean.** `docs/09-differentiation.md`, `docs/10-lumina-integration.md`, and
+  Speech API (falls back to text). App opens on a rich **Overview** landing
+  (greeting + live clock + net-worth glance + quick-launch cards). **Wealth =
+  full net-worth dashboard** (gradient hero, SVG sparkline + trailing delta,
+  segmented allocation bar + bucket cards, goals, color-coded signals, demo/
+  your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
+  rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
+  set. `next build` clean; all blocks screenshot-verified on :4200.
+- **37 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
+auto` to kill Windows CRLF churn); `next build` clean.**
+  `docs/09-differentiation.md`, `docs/10-lumina-integration.md`, and
   `docs/plans/2026-06-05-podcasts-block.md` written.
 - **Known minor follow-ups** (non-blocking, flagged in final review): the portal
   blocks inline-duplicate their resolution types + carry a couple of dead `??`
