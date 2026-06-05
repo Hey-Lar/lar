@@ -55,4 +55,16 @@ describe('parseIntentDeterministic', () => {
     expect(a.entity.query).not.toMatch(/\bshow\b/);
     expect(a.entity.query).not.toMatch(/\bme\b/);
   });
+
+  it('does not over-strip "get" from "play Get Lucky on Spotify"', () => {
+    const a = parseIntentDeterministic('play Get Lucky on Spotify');
+    expect(a.platform).toBe('spotify');
+    expect(a.entity.query).toBe('get lucky');
+  });
+
+  it('does not over-strip "search" from "find the Search Engine podcast"', () => {
+    const a = parseIntentDeterministic('find the Search Engine podcast');
+    expect(a.domain).toBe('podcast');
+    expect(a.entity.query).toBe('search engine');
+  });
 });

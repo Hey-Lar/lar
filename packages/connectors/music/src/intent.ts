@@ -103,7 +103,7 @@ export function parseIntentDeterministic(transcript: string): LarAction {
 
   // strip intent verbs + lookup verbs, domain words, then fillers → what's left is the query
   t = t.replace(
-    /\b(play|pause|stop|next|skip|queue|open|launch|recommend|suggest|put on|listen to|search for|look up|show me|get me|find|search|lookup|get)\b/g,
+    /\b(play|pause|stop|next|skip|queue|open|launch|recommend|suggest|put on|listen to|search for|look up|show me|get me|find|lookup)\b/g,
     ' ',
   );
   t = t.replace(/\b(podcast|movie|film|series|audiobook|book)\b/g, ' ');

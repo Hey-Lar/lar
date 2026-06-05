@@ -44,8 +44,13 @@ export function MusicBlock() {
       });
       const d = await r.json();
       if (!d.ok) throw new Error(d.error ?? 'request failed');
-      setRes(d.resolution ?? null);
-      if (!d.resolution) setMsg(d.note ?? 'Nothing to route.');
+      if (d.kind === 'music') {
+        setRes(d.resolution ?? null);
+        if (!d.resolution) setMsg(d.note ?? 'Nothing to route.');
+      } else {
+        setRes(null);
+        setMsg(d.note ?? 'That looks like a different kind of request — try the matching tab.');
+      }
     } catch (e) {
       setMsg((e as Error).message);
     } finally {
