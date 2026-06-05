@@ -60,4 +60,5 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npm audit --audit-level=high
+      # audit shipped deps only; dev-tool advisories handled by Dependabot
+      - run: npm audit --omit=dev --audit-level=high
