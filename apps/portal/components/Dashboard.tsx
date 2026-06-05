@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { MusicBlock } from './MusicBlock';
 import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
+import { OverviewBlock } from './OverviewBlock';
 
 const TABS = [
-  { key: 'home', label: 'Home', ico: '⌂' },
+  { key: 'home', label: 'Overview', ico: '◫' },
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
@@ -16,7 +17,7 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 export function Dashboard() {
-  const [tab, setTab] = useState<TabKey>('music');
+  const [tab, setTab] = useState<TabKey>('home');
 
   return (
     <div className="bg-mesh">
@@ -43,41 +44,12 @@ export function Dashboard() {
         </nav>
 
         <main className="stage glass">
+          {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'wealth' && <WealthBlock />}
-          {tab === 'home' && <HomeBlock />}
           {tab === 'health' && <HealthBlock />}
         </main>
-      </div>
-    </div>
-  );
-}
-
-function HomeBlock() {
-  return (
-    <div className="block-pad">
-      <div className="head">
-        <div>
-          <div className="eyebrow">Good evening</div>
-          <h1 className="h1">Home</h1>
-        </div>
-      </div>
-      <p className="lead">
-        Lights, climate, scenes and presence — backed by Matter, controlled by voice. Arriving with
-        the Android phase; here is the surface it lives in.
-      </p>
-      <div className="tiles">
-        <div className="card">
-          <div className="eyebrow">Living room</div>
-          <div className="tile-big">21°</div>
-          <div className="note">3 lights · warm</div>
-        </div>
-        <div className="card">
-          <div className="eyebrow">Scene</div>
-          <div className="tile-big">Evening</div>
-          <div className="note">dimmed · doors locked</div>
-        </div>
       </div>
     </div>
   );
