@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { MusicBlock } from './MusicBlock';
+import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
 
 const TABS = [
   { key: 'home', label: 'Home', ico: '⌂' },
   { key: 'music', label: 'Music', ico: '♪' },
+  { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
   { key: 'health', label: 'Health', ico: '♥' },
 ] as const;
@@ -42,6 +44,7 @@ export function Dashboard() {
 
         <main className="stage glass">
           {tab === 'music' && <MusicBlock />}
+          {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'home' && <HomeBlock />}
           {tab === 'health' && <HealthBlock />}
