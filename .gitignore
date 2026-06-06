@@ -3,6 +3,10 @@ node_modules/
 .pnp/
 .pnp.js
 
+# transient build/agent artifacts
+.tmp-*
+.tmp/
+
 # env / secrets
 .env
 .env.*
