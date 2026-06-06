@@ -102,17 +102,19 @@ governance bright-lines). **Do next, in order:**
   **→ PHASE 1 COMPLETE.** Packages now: `shared · crypto · safety · ui ·
 connectors/{finance,music,podcasts}` + `services/mcp`.
 
-- **Phase 2 — Dashboard V2 (do this next):** make the harvested finance core
-  VISIBLE. Order (plan §D): **B9** glass tokens/Bloom → **D1** tri-theme toggle
-  (dark/ember/light, persisted) → **B7** read-only finance UI components
-  (HoldingsTable, AllocationDonut, KPI strip — from `invest-bot-personal/web/
-components`) → **B8** read-only portfolio page (consumes `connectors/finance`
-  analytics + adapters; live data is key-gated, demo otherwise) → **D2** markets
-  block → **D3** Wealth/FIRE panel (B4 Monte-Carlo, display-only, no advice) →
-  **D4** watchlist/hero chart → **D5** agenda → **D6 connector-token vault UI**
-  (paste a read-only key → encrypted client-side via `@lar/crypto` before
-  storage — the visible proof of the encryption pillar). Then Phase 3 deploy
-  (Vercel: Nosecone headers + nonce CSP + per-handler authz; Android: Tink).
+- **Phase 2 — Dashboard V2 (in progress):** make the harvested finance core
+  VISIBLE. **Markets block ✅ MERGED** (`7fbaa0f`): a read-only **Markets** tab +
+  `/api/markets` (GET) surfacing **D2/D3/B7/B8** at once — a **FIRE Monte-Carlo
+  projection** panel (P50 hero + P10–P90 band + probability-of-success via
+  `classifySuccessBand`, tuned to a healthy ~81% "Good"; display-only, "not
+  advice"), a **holdings table** with `computeDrift`/`classifyDrift` chips, and
+  an allocation bar — KEYLESS demo, no buy/sell controls, browser-verified.
+  **Do next:** **D1** tri-theme toggle (dark/ember/light, persisted, from `@lar/
+ui` tokens) → **D6 connector-token vault UI** (paste a read-only key →
+  encrypted client-side via `@lar/crypto` before storage — the visible proof of
+  the encryption pillar; uses `createVaultStore(localStorage)`) → **D4**
+  watchlist/hero chart → **D5** agenda. (`@lar/connector-finance` already
+  exports the analytics + read-only adapters the UI consumes.) Then Phase 3.
 - **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
   then Android (Tink + Keystore). Adopt only the **permissive-licensed** external
   libs in the plan's Section C (gitleaks/age/dotenvx/Nosecone/T212-api/SnapTrade/
