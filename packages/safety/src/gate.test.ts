@@ -112,6 +112,24 @@ describe('stale guard', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 3b. Read-only mode — truthy non-boolean mutating values (fail-closed)
+// ---------------------------------------------------------------------------
+describe('read-only mode: truthy non-boolean mutating', () => {
+  it('blocks when mutating is 1 (truthy non-boolean)', () => {
+    const gate = createGate();
+    const d = gate.check({ name: 'x', mutating: 1 as unknown as boolean });
+    expect(d.allowed).toBe(false);
+    expect(d.reason).toBe('read-only mode: mutation blocked');
+  });
+
+  it('allows when mutating is 0 (falsy non-boolean)', () => {
+    const gate = createGate();
+    const d = gate.check({ name: 'x', mutating: 0 as unknown as boolean });
+    expect(d.allowed).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 4. Stale guard — missing lastDataAt fails closed
 // ---------------------------------------------------------------------------
 describe('stale guard: missing freshness info', () => {
@@ -120,6 +138,28 @@ describe('stale guard: missing freshness info', () => {
     const d = gate.check({ name: 'op' }); // no lastDataAt
     expect(d.allowed).toBe(false);
     expect(d.reason).toBe('stale data: no freshness info');
+  });
+
+  it('denies when maxStaleMs is set and lastDataAt is null (explicit null)', () => {
+    const gate = createGate({ maxStaleMs: 1_000 });
+    const d = gate.check({ name: 'op', lastDataAt: null as unknown as number });
+    expect(d.allowed).toBe(false);
+    expect(d.reason).toBe('stale data: no freshness info');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4b. Fail-closed under error — readEnv throwing propagates (never returns allowed)
+// ---------------------------------------------------------------------------
+describe('fail-closed under error', () => {
+  it('throws when readEnv throws (does not silently return allowed)', () => {
+    const gate = createGate({
+      killSwitchEnv: 'SOME_ENV',
+      readEnv: () => {
+        throw new Error('env read failure');
+      },
+    });
+    expect(() => gate.check({ name: 'op' })).toThrow('env read failure');
   });
 });
 
