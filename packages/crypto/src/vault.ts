@@ -17,6 +17,22 @@ export { type VaultRecord } from './types.js';
 
 export const PBKDF2_ITERATIONS = 600_000;
 
+/**
+ * Hard ceiling on PBKDF2 iterations honoured at decrypt time. Defends
+ * against a local-only DoS where an attacker with write access to the
+ * stored vault record (e.g. a tampered localStorage value) bumps `iter`
+ * to e.g. 10^9 so every unlock spins the CPU for hours.
+ *
+ * 5,000,000 is ~8× the current default — leaves room for future floor
+ * increases without forcing an immediate code change while still being
+ * survivable on commodity hardware (one decrypt ≈ a few seconds).
+ *
+ * Pre-condition for this attack is that an attacker already controls
+ * the storage; the clamp turns "trivial denial-of-service" into "no
+ * effect at all".
+ */
+export const PBKDF2_ITERATIONS_MAX = 5_000_000;
+
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
@@ -110,7 +126,15 @@ export async function decryptSecret(record: VaultRecord, passphrase: string): Pr
 
   const salt = b64ToBuf(record.salt);
   const iv = b64ToBuf(record.iv);
-  const iterations = record.iter ?? PBKDF2_ITERATIONS;
+  // Honour the record's claimed iter (legacy records may omit it → 600k)
+  // but reject anything beyond the hard ceiling — a tampered storage
+  // entry asking for 10^9 iterations would otherwise lock the CPU for
+  // hours per unlock attempt.
+  const claimed = record.iter ?? PBKDF2_ITERATIONS;
+  if (!Number.isFinite(claimed) || claimed < 1 || claimed > PBKDF2_ITERATIONS_MAX) {
+    throw new Error('malformed vault record');
+  }
+  const iterations = claimed;
   const key = await deriveKey(passphrase, salt, iterations);
 
   let plain: ArrayBuffer;
