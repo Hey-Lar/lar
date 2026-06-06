@@ -18,7 +18,7 @@ export class SerialQueue {
   private chain: Promise<unknown> = Promise.resolve();
   private readonly minSpacingMs: number;
   private readonly clock: () => number;
-  private lastRun = 0;
+  private lastRun = -Infinity;
 
   constructor(opts: SerialQueueOptions = {}) {
     this.minSpacingMs = opts.minSpacingMs ?? 0;
