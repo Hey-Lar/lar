@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Resolution {
   title: string;
@@ -30,9 +30,22 @@ export function MusicBlock() {
   const [res, setRes] = useState<Resolution | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
+  // Track the in-flight request so a second submission cancels the first.
+  // Without this, a rapid "play X" / "play Y" sequence could race and
+  // surface the older resolution after the newer one finished.
+  const inflightRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      inflightRef.current?.abort();
+    };
+  }, []);
 
   async function run(transcript: string) {
     if (!transcript.trim()) return;
+    inflightRef.current?.abort();
+    const ctrl = new AbortController();
+    inflightRef.current = ctrl;
     setLoading(true);
     setMsg(null);
     setRes(null);
@@ -41,8 +54,10 @@ export function MusicBlock() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ transcript }),
+        signal: ctrl.signal,
       });
       const d = await r.json();
+      if (ctrl.signal.aborted) return;
       if (!d.ok) throw new Error(d.error ?? 'request failed');
       if (d.kind === 'music') {
         setRes(d.resolution ?? null);
@@ -52,9 +67,13 @@ export function MusicBlock() {
         setMsg(d.note ?? 'That looks like a different kind of request — try the matching tab.');
       }
     } catch (e) {
+      if ((e as { name?: string }).name === 'AbortError') return;
       setMsg((e as Error).message);
     } finally {
-      setLoading(false);
+      if (inflightRef.current === ctrl) {
+        inflightRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
