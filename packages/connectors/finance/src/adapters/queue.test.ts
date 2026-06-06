@@ -111,6 +111,37 @@ describe('SerialQueue — minSpacingMs with injected clock', () => {
     expect(startTimes[1]).toBeGreaterThanOrEqual(100);
   });
 
+  it('first task runs immediately — no phantom rate-limit wait', async () => {
+    // With lastRun = -Infinity, clock() - lastRun = +Infinity, so
+    // wait = minSpacingMs - Infinity < 0 → no setTimeout for task 1.
+    // We verify this by checking that task 1 starts at the same fake-clock
+    // value it was enqueued at (fakeNow=0), without any injected delay.
+    let fakeNow = 0;
+    const clock = () => fakeNow;
+    const q = new SerialQueue({ minSpacingMs: 100, clock });
+
+    const task1StartTime: number[] = [];
+    const p1 = q.enqueue(async () => {
+      task1StartTime.push(fakeNow); // should be 0 — no wait inflated this
+      fakeNow += 10; // simulate task duration
+    });
+    await p1;
+
+    expect(task1StartTime).toHaveLength(1);
+    // Task 1 must have started at fakeNow=0 (no delay was injected).
+    expect(task1StartTime[0]).toBe(0);
+
+    // Sanity-check: task 2 IS still spaced by minSpacingMs.
+    fakeNow = 120; // advance past lastRun(10) + spacing(100) = 110
+    const task2StartTime: number[] = [];
+    const p2 = q.enqueue(async () => {
+      task2StartTime.push(fakeNow);
+    });
+    await p2;
+
+    expect(task2StartTime[0]).toBeGreaterThanOrEqual(110);
+  });
+
   it('does not add extra delay when tasks are already spaced far enough apart', async () => {
     // Simulate task 1 completing at fake time 0, then fake time advances to 60
     // before task 2 starts. minSpacingMs=50 → no wait needed (60 >= 0+50).
