@@ -3,6 +3,7 @@ import type { Platform } from '@lar/shared';
 import { parseIntentDeterministic, resolveMusic } from '@lar/connector-music';
 import { resolvePodcast } from '@lar/connector-podcasts';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
+import { authorize } from '../../../lib/authz';
 
 /**
  * "Hey Lar" → action → dispatch.
@@ -13,6 +14,9 @@ import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
  * Music connector then resolves + routes to a deep link. No audio, ever.
  */
 export async function POST(req: Request) {
+  const gate = authorize(req, { allow: ['POST'] });
+  if (!gate.ok) return gate.response;
+
   try {
     const body = (await req.json()) as {
       transcript?: string;
