@@ -2,7 +2,7 @@
 //
 // Decision order (deny wins — fail-closed):
 //   1. Kill-switch: killSwitchEnv is set AND its value is truthy → deny everything.
-//   2. Read-only:   readOnly=true AND req.mutating=true → deny mutation.
+//   2. Read-only:   readOnly=true AND req.mutating is truthy → deny mutation.
 //   3. Stale guard: maxStaleMs set AND (lastDataAt missing OR data is too old) → deny.
 //   4. Otherwise → allow.
 //
@@ -35,7 +35,7 @@ export interface GateConfig {
 export interface GateRequest {
   /** Human-readable name of the operation being gated. */
   name: string;
-  /** True if the operation would write/mutate state. */
+  /** True if the operation would write/mutate state. Any truthy value is treated as a mutation (fail-closed). */
   mutating?: boolean;
   /** Epoch ms of the most recent data snapshot used by this request. */
   lastDataAt?: number;
@@ -69,13 +69,13 @@ export function createGate(config?: GateConfig): { check(req: GateRequest): Gate
     }
 
     // 2. Read-only guard — blocks mutations.
-    if (readOnly && req.mutating === true) {
+    if (readOnly && Boolean(req.mutating)) {
       return { allowed: false, reason: 'read-only mode: mutation blocked' };
     }
 
     // 3. Stale guard — fail-closed when freshness info is missing or stale.
     if (maxStaleMs !== undefined) {
-      if (req.lastDataAt === undefined) {
+      if (req.lastDataAt == null) {
         return { allowed: false, reason: 'stale data: no freshness info' };
       }
       if (now() - req.lastDataAt > maxStaleMs) {
