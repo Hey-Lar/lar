@@ -7,6 +7,7 @@
     "apps/*",
     "services/*",
     "packages/shared",
+    "packages/safety",
     "packages/ui",
     "packages/connectors/*",
     "packages/crypto"
