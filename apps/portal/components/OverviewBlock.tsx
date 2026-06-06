@@ -1,11 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { AgendaItem } from '../lib/agenda-demo';
+import { currentItem, nextUpcoming } from '../lib/agenda-demo';
 
 interface Glance {
   netWorthEur: number;
   history: number[];
   source: string;
+}
+
+interface AgendaPayload {
+  items: AgendaItem[];
+  asOfMs: number;
 }
 
 const eur = (n: number) =>
@@ -14,6 +21,11 @@ const eur = (n: number) =>
     currency: 'EUR',
     maximumFractionDigits: 0,
   }).format(n);
+
+function fmtAgendaTime(ms: number): string {
+  const d = new Date(ms);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
 
 function greeting(h: number): string {
   if (h < 5) return 'Good night';
@@ -31,6 +43,7 @@ const QUICK: Array<{ tab: string; label: string; desc: string; ico: string }> = 
 export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => void }) {
   const [now, setNow] = useState<Date | null>(null);
   const [fin, setFin] = useState<Glance | null>(null);
+  const [agenda, setAgenda] = useState<AgendaPayload | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -49,6 +62,17 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
     };
   }, []);
 
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/agenda')
+      .then((r) => r.json())
+      .then((d) => alive && setAgenda({ items: d.items, asOfMs: d.asOfMs }))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const hh = now ? String(now.getHours()).padStart(2, '0') : '--';
   const mm = now ? String(now.getMinutes()).padStart(2, '0') : '--';
   const ss = now ? String(now.getSeconds()).padStart(2, '0') : '--';
@@ -58,6 +82,15 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
   const greet = now ? greeting(now.getHours()) : 'Hello';
   const delta =
     fin && fin.history.length >= 2 ? fin.history[fin.history.length - 1]! - fin.history[0]! : 0;
+
+  const nowMs = now ? now.getTime() : (agenda?.asOfMs ?? 0);
+  const agendaNext = agenda
+    ? (currentItem(agenda.items, nowMs) ?? nextUpcoming(agenda.items, nowMs))
+    : null;
+  const agendaRunning =
+    agenda &&
+    nowMs >= (agendaNext?.startMs ?? Infinity) &&
+    nowMs < (agendaNext?.endMs ?? -Infinity);
 
   return (
     <div className="block-pad">
@@ -90,6 +123,33 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
         )}
         <div className="ov-go">Open Wealth →</div>
       </button>
+
+      {agendaNext && (
+        <button
+          className="card ov-net"
+          onClick={() => onNavigate('agenda')}
+          style={{ display: 'block', width: '100%', textAlign: 'left' }}
+        >
+          <div className="eyebrow">{agendaRunning ? 'Now · agenda' : 'Up next · agenda'}</div>
+          <div
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: 24,
+              fontWeight: 500,
+              marginTop: 4,
+              color: 'var(--ink)',
+            }}
+          >
+            {agendaNext.title}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--ink-soft)', marginTop: 4 }}>
+            {fmtAgendaTime(agendaNext.startMs)} – {fmtAgendaTime(agendaNext.endMs)}
+            {agendaNext.location ? ` · ${agendaNext.location}` : ''} · {agenda?.items.length ?? 0}{' '}
+            on today's schedule
+          </div>
+          <div className="ov-go">Open Agenda →</div>
+        </button>
+      )}
 
       <div className="ov-grid">
         {QUICK.map((q) => (
