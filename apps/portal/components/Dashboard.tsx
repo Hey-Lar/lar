@@ -6,6 +6,7 @@ import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
 import { MarketsBlock } from './MarketsBlock';
 import { OverviewBlock } from './OverviewBlock';
+import { VaultPanel } from './VaultPanel';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
@@ -14,6 +15,7 @@ const TABS = [
   { key: 'wealth', label: 'Wealth', ico: '◈' },
   { key: 'markets', label: 'Markets', ico: '📈' },
   { key: 'health', label: 'Health', ico: '♥' },
+  { key: 'connect', label: 'Connect', ico: '🔒' },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -52,6 +54,7 @@ export function Dashboard() {
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'markets' && <MarketsBlock />}
           {tab === 'health' && <HealthBlock />}
+          {tab === 'connect' && <VaultPanel />}
         </main>
       </div>
     </div>
