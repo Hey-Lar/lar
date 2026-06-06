@@ -7,6 +7,7 @@
     "dev": "next dev -p 4200",
     "build": "next build",
     "start": "next start -p 4200",
+    "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "@lar/crypto": "*",
     "@lar/shared": "*",
     "@lar/ui": "*",
+    "lightweight-charts": "^4.2.3",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
