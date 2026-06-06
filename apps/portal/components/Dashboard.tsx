@@ -6,6 +6,7 @@ import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
 import { MarketsBlock } from './MarketsBlock';
 import { OverviewBlock } from './OverviewBlock';
+import { ThemeToggle } from './ThemeToggle';
 import { VaultPanel } from './VaultPanel';
 
 const TABS = [
@@ -44,6 +45,7 @@ export function Dashboard() {
               <span>{t.label}</span>
             </button>
           ))}
+          <ThemeToggle />
           <div className="avatar">AM</div>
         </nav>
 
