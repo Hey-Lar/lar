@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface PodcastResolution {
   title: string;
@@ -19,9 +19,23 @@ export function PodcastsBlock() {
   const [msg, setMsg] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Race / leak guards: abort prior request when a new one starts and
+  // on unmount; clear the "Copied ✓" reset-timer on unmount.
+  const inflightRef = useRef<AbortController | null>(null);
+  const copyResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      inflightRef.current?.abort();
+      if (copyResetRef.current) clearTimeout(copyResetRef.current);
+    };
+  }, []);
 
   async function run(transcript: string) {
     if (!transcript.trim()) return;
+    inflightRef.current?.abort();
+    const ctrl = new AbortController();
+    inflightRef.current = ctrl;
     setLoading(true);
     setMsg(null);
     setRes(null);
@@ -30,8 +44,10 @@ export function PodcastsBlock() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ transcript, forceDomain: 'podcast' }),
+        signal: ctrl.signal,
       });
       const d = await r.json();
+      if (ctrl.signal.aborted) return;
       if (!d.ok) throw new Error(d.error ?? 'request failed');
       if (d.kind === 'podcast' && d.resolution) {
         setRes(d.resolution);
@@ -39,9 +55,13 @@ export function PodcastsBlock() {
         setMsg(d.note ?? 'Nothing to route.');
       }
     } catch (e) {
+      if ((e as { name?: string }).name === 'AbortError') return;
       setMsg((e as Error).message);
     } finally {
-      setLoading(false);
+      if (inflightRef.current === ctrl) {
+        inflightRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
@@ -74,7 +94,14 @@ export function PodcastsBlock() {
     try {
       await navigator.clipboard.writeText(feedUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Cancel any prior reset still pending — keeps the "✓" visible for
+      // exactly 2s after the LATEST copy click instead of an earlier one,
+      // and the unmount-effect above clears the handle if we navigate away.
+      if (copyResetRef.current) clearTimeout(copyResetRef.current);
+      copyResetRef.current = setTimeout(() => {
+        copyResetRef.current = null;
+        setCopied(false);
+      }, 2000);
     } catch {
       setMsg('Could not copy — please copy the URL manually.');
     }
