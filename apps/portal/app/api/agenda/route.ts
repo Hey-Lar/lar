@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateAgenda } from '../../../lib/agenda-demo';
+import { authorize } from '../../../lib/authz';
 
 /**
  * BRIGHT-LINE: Read-only, display-only. No event creation, update, or
@@ -8,7 +9,10 @@ import { generateAgenda } from '../../../lib/agenda-demo';
  *
  * Returns: { ok, source, asOfMs, items: AgendaItem[] }
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const gate = authorize(req);
+  if (!gate.ok) return gate.response;
+
   const asOfMs = Date.now();
   const items = generateAgenda(asOfMs);
   return NextResponse.json({
