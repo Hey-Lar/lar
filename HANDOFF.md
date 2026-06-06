@@ -113,10 +113,6 @@ components`) → **B8** read-only portfolio page (consumes `connectors/finance`
   (paste a read-only key → encrypted client-side via `@lar/crypto` before
   storage — the visible proof of the encryption pillar). Then Phase 3 deploy
   (Vercel: Nosecone headers + nonce CSP + per-handler authz; Android: Tink).
-- **Phase 2 — Dashboard V2** (build on Overview/Wealth/Music/Podcasts): B9 glass
-  tokens → D1 tri-theme toggle → B7 read-only finance UI (HoldingsTable/donut/
-  KPI strip) → B8 read-only RSC portfolio page → D2 markets block → D4 watchlist/
-  hero chart → D5 agenda → **D6 connector-token vault UI** (uses `@lar/crypto`).
 - **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
   then Android (Tink + Keystore). Adopt only the **permissive-licensed** external
   libs in the plan's Section C (gitleaks/age/dotenvx/Nosecone/T212-api/SnapTrade/
