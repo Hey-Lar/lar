@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { encryptSecret, decryptSecret, PBKDF2_ITERATIONS } from './vault.js';
+import { encryptSecret, decryptSecret, PBKDF2_ITERATIONS, PBKDF2_ITERATIONS_MAX } from './vault.js';
 import { createVaultStore } from './storage.js';
 import type { VaultStorage } from './storage.js';
 
@@ -58,6 +58,29 @@ describe('@lar/crypto vault (WebCrypto)', () => {
     expect(
       await decryptSecret(legacy as Parameters<typeof decryptSecret>[0], 'correct horse battery'),
     ).toBe('value');
+  });
+
+  it('exposes a hard PBKDF2_ITERATIONS_MAX ceiling above today’s default', () => {
+    expect(PBKDF2_ITERATIONS_MAX).toBeGreaterThan(PBKDF2_ITERATIONS);
+    expect(PBKDF2_ITERATIONS_MAX).toBeLessThanOrEqual(10_000_000);
+  });
+
+  it('rejects a tampered record whose iter exceeds the ceiling (DoS hardening)', async () => {
+    const rec = await encryptSecret('value', 'correct horse battery');
+    const tampered = { ...rec, iter: PBKDF2_ITERATIONS_MAX + 1 };
+    await expect(decryptSecret(tampered, 'correct horse battery')).rejects.toThrow(
+      'malformed vault record',
+    );
+  });
+
+  it('rejects a tampered record whose iter is non-finite or non-positive', async () => {
+    const rec = await encryptSecret('value', 'correct horse battery');
+    for (const bad of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const tampered = { ...rec, iter: bad as number };
+      await expect(decryptSecret(tampered, 'correct horse battery')).rejects.toThrow(
+        'malformed vault record',
+      );
+    }
   });
 });
 
