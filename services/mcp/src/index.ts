@@ -139,7 +139,6 @@ function buildDemoFixtures(): FixtureMap {
     [fixtureKey('getPosition', 'AAPL')]: positions[0],
     [fixtureKey('getPosition', 'SPY')]: positions[1],
     [fixtureKey('getPosition', 'MSFT')]: null,
-    [fixtureKey('getOrders', {})]: [],
     [fixtureKey('getQuote', 'AAPL')]: aaplQuote,
     [fixtureKey('getQuote', 'SPY')]: spyQuote,
     [fixtureKey('getBars', {

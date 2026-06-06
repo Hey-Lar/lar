@@ -6,10 +6,10 @@
 
 import { z } from 'zod';
 import { EmptyArgsSchema } from '../schema.js';
+import { SERVER_VERSION } from '../server.js';
 import type { ToolDef, ToolDeps, ToolResult } from './types.js';
 
 const SERVER_NAME = '@lar/mcp';
-const SERVER_VERSION = '0.0.0';
 
 export function healthTool(deps: ToolDeps): ToolDef {
   return {

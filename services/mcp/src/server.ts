@@ -5,9 +5,11 @@
 //
 // SDK API note (vs. source invest-bot-personal which uses the low-level
 // Server + setRequestHandler pattern):
-//   - v1.29.0 ships McpServer with registerTool / tool(), which is the
-//     preferred high-level API. We use McpServer.tool(name, description, schema, cb)
-//     but route through our ToolDef handlers so the gate logic lives in each tool.
+//   - v1.29.0 ships McpServer with registerTool / tool(). We call
+//     McpServer.tool(name, description, schema, cb) and route through our
+//     ToolDef handlers so the gate logic lives in each tool.
+//     Note: this overload is marked @deprecated in the SDK in favor of
+//     registerTool — migrate later when the API stabilises.
 //   - The low-level Server class is still available but is now deprecated for
 //     basic usage. We use McpServer here; it wraps Server internally.
 
@@ -18,7 +20,7 @@ import { READ_TOOLS, WRITE_PATTERN } from './tools/index.js';
 import type { ToolDeps } from './tools/types.js';
 
 const SERVER_NAME = '@lar/mcp';
-const SERVER_VERSION = '0.0.0';
+export const SERVER_VERSION = '0.0.0';
 
 // ---------------------------------------------------------------------------
 // Guard: detect any accidentally registered write tool name.
@@ -59,8 +61,9 @@ export function createMcpServer(deps: ToolDeps): McpServer {
 
     // Register with McpServer using the tool's own Zod schema as an object shape.
     // McpServer.tool() accepts a ZodRawShape (Record<string, ZodTypeAny>), so we
-    // wrap the Zod schema in an object shape when needed, or use z.object({}) for
-    // empty-args tools.
+    // unwrap the Zod schema into a shape when needed, or use z.object({}) for
+    // empty-args tools. Uses McpServer.tool(); the SDK marks this overload
+    // deprecated in favor of registerTool — migrate later.
     const zodShape = buildZodShape(tool);
 
     mcpServer.tool(tool.name, tool.description, zodShape, async (args: Record<string, unknown>) => {
