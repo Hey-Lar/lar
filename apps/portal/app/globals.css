@@ -2,22 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme CSS vars are emitted by `@lar/ui` `themeCss()` into a <style> tag in
+ * `<head>` (see app/layout.tsx). One [data-theme="dark|ember|light"] block
+ * per theme; switching themes flips them without a rebuild. Only constants
+ * that NEVER vary by theme live here.
+ */
 :root {
-  --ink: #26303c;
-  --ink-soft: #5a6573;
-  --ink-faint: #8b96a4;
-  --hearth: #d98a2b;
-  --hearth-lo: #f0b357;
-  --hearth-glow: rgba(217, 138, 43, 0.32);
-  --teal: #3aa6a0;
-  --glass: rgba(255, 255, 255, 0.55);
-  --glass-2: rgba(255, 255, 255, 0.42);
-  --stroke: rgba(255, 255, 255, 0.65);
-  --shadow: 0 18px 50px -20px rgba(40, 52, 68, 0.45), 0 6px 18px -10px rgba(40, 52, 68, 0.25);
   --radius: 30px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --pos: #3aa6a0;
-  --neg: #d2554d;
 }
 
 * {
@@ -31,17 +24,20 @@ body {
 body {
   font-family: 'Manrope', system-ui, sans-serif;
   color: var(--ink);
-  background: #eef1f6;
+  background: var(--body);
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  transition:
+    background-color 0.4s var(--ease),
+    color 0.4s var(--ease);
 }
 
-/* ambient warm mesh */
+/* ambient mesh — colors driven by the active theme */
 .bg-mesh {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: linear-gradient(135deg, #f6efe7 0%, #eef0f7 45%, #e9f3ef 100%);
+  background: var(--mesh-base);
 }
 .bg-mesh::before,
 .bg-mesh::after {
@@ -54,14 +50,14 @@ body {
 .bg-mesh::before {
   width: 46vw;
   height: 46vw;
-  background: radial-gradient(circle at 30% 30%, #ffd9a8, rgba(255, 184, 107, 0) 70%);
+  background: radial-gradient(circle at 30% 30%, var(--mesh-a), transparent 70%);
   top: -12vw;
   left: -6vw;
 }
 .bg-mesh::after {
   width: 42vw;
   height: 42vw;
-  background: radial-gradient(circle at 50% 50%, #c9c1ff, rgba(182, 168, 255, 0) 70%);
+  background: radial-gradient(circle at 50% 50%, var(--mesh-b), transparent 70%);
   bottom: -14vw;
   left: 26vw;
 }
@@ -74,14 +70,14 @@ body {
 .blob.m1 {
   width: 40vw;
   height: 40vw;
-  background: radial-gradient(circle at 50% 50%, #a8ead9, rgba(143, 227, 205, 0) 70%);
+  background: radial-gradient(circle at 50% 50%, var(--mesh-c), transparent 70%);
   top: -6vw;
   right: -10vw;
 }
 .blob.m2 {
   width: 34vw;
   height: 34vw;
-  background: radial-gradient(circle at 50% 50%, #ffc6c0, rgba(255, 177, 170, 0) 70%);
+  background: radial-gradient(circle at 50% 50%, var(--mesh-d), transparent 70%);
   bottom: -10vw;
   right: 8vw;
 }
@@ -146,7 +142,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  color: var(--ink-faint);
+  color: var(--nav-idle);
   transition: all 0.3s var(--ease);
   position: relative;
 }
@@ -161,11 +157,11 @@ body {
 }
 .navbtn:hover {
   color: var(--ink-soft);
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--glass-2);
 }
 .navbtn.active {
   color: var(--hearth);
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--nav-active-bg);
   box-shadow: 0 8px 18px -10px var(--hearth-glow);
 }
 .navbtn.active::after {
@@ -230,7 +226,7 @@ body {
 }
 .card {
   background: var(--glass-2);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--stroke);
   border-radius: 26px;
   padding: 22px 24px;
 }
@@ -247,8 +243,8 @@ body {
   height: 56px;
   padding: 0 20px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--stroke);
+  background: var(--glass);
   font-size: 16px;
   color: var(--ink);
   outline: none;
@@ -270,8 +266,9 @@ body {
 .mic {
   width: 56px;
   font-size: 20px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  color: var(--ink);
 }
 .mic.on {
   background: var(--hearth);
@@ -372,8 +369,8 @@ body {
   color: var(--ink);
   padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
 }
 .chip:hover {
   border-color: var(--hearth);
@@ -449,11 +446,38 @@ body {
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--nav-active-bg);
   display: grid;
   place-items: center;
   font-style: normal;
   font-size: 18px;
+}
+
+/* theme cycle button on the rail */
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: var(--glass);
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    transform 0.12s var(--ease);
+  margin-top: 6px;
+}
+.theme-btn:hover {
+  background: var(--nav-active-bg);
+  color: var(--hearth);
+}
+.theme-btn:active {
+  transform: scale(0.94);
 }
 
 /* ── Wealth dashboard ─────────────────────────────────────────────────── */
@@ -540,8 +564,8 @@ body {
   height: 100%;
 }
 .bucket-cell {
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: var(--glass-2);
+  border: 1px solid var(--stroke);
   border-radius: 18px;
   padding: 14px 16px;
 }
@@ -645,7 +669,7 @@ body {
   width: 100%;
   text-align: left;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--stroke);
   background: var(--glass-2);
   border-radius: 26px;
   padding: 22px 24px;
@@ -670,7 +694,7 @@ body {
 .ov-card {
   text-align: left;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--stroke);
   background: var(--glass-2);
   border-radius: 26px;
   padding: 22px 24px;
@@ -734,8 +758,8 @@ body {
   height: 52px;
   padding: 0 18px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--stroke);
+  background: var(--glass);
   font-family: inherit;
   font-size: 15px;
   color: var(--ink);
@@ -791,11 +815,11 @@ body {
 }
 .btn.ghost {
   color: var(--ink-soft);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
 }
 .btn.ghost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--nav-active-bg);
   color: var(--ink);
 }
 
@@ -841,8 +865,8 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: var(--glass-2);
+  border: 1px solid var(--stroke);
   border-radius: 14px;
   padding: 11px 16px;
 }
