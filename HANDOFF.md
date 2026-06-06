@@ -58,10 +58,11 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **54 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
+- **62 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
 auto` to kill Windows CRLF churn); `next build` clean.** (`@lar/ui` gained 8
-  themes specs in D1, `apps/portal/lib/synthetic-ohlc` 9 specs in D4 — the
-  portal workspace now has a `test` script.) `docs/09-differentiation.md`,
+  themes specs in D1, `apps/portal/lib/synthetic-ohlc` 9 specs in D4,
+  `apps/portal/lib/agenda-demo` 8 specs in D5 — the portal workspace has its
+  own `test` script.) `docs/09-differentiation.md`,
   `docs/10-lumina-integration.md`, and `docs/plans/2026-06-05-podcasts-block.md`
   written.
 - **Security/governance layer (branch `feat/v2-security-foundation`):**
@@ -150,13 +151,28 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
   **Browser-verified live** in all three themes (ember teal/red on warm
   glass, dark on Synex black, light on Stone) and click-to-select round-
   tripped (VWCE → IWDA, hero swapped to €92.12 / −19.78 / −17.68%).
-  **Do next:** **D5** agenda block (today's calendar surface, read-only;
-  Lar already has Calendar MCP available — start with a stub Overview card
-  - a simple agenda list pulling from a `/api/agenda` route returning a
-    KEYLESS demo schedule, then wire to Calendar MCP once the user hands over
-    Google OAuth). (Portal tabs now: Overview·Music·Podcasts·Wealth·Markets·
-    Health·Connect.) Then Phase 3.
-  * _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
+  **D5 agenda block ✅ MERGED** (`c30b2f2`): an eighth portal tab + an
+  Overview "up next · agenda" preview card. `apps/portal/lib/agenda-demo`
+  is a pure, KEYLESS generator — 7 daily slots tagged Calendar / Focus /
+  Wealth / Health, anchored to local midnight via `generateAgenda(asOfMs)`;
+  `currentItem` / `nextUpcoming` select the running or up-next slot (8
+  vitest specs cover sortedness, end > start, source whitelist, intraday
+  stability, nextUpcoming wraparound, currentItem mid-block + gap).
+  `/api/agenda` is GET-only (no write path). `AgendaBlock.tsx` paints a
+  themed "Now / Up next" hero card + a today-list where past items dim
+  to 0.45 opacity and the running item paints its time in hearth amber;
+  source chips use the brand palette (Calendar amber, Focus teal, Health
+  red, Wealth blue). BRIGHT-LINE held: read-only / routes-outward — Lar
+  never creates, edits, or deletes events. **Browser-verified live** in
+  light + dark themes (after-hours screenshot caught the "All clear · the
+  day is done" hero state). Portal tabs now: **Overview · Agenda · Music ·
+  Podcasts · Wealth · Markets · Health · Connect** (8). **→ PHASE 2
+  DASHBOARD V2 COMPLETE.**
+  **Do next:** **Phase 3 deploy** — Vercel: **Nosecone** headers + nonce
+  CSP + per-handler authz (V2 plan §E). Then Android Tink + Keystore. The
+  GitHub remote + Vercel CI both need a one-time account action — see the
+  Credential gates table.
+  - _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
     `decryptSecret` to a sane max so a tampered localStorage record can't request
     an absurd PBKDF2 count (local-only DoS; attacker already needs storage write).
 - **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
