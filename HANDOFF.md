@@ -109,12 +109,21 @@ connectors/{finance,music,podcasts}` + `services/mcp`.
   `classifySuccessBand`, tuned to a healthy ~81% "Good"; display-only, "not
   advice"), a **holdings table** with `computeDrift`/`classifyDrift` chips, and
   an allocation bar — KEYLESS demo, no buy/sell controls, browser-verified.
-  **Do next:** **D1** tri-theme toggle (dark/ember/light, persisted, from `@lar/
-ui` tokens) → **D6 connector-token vault UI** (paste a read-only key →
-  encrypted client-side via `@lar/crypto` before storage — the visible proof of
-  the encryption pillar; uses `createVaultStore(localStorage)`) → **D4**
-  watchlist/hero chart → **D5** agenda. (`@lar/connector-finance` already
-  exports the analytics + read-only adapters the UI consumes.) Then Phase 3.
+  **D6 connector-token vault UI ✅ MERGED** (`8c6c48b`): a **Connect** tab where
+  a user pastes a READ-ONLY key → encrypted **client-side via `@lar/crypto`**
+  (PBKDF2-600k → AES-256-GCM) → stored ciphertext-only in localStorage
+  (`createVaultStore`). Plaintext key + passphrase never leave the browser
+  (decrypted key kept in a ref, char-count only, auto-clears 120s + on unmount);
+  Unlock/Forget + stored-keys list. Opus security review: all 4 bright-lines
+  confirmed; **browser-verified live** — localStorage holds only `{kdf,iter,
+salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
+  encryption pillar. **Do next:** **D1** tri-theme toggle (dark/ember/light,
+  persisted, from `@lar/ui` tokens) → **D4** watchlist/hero chart → **D5**
+  agenda. (Portal tabs now: Overview·Music·Podcasts·Wealth·Markets·Health·
+  Connect.) Then Phase 3.
+  - _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
+    `decryptSecret` to a sane max so a tampered localStorage record can't request
+    an absurd PBKDF2 count (local-only DoS; attacker already needs storage write).
 - **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
   then Android (Tink + Keystore). Adopt only the **permissive-licensed** external
   libs in the plan's Section C (gitleaks/age/dotenvx/Nosecone/T212-api/SnapTrade/
