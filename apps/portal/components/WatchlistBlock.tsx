@@ -94,13 +94,14 @@ export function WatchlistBlock({ symbols, selected, onSelect, asOfMs }: Watchlis
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table
+          role="grid"
           style={{
             width: '100%',
             borderCollapse: 'collapse',
             fontSize: 13.5,
             fontVariantNumeric: 'tabular-nums',
           }}
-          aria-label="Watchlist"
+          aria-label="Watchlist — press Enter or Space on a row to load that symbol in the chart"
         >
           <thead>
             <tr style={{ color: 'var(--ink-faint)', textAlign: 'left' }}>
@@ -148,6 +149,7 @@ export function WatchlistBlock({ symbols, selected, onSelect, asOfMs }: Watchlis
               return (
                 <tr
                   key={r.symbol}
+                  role="row"
                   onClick={() => onSelect(r.symbol)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -160,9 +162,9 @@ export function WatchlistBlock({ symbols, selected, onSelect, asOfMs }: Watchlis
                     cursor: 'pointer',
                     borderTop: '1px solid rgba(120,130,145,0.10)',
                     background: isSelected ? 'var(--nav-active-bg)' : 'transparent',
-                    outline: 'none',
                   }}
                   aria-selected={isSelected}
+                  aria-label={`${r.symbol} — ${r.name}, last ${r.last.toFixed(2)}, day ${r.dayPct >= 0 ? 'up' : 'down'} ${(Math.abs(r.dayPct) * 100).toFixed(2)}%`}
                 >
                   <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--ink)' }}>{r.symbol}</td>
                   <td style={{ ...tdStyle, color: 'var(--ink-soft)', maxWidth: 220 }}>{r.name}</td>

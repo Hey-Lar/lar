@@ -40,6 +40,8 @@ export function Dashboard() {
               className={`navbtn ${tab === t.key ? 'active' : ''}`}
               onClick={() => setTab(t.key)}
               aria-current={tab === t.key ? 'page' : undefined}
+              aria-label={`Open ${t.label} tab`}
+              type="button"
             >
               <span className="ico" aria-hidden>
                 {t.ico}
