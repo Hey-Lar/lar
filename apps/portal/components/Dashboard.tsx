@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { MusicBlock } from './MusicBlock';
 import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
+import { MarketsBlock } from './MarketsBlock';
 import { OverviewBlock } from './OverviewBlock';
 
 const TABS = [
@@ -11,6 +12,7 @@ const TABS = [
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
+  { key: 'markets', label: 'Markets', ico: '📈' },
   { key: 'health', label: 'Health', ico: '♥' },
 ] as const;
 
@@ -48,6 +50,7 @@ export function Dashboard() {
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'wealth' && <WealthBlock />}
+          {tab === 'markets' && <MarketsBlock />}
           {tab === 'health' && <HealthBlock />}
         </main>
       </div>
