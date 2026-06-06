@@ -94,11 +94,25 @@ governance bright-lines). **Do next, in order:**
   read-only `RecordingAdapter` replaying in-memory fixtures — no write methods)
   · **B6** `@lar/safety` transport-agnostic **fail-closed gate** (kill-switch +
   read-only [any truthy mutating blocked] + stale-guard fail-closed + secret-
-  dropping audit log). **Do next (last of Phase 1):** **B5** read-only MCP
-  service in `services/mcp` (server + read tools account/positions/quotes/
-  symbols/health, gated by `@lar/safety`, **SKIP `orders.ts`/all write paths**)
-  — optionally wire one live read-only data adapter (e.g. keyless YFinance, or
-  key-gated Polygon/TwelveData) behind `SerialQueue`.
+  dropping audit log). **B5 ✅ MERGED** (`d24ec3b`): `services/mcp` (`@lar/mcp`)
+  — read-only MCP service, 5 tool groups (account/positions/quotes/symbols/
+  health), NO order/write tool (registration-time `WRITE_PATTERN` guard), every
+  call gated fail-closed via `@lar/safety` BEFORE the adapter + audit-logged,
+  `demoDeps()` keyless default (B3 RecordingAdapter), stdio (MCP SDK 1.29).
+  **→ PHASE 1 COMPLETE.** Packages now: `shared · crypto · safety · ui ·
+connectors/{finance,music,podcasts}` + `services/mcp`.
+
+- **Phase 2 — Dashboard V2 (do this next):** make the harvested finance core
+  VISIBLE. Order (plan §D): **B9** glass tokens/Bloom → **D1** tri-theme toggle
+  (dark/ember/light, persisted) → **B7** read-only finance UI components
+  (HoldingsTable, AllocationDonut, KPI strip — from `invest-bot-personal/web/
+components`) → **B8** read-only portfolio page (consumes `connectors/finance`
+  analytics + adapters; live data is key-gated, demo otherwise) → **D2** markets
+  block → **D3** Wealth/FIRE panel (B4 Monte-Carlo, display-only, no advice) →
+  **D4** watchlist/hero chart → **D5** agenda → **D6 connector-token vault UI**
+  (paste a read-only key → encrypted client-side via `@lar/crypto` before
+  storage — the visible proof of the encryption pillar). Then Phase 3 deploy
+  (Vercel: Nosecone headers + nonce CSP + per-handler authz; Android: Tink).
 - **Phase 2 — Dashboard V2** (build on Overview/Wealth/Music/Podcasts): B9 glass
   tokens → D1 tri-theme toggle → B7 read-only finance UI (HoldingsTable/donut/
   KPI strip) → B8 read-only RSC portfolio page → D2 markets block → D4 watchlist/
