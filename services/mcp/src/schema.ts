@@ -38,13 +38,6 @@ export const SymbolArgsSchema = z
   })
   .strict();
 
-export const GetOrdersArgsSchema = z
-  .object({
-    status: z.enum(['open', 'closed', 'all']).optional(),
-    limit: z.number().int().positive().max(500).optional(),
-  })
-  .strict();
-
 export const GetBarsArgsSchema = z
   .object({
     symbol: SymbolStringSchema,
@@ -67,4 +60,3 @@ export const SearchSymbolsArgsSchema = z
 // TS type aliases for handler use.
 export type GetBarsInput = z.infer<typeof GetBarsArgsSchema>;
 export type SearchSymbolsInput = z.infer<typeof SearchSymbolsArgsSchema>;
-export type GetOrdersInput = z.infer<typeof GetOrdersArgsSchema>;

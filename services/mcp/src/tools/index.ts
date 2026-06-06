@@ -20,15 +20,10 @@ import { healthTool } from './health.js';
 import type { ToolFactory } from './types.js';
 
 /**
- * The 5 read-only tool factories that @lar/mcp registers.
- * Ordered: account, positions (2), quotes (2), symbols (2), health — then collapsed to
- * the 5 logical "groups": account, positions, quotes, symbols, health.
- *
- * Note: `positionsTool` and `positionTool` are separate tools but belong to the
- * same logical group.  The spec says "5 READ tools" meaning the 5 source groups
- * (account, positions, quotes, symbols, health); the actual registered tool count
- * is 7 (get_account, get_positions, get_position, get_quote, get_bars,
- * get_symbol, search_symbols, health).
+ * The 5 tool groups / 8 read tools that @lar/mcp registers.
+ * Groups: account, positions, quotes, symbols, health (5 logical groups).
+ * Actual registered tools: get_account, get_positions, get_position,
+ * get_quote, get_bars, get_symbol, search_symbols, health (8 read tools).
  *
  * We export this flat list as READ_TOOLS so server.ts can iterate it.
  */
