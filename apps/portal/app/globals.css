@@ -13,6 +13,29 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/*
+ * Keyboard-only focus ring (hearth-amber, 2px) — visible across all three
+ * themes because both --hearth and --hearth-glow live in @lar/ui's shared
+ * accent block. `:focus-visible` keeps mouse clicks ring-free so the
+ * dashboard stays clean for pointer users.
+ */
+*:focus {
+  outline: none;
+}
+*:focus-visible {
+  outline: 2px solid var(--hearth);
+  outline-offset: 2px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 4px var(--hearth-glow);
+}
+/* Radial elements (avatar, theme-btn, ring) deserve a circular ring. */
+.theme-btn:focus-visible,
+.mark:focus-visible,
+.avatar:focus-visible,
+.ring:focus-visible {
+  border-radius: 50%;
+}
+
 * {
   box-sizing: border-box;
 }
