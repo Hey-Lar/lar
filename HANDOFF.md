@@ -58,10 +58,11 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **37 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
-auto` to kill Windows CRLF churn); `next build` clean.**
-  `docs/09-differentiation.md`, `docs/10-lumina-integration.md`, and
-  `docs/plans/2026-06-05-podcasts-block.md` written.
+- **45 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
+auto` to kill Windows CRLF churn); `next build` clean.** (`@lar/ui` gained the
+  8 themes specs in this increment.) `docs/09-differentiation.md`,
+  `docs/10-lumina-integration.md`, and `docs/plans/2026-06-05-podcasts-block.md`
+  written.
 - **Security/governance layer (branch `feat/v2-security-foundation`):**
   `SECURITY.md` (threat model, vuln reporting, incident rule) ·
   `docs/11-secrets-and-env.md` (env contract, server-only boundary, rotation) ·
@@ -117,10 +118,25 @@ connectors/{finance,music,podcasts}` + `services/mcp`.
   Unlock/Forget + stored-keys list. Opus security review: all 4 bright-lines
   confirmed; **browser-verified live** — localStorage holds only `{kdf,iter,
 salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
-  encryption pillar. **Do next:** **D1** tri-theme toggle (dark/ember/light,
-  persisted, from `@lar/ui` tokens) → **D4** watchlist/hero chart → **D5**
-  agenda. (Portal tabs now: Overview·Music·Podcasts·Wealth·Markets·Health·
-  Connect.) Then Phase 3.
+  encryption pillar.
+  **D1 tri-theme toggle ✅ MERGED** (`72ccb01`): `@lar/ui` now ships **three**
+  palettes — **dark "Synex"** (near-black body + indigo/amber dark blobs),
+  **ember "Atrium"** (warm peach mesh — the default), **light "Stone"** (cool
+  violet/teal mesh). The amber **hearth** accent is the brand and stays
+  identical across themes; what flips is body / glass fills / ink contrast /
+  mesh stops / rail surfaces. `themeCss()` emits one `[data-theme]` block per
+  theme into a `<style>` injected in `<head>`; a pre-hydration `<script>`
+  reads `localStorage["lar-theme"]` and sets `data-theme` on `<html>` before
+  first paint (no FOUC). A small rail button (above the avatar) cycles
+  dark→ember→light and persists; cross-tab sync via `storage` events. 8
+  vitest specs in `@lar/ui` (palette completeness, themeCss coverage, cycle
+  order, coerce fallback, dark-mode contrast). **Browser-verified live** at
+  :4200 via Chrome MCP — all three render distinctly, brand accents preserved.
+  **Do next:** **D4** watchlist + hero chart (lightweight-charts, harvest
+  `web/components/{HeroChart,Watchlist}.tsx`, read-only quotes via the B3
+  adapters with an `isStale()` chip) → **D5** agenda block (today's calendar
+  surface, read-only). (Portal tabs now: Overview·Music·Podcasts·Wealth·
+  Markets·Health·Connect.) Then Phase 3.
   - _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
     `decryptSecret` to a sane max so a tampered localStorage record can't request
     an absurd PBKDF2 count (local-only DoS; attacker already needs storage write).
