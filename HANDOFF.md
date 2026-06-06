@@ -58,24 +58,29 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **62 unit tests green (+2 gated live); typecheck + prettier clean (`endOfLine:
-auto` to kill Windows CRLF churn); `next build` clean.** (`@lar/ui` gained 8
-  themes specs in D1, `apps/portal/lib/synthetic-ohlc` 9 specs in D4,
-  `apps/portal/lib/agenda-demo` 8 specs in D5 — the portal workspace has its
-  own `test` script.) `docs/09-differentiation.md`,
-  `docs/10-lumina-integration.md`, and `docs/plans/2026-06-05-podcasts-block.md`
-  written.
+- **71 unit tests green (+2 gated live); typecheck + prettier clean
+  (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
+  for both apps.** Coverage gained this session: `@lar/ui` 8 themes
+  specs (D1), `apps/portal/lib/synthetic-ohlc` 9 (D4),
+  `apps/portal/lib/agenda-demo` 8 (D5), `apps/portal/lib/authz` 6
+  (Phase 3), `@lar/crypto` +3 iter-clamp (16 total). The portal +
+  marketing workspaces both have `test` scripts.
+  `docs/09-differentiation.md`, `docs/10-lumina-integration.md`,
+  `docs/11-secrets-and-env.md`, `docs/12-deploy.md`, and
+  `docs/plans/2026-06-05-podcasts-block.md` written.
 - **Security/governance layer (branch `feat/v2-security-foundation`):**
   `SECURITY.md` (threat model, vuln reporting, incident rule) ·
   `docs/11-secrets-and-env.md` (env contract, server-only boundary, rotation) ·
   `apps/portal/.env.example` (placeholder-only) · `docs/03-governance.md`
   updated (Security row implemented, four security bright-lines, dep-risk stub) ·
   `CLAUDE.md` + `HANDOFF.md` restated to match.
-- **Known minor follow-ups** (non-blocking, flagged in final review): the portal
-  blocks inline-duplicate their resolution types + carry a couple of dead `??`
-  fallbacks (matches the MusicBlock pattern); `PodcastsBlock`'s Copy-RSS
-  `setTimeout` isn't cleared on unmount; neither ask-bar guards against
-  overlapping in-flight requests (an `AbortController` would fix both blocks).
+- **Known minor follow-ups CLEARED** (`56ecaa4` + `533b700`):
+  `@lar/crypto.decryptSecret` now clamps `iter` (DoS hardening);
+  Music + Podcasts ask-bars hold an `AbortController` and abort
+  prior + on-unmount; PodcastsBlock's Copy-RSS reset-timer is
+  tracked + cleared on unmount. Remaining minor: the portal blocks
+  still inline-duplicate their resolution types (DRY-only, no
+  functional impact).
 
 ## NEXT increment (do this next)
 
@@ -168,13 +173,69 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
   day is done" hero state). Portal tabs now: **Overview · Agenda · Music ·
   Podcasts · Wealth · Markets · Health · Connect** (8). **→ PHASE 2
   DASHBOARD V2 COMPLETE.**
-  **Do next:** **Phase 3 deploy** — Vercel: **Nosecone** headers + nonce
-  CSP + per-handler authz (V2 plan §E). Then Android Tink + Keystore. The
-  GitHub remote + Vercel CI both need a one-time account action — see the
-  Credential gates table.
+  **Phase 3 deploy hardening (local prep) ✅ MERGED.** Three pieces, all
+  ready to go live the moment GitHub + Vercel are wired:
+  - **Per-handler authz seam** (`7dc8cf0`): `apps/portal/lib/authz.ts`
+    `authorize(req, { policy, allow })` runs at the top of every `/api/*`
+    handler. Defends against the March-2025 `x-middleware-subrequest`
+    CVE shape (CVSS 9.1) by NOT relying on middleware alone. Default
+    policy is `personal` (single-user read-only) with a method allow-list
+    (`/api/{finance,markets,agenda}` are GET-only, `/api/lar` is POST-only).
+    `LAR_KILL_SWITCH=1` returns 503 + `X-Lar-Kill-Switch: 1` on every
+    route. Future `session` / `token` / `origin` policies are wired as
+    fail-closed stubs. 6 vitest specs.
+  - **Nonce-CSP edge middleware** (`dab41a5`): `apps/portal/middleware.ts`
+    generates a base64 nonce per request, attaches it via `x-nonce` to
+    the request and to the response's CSP, and ships Nosecone-equivalent
+    security headers (HSTS 2y preload, X-Frame-Options DENY, COOP/CORP
+    same-origin, Referrer-Policy no-referrer, Permissions-Policy with
+    only `microphone=(self)` for the Web Speech API). `layout.tsx` reads
+    the nonce and stamps it on the two inline tags Lar ships (themeCss
+    `<style>`, theme-boot `<script>`). Live-verified: HEAD on `/`
+    returns the full header set, 1 nonce-stamped `<style>` + 13 nonce-
+    stamped `<script>` tags, no CSP violations.
+  - **Deploy runbook** (`a4158a6`): `docs/12-deploy.md` covers pre-deploy
+    local gates, the one-time account actions (GitHub `gh repo create`,
+    Vercel link + env vars), env-var contract, deploy flow, manual smoke,
+    and the revoke-before-scrub rollback rule.
+
+  **Known follow-ups ALL CLEARED in the same window:**
+  - **`@lar/crypto` iter clamp** (`56ecaa4`): `decryptSecret` now rejects
+    any record whose `iter` is non-finite, < 1, or above the new
+    `PBKDF2_ITERATIONS_MAX = 5,000,000` ceiling. Defends against a
+    local-only DoS where a tampered localStorage record asks for 10^9
+    iterations. 3 new vitest specs, crypto now at 16 total.
+  - **AbortController + setTimeout leak** (`533b700`): both Music and
+    Podcasts ask-bars now hold an `inflightRef<AbortController>`. New
+    submissions abort prior ones, the unmount-effect aborts whatever's
+    open. PodcastsBlock's Copy-RSS "Copied ✓" reset-timer is now
+    tracked in a `copyResetRef` and cleared on unmount + cancelled when
+    a rapid second copy lands.
+  - **`apps/marketing` keyless landing** (`51349d9`): new workspace at
+    `:4201`. Hero "One warm surface for everything you control" (amber
+    gradient on "warm"), live-cycling "Available on" cross-platform
+    demo with aria-live narration explaining the routing choice, three
+    pitch cards on the bright-lines (read-only / your-algorithm / your-
+    data), brand-warm mesh + glass from `@lar/ui`. 969 B page, 103 kB
+    First Load JS. Email waitlist still gated on Supabase.
+
+  **→ PHASE 3 DEPLOY HARDENING COMPLETE (local prep).**
+
+  **Do next (only one item left without YOUR involvement):** an a11y /
+  keyboard pass on the React apps (focus rings via `@lar/ui`, aria-labels
+  on the rail buttons, key-equivalents for the watchlist row click, etc.).
+  Everything else needs a one-time account action — see the Credential
+  gates table.
+
+  **Account actions pending:** (1) `gh repo create lar --private --source
+  . --push` then wire the GitHub→Vercel hook; (2) Vercel project link
+  for `apps/portal` and `apps/marketing` + env vars; (3) Supabase
+  project for the email waitlist + sign-in; (4) market-data / Anthropic
+  / Trigger.dev keys per the Credential gates table.
   - _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
     `decryptSecret` to a sane max so a tampered localStorage record can't request
     an absurd PBKDF2 count (local-only DoS; attacker already needs storage write).
+
 - **Phase 3 — deploy:** Vercel (Nosecone headers + nonce CSP + per-handler authz)
   then Android (Tink + Keystore). Adopt only the **permissive-licensed** external
   libs in the plan's Section C (gitleaks/age/dotenvx/Nosecone/T212-api/SnapTrade/
