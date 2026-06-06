@@ -64,13 +64,15 @@ export const DEMO_TOTAL_VALUE = DEMO_HOLDINGS.reduce((s, h) => s + h.market_valu
 // ---------------------------------------------------------------------------
 
 /**
- * Illustrative FIRE projection inputs.
- * Represents a 35-year-old saving toward a €40 k/yr retirement lifestyle.
+ * Illustrative FIRE projection inputs — an "on-track" saver persona.
+ * Represents a mid-30s saver with a solid balance and contribution rate,
+ * targeting a €40 k/yr retirement lifestyle ~30 years out. These values land
+ * the Monte Carlo probabilityOfSuccess in a healthy "Good" band (~0.81).
  */
 export const DEMO_PROJECTION_INPUTS: ProjectionInputs = {
-  currentBalance: DEMO_TOTAL_VALUE, // current portfolio value
-  monthlyContribution: 1_200, // €1 200/mo ongoing contribution
-  yearsToTarget: 27, // targeting retirement at ~62
+  currentBalance: 400_000, // €400 k current portfolio value
+  monthlyContribution: 3_000, // €3 000/mo ongoing contribution
+  yearsToTarget: 30, // ~30-year horizon
   expectedRealReturnPct: 5, // 5 % real return (after inflation)
   inflationPct: 2.5, // 2.5 % annual inflation assumption
   annualSpendingToday: 40_000, // €40 k/yr desired retirement spending (today's money)
