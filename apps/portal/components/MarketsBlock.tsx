@@ -6,10 +6,17 @@
  * No advice language. Demo data only. Lar never trades.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatCurrency, formatPercent } from '@lar/shared';
 import { classifySuccessBand } from '@lar/connector-finance';
 import type { MonteCarloResult, DriftState, SuccessBand } from '@lar/connector-finance';
+import { HeroChart } from './HeroChart';
+import { WatchlistBlock, type WatchSymbol } from './WatchlistBlock';
+
+// Stable reference time used to seed deterministic synthetic OHLCV. Fixed at
+// build / module load so SSR and CSR agree on the series (no hydration churn,
+// no Date.now() per render). Increment when you want fresher bars.
+const MARKETS_AS_OF_MS = 1_780_704_000_000; // 2026-06-06 UTC midnight
 
 // ---------------------------------------------------------------------------
 // API response shape
@@ -83,6 +90,7 @@ const SUCCESS_BAND: Record<SuccessBand, { label: string; color: string }> = {
 export function MarketsBlock() {
   const [data, setData] = useState<MarketsData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string>('VWCE');
 
   useEffect(() => {
     let alive = true;
@@ -97,6 +105,11 @@ export function MarketsBlock() {
       alive = false;
     };
   }, []);
+
+  const watchSymbols: WatchSymbol[] = useMemo(
+    () => (data?.holdings ?? []).map((h) => ({ symbol: h.symbol, name: h.name })),
+    [data?.holdings],
+  );
 
   if (error) {
     return (
@@ -159,6 +172,19 @@ export function MarketsBlock() {
         </div>
         <span className="badge demo">Demo data</span>
       </div>
+
+      {/* ── Hero candlestick + watchlist (D4) ── */}
+      {watchSymbols.length > 0 && (
+        <>
+          <HeroChart symbol={selected} asOfMs={MARKETS_AS_OF_MS} />
+          <WatchlistBlock
+            symbols={watchSymbols}
+            selected={selected}
+            onSelect={setSelected}
+            asOfMs={MARKETS_AS_OF_MS}
+          />
+        </>
+      )}
 
       {/* ── FIRE Projection card ── */}
       <div className="card" style={{ marginBottom: 16 }}>
