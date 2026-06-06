@@ -8,7 +8,8 @@
 
 import { useEffect, useState } from 'react';
 import { formatCurrency, formatPercent } from '@lar/shared';
-import type { MonteCarloResult, DriftState } from '@lar/connector-finance';
+import { classifySuccessBand } from '@lar/connector-finance';
+import type { MonteCarloResult, DriftState, SuccessBand } from '@lar/connector-finance';
 
 // ---------------------------------------------------------------------------
 // API response shape
@@ -61,24 +62,19 @@ const DRIFT_COLOR: Record<DriftState, { bg: string; text: string; label: string 
 const HOLDING_COLORS = ['#d98a2b', '#3aa6a0', '#6c8cff', '#b0bac7'];
 
 // ---------------------------------------------------------------------------
-// Success-band label
+// Success-band presentation (label + colour)
+//
+// Band classification is harvested from @lar/connector-finance
+// (classifySuccessBand → SuccessBand); this map only drives the display.
 // ---------------------------------------------------------------------------
 
-function successLabel(prob: number): string {
-  const p = prob * 100;
-  if (p > 95) return 'On target';
-  if (p >= 80) return 'Good';
-  if (p >= 65) return 'Fair';
-  return 'Needs attention';
-}
-
-function successColor(prob: number): string {
-  const p = prob * 100;
-  if (p > 95) return '#2a8a84';
-  if (p >= 80) return '#3aa6a0';
-  if (p >= 65) return '#d98a2b';
-  return '#d2554d';
-}
+const SUCCESS_BAND: Record<SuccessBand, { label: string; color: string }> = {
+  on_target: { label: 'On target', color: '#2a8a84' },
+  good: { label: 'Good', color: '#3aa6a0' },
+  fair: { label: 'Fair', color: '#d98a2b' },
+  needs_attention: { label: 'Needs attention', color: '#d2554d' },
+  unknown: { label: 'Unknown', color: '#d2554d' },
+};
 
 // ---------------------------------------------------------------------------
 // Component
@@ -132,6 +128,10 @@ export function MarketsBlock() {
 
   const { projection, holdings, totalValue } = data;
   const probPct = projection.probabilityOfSuccess * 100;
+
+  // classifySuccessBand takes a 0–1 ratio (NOT a percentage); the component's
+  // probabilityOfSuccess is already in [0, 1], so pass it directly.
+  const band = SUCCESS_BAND[classifySuccessBand(projection.probabilityOfSuccess)];
 
   // Allocation bar — derive slices from current weights
   const allocSlices = holdings.map((h, i) => ({
@@ -194,7 +194,7 @@ export function MarketsBlock() {
                 style={{
                   fontSize: 22,
                   fontWeight: 700,
-                  color: successColor(projection.probabilityOfSuccess),
+                  color: band.color,
                 }}
               >
                 {probPct.toFixed(0)}%
@@ -207,11 +207,11 @@ export function MarketsBlock() {
                   textTransform: 'uppercase',
                   padding: '3px 10px',
                   borderRadius: 999,
-                  background: `${successColor(projection.probabilityOfSuccess)}22`,
-                  color: successColor(projection.probabilityOfSuccess),
+                  background: `${band.color}22`,
+                  color: band.color,
                 }}
               >
-                {successLabel(projection.probabilityOfSuccess)}
+                {band.label}
               </span>
             </div>
           </div>
