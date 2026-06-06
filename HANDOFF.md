@@ -89,9 +89,16 @@ governance bright-lines). **Do next, in order:**
   omitted — structural read-only guarantee) · **B4** `connectors/finance/analytics`
   (FIRE Monte-Carlo w/ seeded RNG, rebalance drift, contribution-rebalance that
   NEVER sells, dashboard math — source tests ported verbatim). All read-only /
-  pure / keyless verified. **Do next:** **B3** read-only data adapters +
-  `RecordingAdapter` fixtures (KEYLESS) → **B6** fail-closed gate lib (TDD) →
-  **B5** read-only MCP service (`services/mcp`, SKIP `orders.ts`/all write paths).
+  pure / keyless verified. **Infra + gate ✅ MERGED** (`fcad759`): **B3**
+  `connectors/finance/adapters` (typed errors, `SerialQueue` rate-limiter,
+  read-only `RecordingAdapter` replaying in-memory fixtures — no write methods)
+  · **B6** `@lar/safety` transport-agnostic **fail-closed gate** (kill-switch +
+  read-only [any truthy mutating blocked] + stale-guard fail-closed + secret-
+  dropping audit log). **Do next (last of Phase 1):** **B5** read-only MCP
+  service in `services/mcp` (server + read tools account/positions/quotes/
+  symbols/health, gated by `@lar/safety`, **SKIP `orders.ts`/all write paths**)
+  — optionally wire one live read-only data adapter (e.g. keyless YFinance, or
+  key-gated Polygon/TwelveData) behind `SerialQueue`.
 - **Phase 2 — Dashboard V2** (build on Overview/Wealth/Music/Podcasts): B9 glass
   tokens → D1 tri-theme toggle → B7 read-only finance UI (HoldingsTable/donut/
   KPI strip) → B8 read-only RSC portfolio page → D2 markets block → D4 watchlist/
