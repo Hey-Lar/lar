@@ -83,12 +83,15 @@ gate · hardened `.gitignore` · `SECURITY.md` + `docs/11` env conventions ·
 governance bright-lines). **Do next, in order:**
 
 - **Phase 1 — harvest the read-only finance core from `D:\Claude\invest-bot-personal`**
-  (the founder's own repo — direct harvest OK; tracked files only, never its
-  `data/`): B1 Intl format helpers → B2 BrokerAdapter/DataAdapter **read-only**
-  contracts → B4 finance math (FIRE Monte-Carlo, drift, next-contribution — port
-  tests) → B3 read-only data adapters + RecordingAdapter fixtures (KEYLESS) → B6
-  fail-closed gate lib → B5 read-only MCP service (`services/mcp`, SKIP
-  `orders.ts`/write paths).
+  (founder's own repo — direct harvest OK; tracked files only, never its `data/`).
+  **Pure core ✅ MERGED** (`99bd84f`): **B1** `@lar/shared` Intl format helpers ·
+  **B2** read-only `BrokerAdapter`/`DataAdapter` contracts (every write/order method
+  omitted — structural read-only guarantee) · **B4** `connectors/finance/analytics`
+  (FIRE Monte-Carlo w/ seeded RNG, rebalance drift, contribution-rebalance that
+  NEVER sells, dashboard math — source tests ported verbatim). All read-only /
+  pure / keyless verified. **Do next:** **B3** read-only data adapters +
+  `RecordingAdapter` fixtures (KEYLESS) → **B6** fail-closed gate lib (TDD) →
+  **B5** read-only MCP service (`services/mcp`, SKIP `orders.ts`/all write paths).
 - **Phase 2 — Dashboard V2** (build on Overview/Wealth/Music/Podcasts): B9 glass
   tokens → D1 tri-theme toggle → B7 read-only finance UI (HoldingsTable/donut/
   KPI strip) → B8 read-only RSC portfolio page → D2 markets block → D4 watchlist/
