@@ -1,4 +1,5 @@
 import './globals.css';
+import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { DEFAULT_THEME, THEMES, THEME_STORAGE_KEY, themeCss } from '@lar/ui';
 
@@ -18,7 +19,10 @@ const THEME_BOOT_SCRIPT = `(function(){try{var k=${JSON.stringify(THEME_STORAGE_
   DEFAULT_THEME,
 )});}})();`;
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Per-request nonce from middleware.ts so the CSP can disallow generic
+  // 'unsafe-inline' scripts and only accept the boot script + themeCss.
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
   return (
     <html lang="en" data-theme={DEFAULT_THEME}>
       <head>
@@ -28,8 +32,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        <style dangerouslySetInnerHTML={{ __html: THEME_CSS }} />
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <style nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_CSS }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
       <body>{children}</body>
     </html>
