@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchFinanceSnapshot, demoSnapshot } from '@lar/connector-finance';
+import { authorize } from '../../../lib/authz';
 
 /**
  * Read-only money. If LUMINA_API_BASE points at a running Lumina API, the
@@ -8,7 +9,10 @@ import { fetchFinanceSnapshot, demoSnapshot } from '@lar/connector-finance';
  * `source` let the UI badge whose data it is.
  * BRIGHT-LINE: GET only — Lar never moves money.
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const gate = authorize(req);
+  if (!gate.ok) return gate.response;
+
   const base = process.env.LUMINA_API_BASE;
   if (base) {
     try {
