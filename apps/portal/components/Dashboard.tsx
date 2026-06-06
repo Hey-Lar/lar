@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { AgendaBlock } from './AgendaBlock';
 import { MusicBlock } from './MusicBlock';
 import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
@@ -11,6 +12,7 @@ import { VaultPanel } from './VaultPanel';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
+  { key: 'agenda', label: 'Agenda', ico: '⌖' },
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
@@ -51,6 +53,7 @@ export function Dashboard() {
 
         <main className="stage glass">
           {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
+          {tab === 'agenda' && <AgendaBlock />}
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'wealth' && <WealthBlock />}
