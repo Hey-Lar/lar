@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { projectMonteCarlo, computeDrift, classifyDrift } from '@lar/connector-finance';
 import { DEMO_HOLDINGS, DEMO_PROJECTION_INPUTS } from '../../../lib/markets-demo';
+import { authorize } from '../../../lib/authz';
 
 /**
  * BRIGHT-LINE: Read-only, display-only. No order paths, no trade controls,
@@ -10,7 +11,10 @@ import { DEMO_HOLDINGS, DEMO_PROJECTION_INPUTS } from '../../../lib/markets-demo
  * Returns:
  *   { ok, source, projection: MonteCarloResult, holdings: enriched[] }
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const gate = authorize(req);
+  if (!gate.ok) return gate.response;
+
   // Fixed seed → deterministic response across server restarts.
   const projection = projectMonteCarlo(DEMO_PROJECTION_INPUTS, { seed: 0xdeadbeef });
 
