@@ -22,6 +22,17 @@ export {
   type BrokerAdapter,
 } from './contracts';
 export {
+  BrokerError,
+  DataError,
+  num,
+  SerialQueue,
+  RecordingAdapter,
+  fixtureKey,
+  type SerialQueueOptions,
+  type FixtureMap,
+  type RecordingAdapterOptions,
+} from './adapters/index';
+export {
   projectDeterministic,
   projectMonteCarlo,
   project,
