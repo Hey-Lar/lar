@@ -221,17 +221,32 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
 
   **→ PHASE 3 DEPLOY HARDENING COMPLETE (local prep).**
 
-  **Do next (only one item left without YOUR involvement):** an a11y /
-  keyboard pass on the React apps (focus rings via `@lar/ui`, aria-labels
-  on the rail buttons, key-equivalents for the watchlist row click, etc.).
-  Everything else needs a one-time account action — see the Credential
-  gates table.
+  **A11y / keyboard pass ✅ MERGED** (`b8168e6`): `*:focus-visible` ring
+  in hearth amber (2 px outline + soft `--hearth-glow` halo) on
+  `apps/portal/app/globals.css` — works across all three themes because
+  `--hearth` is in `@lar/ui`'s shared-accent block. Pointer users get
+  no ring (`*:focus { outline: none }`); keyboard users get the
+  contract. Rail nav buttons gain `aria-label="Open <Label> tab"` so
+  screen readers announce destinations, not glyphs. WatchlistBlock
+  gains `<table role="grid">` + per-row `role="row"` +
+  `aria-label="<SYM> — <name>, last <last>, day up/down <pct>%"` so
+  the synthetic-data series is fully spoken.
 
-  **Account actions pending:** (1) `gh repo create lar --private --source
-  . --push` then wire the GitHub→Vercel hook; (2) Vercel project link
-  for `apps/portal` and `apps/marketing` + env vars; (3) Supabase
-  project for the email waitlist + sign-in; (4) market-data / Anthropic
-  / Trigger.dev keys per the Credential gates table.
+  **Everything that does not need an account is done.** What's left is
+  account-gated:
+
+  **Account actions pending** (the agent will not run these — see the
+  Credential gates table for context):
+  1. **`gh repo create lar --private --source . --push`** then wire the
+     GitHub→Vercel deploy hook. After this, every push to `master`
+     triggers CI (typecheck / test / lint / gitleaks) → Vercel deploy.
+  2. **Vercel project link** for `apps/portal` (`:4200`) and
+     `apps/marketing` (`:4201`) + env vars per `docs/11` and `docs/12`.
+  3. **Supabase project** — unlocks the email waitlist on the marketing
+     landing + sign-in / RLS on the portal.
+  4. **Anthropic / market-data / Trigger.dev keys** per the Credential
+     gates table — unlock cloud intent escalation, live market data,
+     and scheduled refreshes.
   - _Follow-up (minor crypto hardening):_ clamp `iter` in `@lar/crypto`
     `decryptSecret` to a sane max so a tampered localStorage record can't request
     an absurd PBKDF2 count (local-only DoS; attacker already needs storage write).
