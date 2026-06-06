@@ -1,0 +1,369 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Marketing reuses the portal's ember palette directly — the surface is
+ * read-only marketing copy, not a themed dashboard, so we keep a single
+ * (ember) [data-theme] block here rather than the full tri-theme system.
+ */
+:root,
+[data-theme='ember'] {
+  --ink: #26303c;
+  --ink-soft: #5a6573;
+  --ink-faint: #8b96a4;
+  --hearth: #d98a2b;
+  --hearth-lo: #f0b357;
+  --hearth-glow: rgba(217, 138, 43, 0.32);
+  --teal: #3aa6a0;
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-2: rgba(255, 255, 255, 0.42);
+  --stroke: rgba(255, 255, 255, 0.65);
+  --shadow: 0 18px 50px -20px rgba(40, 52, 68, 0.45), 0 6px 18px -10px rgba(40, 52, 68, 0.25);
+  --radius: 30px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --body: #eef1f6;
+  --mesh-base: linear-gradient(135deg, #f6efe7 0%, #eef0f7 45%, #e9f3ef 100%);
+  --mesh-a: #ffd9a8;
+  --mesh-b: #c9c1ff;
+  --mesh-c: #a8ead9;
+  --mesh-d: #ffc6c0;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ambient mesh — shared visual language with the portal */
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: var(--mesh-base);
+}
+.bg-mesh::before,
+.bg-mesh::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.7;
+}
+.bg-mesh::before {
+  width: 46vw;
+  height: 46vw;
+  background: radial-gradient(circle at 30% 30%, var(--mesh-a), transparent 70%);
+  top: -12vw;
+  left: -6vw;
+}
+.bg-mesh::after {
+  width: 42vw;
+  height: 42vw;
+  background: radial-gradient(circle at 50% 50%, var(--mesh-b), transparent 70%);
+  bottom: -14vw;
+  left: 26vw;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.6;
+  z-index: 0;
+}
+.blob.m1 {
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle at 50% 50%, var(--mesh-c), transparent 70%);
+  top: -6vw;
+  right: -10vw;
+}
+.blob.m2 {
+  width: 34vw;
+  height: 34vw;
+  background: radial-gradient(circle at 50% 50%, var(--mesh-d), transparent 70%);
+  bottom: -10vw;
+  right: 8vw;
+}
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* shared building blocks */
+.shell {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 28px 64px;
+}
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* navbar */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px;
+  margin-bottom: 32px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand .mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
+  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+}
+.nav-links {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.nav-links a {
+  color: inherit;
+  text-decoration: none;
+}
+.nav-links a:hover {
+  color: var(--hearth);
+}
+.btn {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 16px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.12s var(--ease);
+}
+.btn.primary {
+  color: #fff;
+  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
+  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+}
+.btn.primary:hover {
+  transform: translateY(-1px);
+}
+.btn.ghost {
+  background: var(--glass);
+  color: var(--ink);
+  border: 1px solid var(--stroke);
+}
+
+/* hero */
+.hero {
+  padding: 56px 44px 48px;
+  margin-bottom: 32px;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(217, 138, 43, 0.12);
+  color: var(--hearth);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin: 16px 0 14px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--hearth), var(--hearth-lo) 55%, #e0a64f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p.lead {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 64ch;
+  margin: 0 0 28px;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* "Available on" demo */
+.avail-demo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 32px 34px;
+  margin-bottom: 32px;
+}
+@media (min-width: 720px) {
+  .avail-demo {
+    grid-template-columns: 1fr 1.4fr;
+  }
+}
+.avail-track {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.avail-cover {
+  width: 92px;
+  height: 92px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, var(--hearth-lo), var(--hearth) 70%, #b86d12);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 32px;
+  box-shadow: 0 12px 28px -10px var(--hearth-glow);
+}
+.avail-meta-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+.avail-meta-artist {
+  color: var(--ink-soft);
+  font-size: 14px;
+  margin-top: 4px;
+}
+.avail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.avail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--stroke);
+}
+.avail-row.chosen {
+  border-color: var(--hearth);
+  box-shadow: 0 0 0 1px var(--hearth);
+}
+.avail-name {
+  font-size: 14.5px;
+  font-weight: 650;
+}
+.avail-chip {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(58, 166, 160, 0.18);
+  color: var(--teal);
+}
+.avail-row.chosen .avail-chip {
+  background: rgba(217, 138, 43, 0.18);
+  color: var(--hearth);
+}
+
+/* pitch — three-column anti-lock-in pitch */
+.pitch {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media (min-width: 720px) {
+  .pitch {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.pitch-card {
+  padding: 28px 26px 30px;
+}
+.pitch-card h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 8px 0 8px;
+  letter-spacing: -0.005em;
+}
+.pitch-card p {
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* footer */
+.foot {
+  margin-top: 32px;
+  padding: 24px 26px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.foot strong {
+  color: var(--ink);
+  font-weight: 700;
+}
