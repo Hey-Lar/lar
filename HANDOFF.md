@@ -431,12 +431,19 @@ aurora·warm-mesh`) via `SceneBackground.tsx` + `[data-scene]` CSS + the
       at `apps/portal/public/local/living-room.jpg` (git-ignored; README there) →
       `.scene-photo` makes it the real background, SVG room as fallback. Browser-
       verified on ember (sofa/lamp/floor/window read, warm).
-  - _Design polish backlog (still open):_ the stylized room reads **soft/washed-
-    out** behind the very-clear tiles — sharpen furniture contrast or (better) use
-    the photo layer; scene thumbnails could be more vivid; the dev **cold-start
-    theme/click race** (single cold `next dev` navigate can render unstyled/miss a
-    click — a **double-navigate** or reload fixes it; prod/`next start`
-    unaffected). **Platform:** touch-PWA now; **React Native + Expo** is the
+  - **Room + glass refine ✅ MERGED (`6fa1256`)** — sharpened the living-room
+    (wider `--room-*` furniture↔floor contrast, 3-stop crisper sofa/table shading
+    - AO seam lines + tighter contact shadows, richer window/sill + perspective
+      floor-boards + a 3-ring rug) so the sofa/table/lamp/plant/rug read as a clear
+      cozy living room; rebalanced the glass (stronger `--glass-stroke`/`-highlight`/
+      `--shadow-*` + small ember .34→.38 / light .32→.36 fill bump) so very-clear
+      tiles still read as distinct panes. Browser-verified on ember (sparse tab).
+  - _Design polish backlog (still open):_ the SVG room is good but **stylized, not
+    photoreal** — for true realism drop `apps/portal/public/local/living-room.jpg`
+    (wired, git-ignored); scene-picker thumbnails could be more vivid; the dev
+    **cold-start theme/click race** (single cold `next dev` navigate can render
+    unstyled / miss a click — a **double-navigate** or reload fixes it; prod/`next
+start` unaffected). **Platform:** touch-PWA now; **React Native + Expo** is the
     recommended next surface (reuses all `@lar/*` pure-TS packages; only UI is
     rebuilt) when ready for device-native (Keystore, gestures, Android roadmap).
 
