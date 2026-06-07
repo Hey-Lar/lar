@@ -286,17 +286,52 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     `.cover` `<img>` now hides itself `onError` (no broken-image box on a 404
     cover/artwork/thumbnail); Film default query `Dune` → `Dune movie` (Wikipedia
     card resolves the film, not the sand-dune article).
-  - **NEXT (suggested): keyless Weather block** — first block with REAL live
-    keyless data via **Open-Meteo** (no API key, no token; geocoding + forecast
-    both keyless). "Guardian of your home" → weather at home. Dashboard shape like
-    Health/Wealth (current conditions + a few-day forecast, themed). Read-only.
-    Alternatively: the **shared `useAskLar` hook / `<MediaBlock>` shell** DRY
-    refactor across the 4 route-outward blocks (they duplicate the ask-bar +
-    AbortController + mic + `run()` logic) — higher value but touches 4 working
-    blocks, so re-browser-verify after.
+  - **Weather block ✅ MERGED (`250a5d1`)** — Lar's first block with REAL live
+    data that's still fully KEYLESS, via **Open-Meteo** (no key/token). Server-
+    side geocode (city → lat/lon) + forecast, mapped through a pure WMO-code →
+    label+icon table. `@lar/connector-weather`: `geocode` + `fetchForecast` +
+    `resolveWeather` → `WeatherSnapshot` (current + 5-day, temps rounded,
+    `noUncheckedIndexedAccess` on the parallel daily arrays). 14 vitest specs +
+    1 live-gated. `/api/weather` GET route (`authorize()`-gated, GET-only → POST
+    405); **Open-Meteo is fetched SERVER-SIDE** so the browser only hits same-
+    origin and the CSP `connect-src` list is unchanged; `WeatherBlock.tsx` (city
+    input + current hero + 5-day forecast, AbortController leak-safety); Weather
+    tab after Agenda. **Browser-verified live** (Lisbon 16°C "Mainly clear", 87%
+    humidity, 12 km/h, 5-day 26/24/24/27/32°). Bright-line: keyless, read-only,
+    no location stored, no client→third-party fetch.
+  - _Tabs now (11):_ Overview · Agenda · **Weather** · Music · Podcasts ·
+    **Books** · **Film & TV** · Wealth · Markets · **Health** · Connect.
+  - **NEXT (suggested), pick one:**
+    1. **DRY refactor — shared `useAskLar` hook + `<AskBar>`/`<ResolveCard>`
+       shell** across the 4 route-outward blocks (Music/Podcasts/Books/Film
+       duplicate the ask-bar + mic + AbortController + `run()` + the inline
+       `Resolution` types). Highest engineering value; touches 4 WORKING blocks
+       → **re-browser-verify all 4 after** (UI regressions slip past build/test —
+       see the CSP lesson below).
+    2. **Another keyless block** (additive, lower-risk than refactoring): a
+       **News/Reading** route-outward block (topic → neutral sources), or a
+       **Maps/Places** route-outward (OpenStreetMap/Nominatim is keyless) "near
+       me / take me there" link block.
   - _Optional follow-ups (non-blocking nits):_ strengthen health-demo
     "different-day" test to assert a metric value differs (not just
-    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor.
+    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor;
+    Weather review nits (merge the split `openmeteo.js` import; a short-array
+    forecast test; `geocode` should throw rather than fall back to lat/lon 0,0).
+
+  **⚠️ DEV-ONLY runtime notes (not bugs — for the next session's awareness):**
+  - **CSP theme on cold dev start:** the FIRST request after `next dev` starts
+    cold (esp. right after a `next build` left prod artifacts in `.next`) can
+    render UNSTYLED (theme `<style>` momentarily `sheet === null`) because the
+    middleware nonce handshake races the on-demand compile. **A hard reload
+    fixes it** and it never happens under `next start` (prod, precompiled
+    middleware). Verify with the JS probe: `getComputedStyle(document
+.documentElement).getPropertyValue('--hearth')` should be `#d98a2b`.
+  - **Benign hydration warning:** dev shows "1 Issue" — a nonce hydration
+    mismatch (`nonce="…"` server → `""` client, because browsers strip the
+    nonce _attribute_ after use; the `.nonce` _property_ is intact) plus a
+    browser-extension-injected `data-fbscriptallow` on `<html>`. Both are
+    external/expected; the theme + app work. Do not "fix" by removing the CSP
+    nonce.
 
   **Everything in V2 that does not need an account is done.** What remains in
   V2 is account-gated:
