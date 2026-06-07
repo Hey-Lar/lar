@@ -318,11 +318,10 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
   - _Tabs now (12):_ Overview · Agenda · **Weather** · **Places** · Music ·
     Podcasts · **Books** · **Film & TV** · Wealth · Markets · **Health** ·
     Connect.
-  - **Overview surfacing ✅ MERGED (`110b263`)** — the landing quick-launch grid
-    now surfaces Weather/Books/Film alongside Music/Podcasts/Health (was just
-    Music/Podcasts/Health). _Minor: Places not yet added to the Overview QUICK
-    array (`OverviewBlock.tsx`) — one-line follow-up; it's reachable from the rail._
-    Browser-verified themed.
+  - **Overview surfacing ✅ MERGED (`110b263` + `987cda7`)** — the landing
+    quick-launch grid now surfaces all of Weather/Places/Books/Film alongside
+    Music/Podcasts/Health (was just Music/Podcasts/Health). Browser-verified
+    themed.
   - **CSP regression guard ✅ MERGED (`3dceeae`)** — `apps/portal/middleware.test.ts`
     (5 specs). The key spec asserts the **request-side** CSP carries the same
     nonce as the response CSP (fails closed if the `c38cb71` fix is ever undone),
