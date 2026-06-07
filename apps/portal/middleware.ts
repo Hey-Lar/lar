@@ -8,12 +8,21 @@ import { NextResponse, type NextRequest } from 'next/server';
  * + browser-side concerns instead: CSP, HSTS, frame-ancestors, MIME
  * sniffing, referrer leakage, opt-out from unnecessary features.
  *
- * Tactic: generate a fresh base64 nonce per request, attach it to both
- * the incoming request (so `layout.tsx` can read it via `headers()` and
- * stamp inline <style>/<script> tags) and to the response's CSP header.
+ * Tactic: generate a fresh base64 nonce per request, attach it to the
+ * incoming request in TWO places and to the response's CSP header:
+ *   1. `x-nonce` — so `layout.tsx` can read it via `headers()` and stamp
+ *      our inline <style>/<script> tags.
+ *   2. `Content-Security-Policy` on the REQUEST — Next.js reads this to
+ *      derive the nonce for ITS OWN framework <script> tags. Without it,
+ *      Next mints a different nonce than our `x-nonce`, the response CSP
+ *      only whitelists one of the two, and the browser blocks the other
+ *      inline tags. (Symptom: the themeCss <style> is present but inert —
+ *      `style.sheet === null` — so every theme variable resolves empty and
+ *      all accent CTAs + glass/mesh vanish.) Setting the CSP on the request
+ *      is the documented Next.js nonce contract; keep both in lockstep.
  * The pre-hydration theme-boot script + the themeCss <style> are the
- * only two inline elements that need it — everything else is bundled
- * or fetched from a same-origin allow-list.
+ * only two inline elements we own — everything else is bundled or fetched
+ * from a same-origin allow-list.
  */
 
 const FONT_HOSTS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
@@ -73,6 +82,9 @@ export function middleware(req: NextRequest): NextResponse {
 
   const reqHeaders = new Headers(req.headers);
   reqHeaders.set('x-nonce', nonce);
+  // Next.js reads the request-side CSP to nonce its own framework scripts —
+  // this MUST carry the same nonce as the response CSP or inline tags break.
+  reqHeaders.set('Content-Security-Policy', csp);
 
   const res = NextResponse.next({ request: { headers: reqHeaders } });
   setSecurityHeaders(res, csp);
