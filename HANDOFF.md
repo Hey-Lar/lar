@@ -321,11 +321,11 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
        **News/Reading** route-outward block (topic → neutral sources), or a
        **Maps/Places** route-outward (OpenStreetMap/Nominatim is keyless) "near
        me / take me there" link block.
-  - _Optional follow-ups (non-blocking nits):_ strengthen health-demo
-    "different-day" test to assert a metric value differs (not just
-    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor;
-    Weather review nits (merge the split `openmeteo.js` import; a short-array
-    forecast test; `geocode` should throw rather than fall back to lat/lon 0,0).
+  - _Review-nit backlog ✅ ALL CLEARED (`0063981`):_ health-demo "different-day"
+    test now asserts a real metric differs; `HealthBlock` SSR-anchor TZ-footgun
+    comment added; Weather — split `openmeteo.js` import merged, `geocode` throws
+    on missing coords (no silent 0,0 fallback), new truncated-daily-array test
+    proves `resolveWeather` degrades safely.
 
   **⚠️ DEV-ONLY runtime notes (not bugs — for the next session's awareness):**
   - **CSP theme on cold dev start:** the FIRST request after `next dev` starts
