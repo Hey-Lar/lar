@@ -18,10 +18,17 @@ describe('health-demo', () => {
   });
 
   it('produces a different snapshot for a different local day', () => {
-    const today = generateHealth(REF_MS);
-    const tomorrow = generateHealth(NEXT_DAY_MS);
-    // At minimum the generatedFor timestamp differs; typically all metrics differ too.
-    expect(today).not.toEqual(tomorrow);
+    // Use two timestamps on clearly different local days (noon on June 6 vs noon on June 7).
+    const a = generateHealth(REF_MS);
+    const b = generateHealth(NEXT_DAY_MS);
+    // The whole object must differ (generatedFor alone would satisfy .not.toEqual; we
+    // go further and assert that at least one actual metric value differs too).
+    expect(
+      a.rings[0]!.pct !== b.rings[0]!.pct ||
+        a.steps.value !== b.steps.value ||
+        a.sleepHours !== b.sleepHours ||
+        a.restingHr !== b.restingHr,
+    ).toBe(true);
   });
 
   it('is idempotent — calling twice with the same ms returns equal objects', () => {
