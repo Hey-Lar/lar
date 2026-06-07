@@ -42,6 +42,16 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   links only. Built via subagent-driven development (per-task spec + quality
   review) and merged from `feat/podcasts-block` — see
   `docs/plans/2026-06-05-podcasts-block.md`.
+- `packages/connectors/books` — **Lar's third media block (keyless)** (merged
+  `02d8411`): Open Library search → resolve a book → route **OUTWARD**, with a
+  **library-first** lead (WorldCat "find it in a library" — the anti-lock-in
+  standout) plus Open Library, Apple Books, Kindle, Kobo, Google Books.
+  `searchBook` (keyless OL `/search.json`) + pure, total `buildBookLinks`
+  (`Record<BookLink,string>`, ISBN-aware `/dp/` + `vid=ISBN`, defensively
+  encoded) + `resolveBook`. 11 vitest specs + 1 live-gated. Portal: `/api/lar`
+  `forceDomain:'book'` branch; `BooksBlock.tsx` (library-led CTA + store chips,
+  AbortController leak-safety); **Books tab** added. Bright-line held: Lar
+  never hosts, streams, or sells — read-only, library-first, your choice.
 - `packages/ui` — Lar design tokens (amber "hearth" + glass) + a Tailwind
   preset; descends from the Lumina "ember" theme.
 - `apps/portal` — **Next.js 15 glass dashboard, BUILT + browser-verified**.
@@ -232,8 +242,23 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
   `aria-label="<SYM> — <name>, last <last>, day up/down <pct>%"` so
   the synthetic-data series is fully spoken.
 
-  **Everything that does not need an account is done.** What's left is
-  account-gated:
+  **The V2 plan (Phases 0–3) is done; what's left in V2 is account-gated.**
+  Autonomous work now continues as **post-V2 keyless feature increments** that
+  extend the product along the route-outward thesis (each = subagent-driven,
+  spec+quality reviewed, merged `--no-ff` green, HANDOFF kept current):
+
+  - **Books block ✅ MERGED (`02d8411`)** — see the connector bullet above.
+  - **NEXT: Health dashboard** — promote the inline `HealthBlock` shell (in
+    `Dashboard.tsx`) into a real **keyless demo dashboard** like Wealth:
+    activity rings (move/exercise/stand), steps, sleep, resting HR, a 7-day
+    trend sparkline, all from a pure deterministic `health-demo` generator
+    (mirror `agenda-demo`/`synthetic-ohlc`). Local-first framing: "your data,
+    on-device, never sold." Read-only — Lar never writes health data.
+  - _Then (candidates):_ Film & TV "where to watch" route-outward block
+    (keyless via a demo/title resolver), shared resolution-types DRY refactor.
+
+  **Everything in V2 that does not need an account is done.** What remains in
+  V2 is account-gated:
 
   **Account actions pending** (the agent will not run these — see the
   Credential gates table for context):
