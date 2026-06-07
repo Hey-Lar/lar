@@ -190,8 +190,13 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
       )}
 
       <div className="ov-grid">
-        {QUICK.map((q) => (
-          <button key={q.tab} className="card ov-card" onClick={() => onNavigate(q.tab)}>
+        {QUICK.map((q, i) => (
+          <button
+            key={q.tab}
+            className="card ov-card"
+            onClick={() => onNavigate(q.tab)}
+            style={{ ['--i' as string]: i }}
+          >
             <div className="ov-ico" aria-hidden>
               <Icon name={q.ico} size={22} />
             </div>
@@ -202,7 +207,7 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
             </div>
           </button>
         ))}
-        <div className="card ov-card ov-soon">
+        <div className="card ov-card ov-soon" style={{ ['--i' as string]: QUICK.length }}>
           <div className="ov-ico" aria-hidden>
             <Icon name="smart-home" size={22} />
           </div>

@@ -225,7 +225,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
 
       {/* Weather special-case */}
       {weatherRoute && !loading && (
-        <div className="np card">
+        <div className="np card" key="weather">
           <div className="eyebrow">Routing you to Weather</div>
           <div className="np-title" style={{ marginTop: 8 }}>
             Live local forecast
@@ -242,7 +242,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
 
       {/* Resolved result with a usable summary */}
       {summary && (
-        <div className="np card">
+        <div className="np card" key={summary.title ?? 'note'}>
           <div className="eyebrow">Routing you to {summary.label}</div>
           <div className="np-title" style={{ marginTop: 8 }}>
             {summary.title}
