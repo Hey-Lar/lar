@@ -92,13 +92,18 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   still inline-duplicate their resolution types (DRY-only, no
   functional impact).
 
-## NEXT increment (do this next)
+## V2 program — Phases 0–3 ✅ COMPLETE (reference / history)
+
+> **What's actually next is in the "Current state" section above** — the
+> _post-V2 keyless feature increments_ block (its **NEXT (suggested), pick one**
+> bullet). V2 Phases 0–3 below are all done (local prep); the only V2 remainder
+> is the **account-gated** list above. This section is kept for context.
 
 **V2 program** (full plan: `docs/plans/2026-06-05-v2-security-merge.md`, from a
 5-agent research synthesis). **Phase 0 — security foundation: ✅ MERGED**
 (`@lar/crypto` encryption vault · gitleaks pre-commit + fail-closed CI secret
 gate · hardened `.gitignore` · `SECURITY.md` + `docs/11` env conventions ·
-governance bright-lines). **Do next, in order:**
+governance bright-lines). **History, in order:**
 
 - **Phase 1 — harvest the read-only finance core from `D:\Claude\invest-bot-personal`**
   (founder's own repo — direct harvest OK; tracked files only, never its `data/`).
