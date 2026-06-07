@@ -23,30 +23,34 @@ export interface BookResolution {
   coverUrl?: string;
   isbn?: string;
   openLibraryUrl: string;
-  links: Partial<Record<BookLink, string>>;
+  links: Record<BookLink, string>;
 }
 
-/** Pure: builds outward links from a seed. No network — unit-testable. */
-export function buildBookLinks(seed: BookSeed): Partial<Record<BookLink, string>> {
+/**
+ * Pure: builds outward links from a seed. No network — unit-testable.
+ * Total — every BookLink is always present (typed as a full Record, not Partial).
+ */
+export function buildBookLinks(seed: BookSeed): Record<BookLink, string> {
   const q = seed.title + (seed.author ? ' ' + seed.author : '');
   const enc = encodeURIComponent(q);
+  // ISBNs from Open Library are bare digits + an optional trailing X, but encode
+  // defensively so a hyphenated/spaced value can never break the path/query.
+  const isbn = seed.isbn ? encodeURIComponent(seed.isbn) : undefined;
 
-  const links: Partial<Record<BookLink, string>> = {
+  return {
     // The neutral, ownable artifact — like RSS for podcasts.
     open_library: seed.openLibraryUrl,
     // FIND IT IN A LIBRARY — the anti-lock-in, route-outward standout; libraries are free.
     library: `https://search.worldcat.org/search?q=${enc}`,
     apple_books: `https://books.apple.com/search?term=${enc}`,
-    kindle: seed.isbn
-      ? `https://www.amazon.com/dp/${seed.isbn}`
+    kindle: isbn
+      ? `https://www.amazon.com/dp/${isbn}`
       : `https://www.amazon.com/s?k=${enc}&i=stripbooks`,
     kobo: `https://www.kobo.com/search?query=${enc}`,
-    google_books: seed.isbn
-      ? `https://books.google.com/books?vid=ISBN${seed.isbn}`
+    google_books: isbn
+      ? `https://books.google.com/books?vid=ISBN${isbn}`
       : `https://www.google.com/search?tbm=bks&q=${enc}`,
   };
-
-  return links;
 }
 
 export async function resolveBook(
