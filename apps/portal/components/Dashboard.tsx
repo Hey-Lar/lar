@@ -57,7 +57,7 @@ export function Dashboard() {
     <div className="app">
       <nav className="rail glass" aria-label="Primary">
         <div className="mark">
-          <Icon name="mark" size={22} />
+          <Icon name="mark" size={26} />
         </div>
         {TABS.map((t) => (
           <button
@@ -84,7 +84,7 @@ export function Dashboard() {
           title="Appearance settings"
         >
           <span aria-hidden>
-            <Icon name="settings" size={18} />
+            <Icon name="settings" size={22} />
           </span>
         </button>
         <ThemeToggle />

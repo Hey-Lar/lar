@@ -43,7 +43,9 @@ export const DEFAULT_APPEARANCE: Appearance = {
   theme: DEFAULT_THEME,
   scene: 'hearth',
   sceneIntensity: 60,
-  glassBlur: 20,
+  // Richer default frost so the now-clearer glass tiles still read as glass
+  // (the Glass-intensity slider scales all three elevation rungs from this).
+  glassBlur: 23,
   motion: 'system',
 };
 

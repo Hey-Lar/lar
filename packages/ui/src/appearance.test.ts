@@ -18,12 +18,12 @@ describe('appearance', () => {
     expect(MOTION_MODES).toEqual(['system', 'on', 'off']);
   });
 
-  it('defaults to the dark theme + hearth scene under the lar-appearance key', () => {
+  it('defaults to the default (ember light) theme + hearth scene under the lar-appearance key', () => {
     expect(APPEARANCE_STORAGE_KEY).toBe('lar-appearance');
     expect(DEFAULT_APPEARANCE.theme).toBe(DEFAULT_THEME);
     expect(DEFAULT_APPEARANCE.scene).toBe('hearth');
     expect(DEFAULT_APPEARANCE.sceneIntensity).toBe(60);
-    expect(DEFAULT_APPEARANCE.glassBlur).toBe(20);
+    expect(DEFAULT_APPEARANCE.glassBlur).toBe(23);
     expect(DEFAULT_APPEARANCE.motion).toBe('system');
   });
 

@@ -15,7 +15,7 @@
 export const THEMES = ['dark', 'ember', 'light'] as const;
 export type ThemeName = (typeof THEMES)[number];
 
-export const DEFAULT_THEME: ThemeName = 'dark';
+export const DEFAULT_THEME: ThemeName = 'ember';
 export const THEME_STORAGE_KEY = 'lar-theme';
 
 export type Palette = {
@@ -87,18 +87,21 @@ const ember: Palette = {
   ink: '#26303c',
   inkSoft: '#5a6573',
   inkFaint: '#8b96a4',
-  body: '#eef1f6',
-  glass: 'rgba(255,255,255,0.55)',
-  glass2: 'rgba(255,255,255,0.42)',
-  glassStrong: 'rgba(255,255,255,0.70)',
+  body: '#f2f5fa',
+  // Clear glass: tiles read as see-through panes (room visible through them),
+  // not frosted-white cards. Legibility is carried by the cues (stroke +
+  // highlight + shadow) and the behind-text --glass-scrim, not the fill alpha.
+  glass: 'rgba(255,255,255,0.34)',
+  glass2: 'rgba(255,255,255,0.28)',
+  glassStrong: 'rgba(255,255,255,0.50)',
   glassTint: 'rgba(255,255,255,0.10)',
-  glassStroke: 'rgba(40,52,68,0.10)',
-  glassHighlight: 'rgba(255,255,255,0.85)',
-  glassScrim: 'rgba(255,255,255,0.55)',
+  glassStroke: 'rgba(40,52,68,0.12)',
+  glassHighlight: 'rgba(255,255,255,0.92)',
+  glassScrim: 'rgba(255,255,255,0.62)',
   shadow1: '0 1px 2px rgba(40,52,68,.06), 0 8px 20px -8px rgba(40,52,68,.12)',
   shadow2: '0 1px 2px rgba(40,52,68,.07), 0 12px 32px -8px rgba(40,52,68,.16)',
   shadow3: '0 2px 4px rgba(40,52,68,.08), 0 24px 56px -12px rgba(40,52,68,.20)',
-  stroke: 'rgba(255,255,255,0.65)',
+  stroke: 'rgba(255,255,255,0.60)',
   shadow: '0 18px 50px -20px rgba(40,52,68,.45), 0 6px 18px -10px rgba(40,52,68,.25)',
   meshBase: 'linear-gradient(135deg, #f6efe7 0%, #eef0f7 45%, #e9f3ef 100%)',
   meshA: '#ffd9a8',
@@ -107,9 +110,9 @@ const ember: Palette = {
   meshD: '#ffc6c0',
   silFar: 'rgba(40,52,68,.10)',
   silNear: 'rgba(40,52,68,.16)',
-  sceneScrim: 'rgba(238,241,246,.26)',
+  sceneScrim: 'rgba(242,245,250,.24)',
   navIdle: '#8b96a4',
-  navActiveBg: 'rgba(255,255,255,0.62)',
+  navActiveBg: 'rgba(255,255,255,0.66)',
 };
 
 const light: Palette = {
@@ -117,18 +120,19 @@ const light: Palette = {
   ink: '#26303c',
   inkSoft: '#5a6573',
   inkFaint: '#8b96a4',
-  body: '#f4f6fa',
-  glass: 'rgba(255,255,255,0.55)',
-  glass2: 'rgba(255,255,255,0.5)',
-  glassStrong: 'rgba(255,255,255,0.70)',
+  body: '#f7f9fc',
+  // Clear glass (cool stone variant) — see ember note above.
+  glass: 'rgba(255,255,255,0.32)',
+  glass2: 'rgba(255,255,255,0.26)',
+  glassStrong: 'rgba(255,255,255,0.48)',
   glassTint: 'rgba(255,255,255,0.10)',
-  glassStroke: 'rgba(40,52,68,0.10)',
-  glassHighlight: 'rgba(255,255,255,0.85)',
-  glassScrim: 'rgba(255,255,255,0.55)',
+  glassStroke: 'rgba(40,52,68,0.12)',
+  glassHighlight: 'rgba(255,255,255,0.92)',
+  glassScrim: 'rgba(255,255,255,0.60)',
   shadow1: '0 1px 2px rgba(40,52,68,.06), 0 8px 20px -8px rgba(40,52,68,.12)',
   shadow2: '0 1px 2px rgba(40,52,68,.07), 0 12px 32px -8px rgba(40,52,68,.16)',
   shadow3: '0 2px 4px rgba(40,52,68,.08), 0 24px 56px -12px rgba(40,52,68,.20)',
-  stroke: 'rgba(255,255,255,0.72)',
+  stroke: 'rgba(255,255,255,0.66)',
   shadow: '0 18px 50px -20px rgba(40,52,68,.35), 0 6px 18px -10px rgba(40,52,68,.2)',
   meshBase: 'linear-gradient(135deg, #eef0f7 0%, #f3f0f8 45%, #ecf3f1 100%)',
   meshA: '#c9c1ff',
@@ -137,9 +141,9 @@ const light: Palette = {
   meshD: '#cfe6ff',
   silFar: 'rgba(40,52,68,.08)',
   silNear: 'rgba(40,52,68,.13)',
-  sceneScrim: 'rgba(244,246,250,.28)',
+  sceneScrim: 'rgba(247,249,252,.26)',
   navIdle: '#8b96a4',
-  navActiveBg: 'rgba(255,255,255,0.7)',
+  navActiveBg: 'rgba(255,255,255,0.64)',
 };
 
 const dark: Palette = {

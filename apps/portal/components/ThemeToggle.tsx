@@ -65,7 +65,7 @@ export function ThemeToggle() {
       aria-label={`Theme: ${THEME_LABEL[theme]}. Click to cycle to the next theme.`}
     >
       <span aria-hidden>
-        <Icon name={THEME_GLYPH[theme]} size={18} />
+        <Icon name={THEME_GLYPH[theme]} size={22} />
       </span>
     </button>
   );
