@@ -7,7 +7,9 @@ import { useEffect, useRef, useState } from 'react';
 import type { FilmResolution } from '@lar/connector-filmtv';
 
 export function FilmBlock() {
-  const [text, setText] = useState('Dune');
+  // "Dune movie" (not bare "Dune") so the Wikipedia card resolves the film,
+  // not the sand-dune geography article. JustWatch handles the real lookup.
+  const [text, setText] = useState('Dune movie');
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState<FilmResolution | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export function FilmBlock() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') void run(text);
           }}
-          placeholder="Dune"
+          placeholder="Dune movie"
           aria-label="Ask Lar"
         />
         <button className={`mic ${listening ? 'on' : ''}`} onClick={mic} aria-label="Speak to Lar">
@@ -118,7 +120,14 @@ export function FilmBlock() {
           <div className="np-head">
             {res.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={res.thumbnailUrl} alt="" className="cover" />
+              <img
+                src={res.thumbnailUrl}
+                alt=""
+                className="cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             ) : null}
             <div>
               <div className="np-title">{res.title}</div>

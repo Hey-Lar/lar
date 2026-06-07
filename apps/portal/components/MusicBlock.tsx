@@ -141,7 +141,14 @@ export function MusicBlock() {
           <div className="np-head">
             {res.artworkUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={res.artworkUrl} alt="" className="cover" />
+              <img
+                src={res.artworkUrl}
+                alt=""
+                className="cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             ) : null}
             <div>
               <div className="np-title">{res.title}</div>
