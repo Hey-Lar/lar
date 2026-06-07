@@ -66,7 +66,12 @@ export function useAskLar<TRes>(opts: {
         if (!d.ok) throw new Error(d.error ?? 'request failed');
         if (d.kind === opts.kind && d.resolution) {
           setRes(d.resolution as TRes);
+        } else if (d.kind === opts.kind) {
+          // Right surface, but nothing to route (no match / not launchable).
+          setRes(null);
+          setMsg(d.note ?? 'Nothing to route.');
         } else {
+          // A different kind of request entirely — point at the matching tab.
           setRes(null);
           setMsg(d.note ?? 'That looks like a different kind of request — try the matching tab.');
         }

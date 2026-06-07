@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { PodcastResolution } from '@lar/connector-podcasts';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -12,8 +12,14 @@ export function PodcastsBlock() {
     initial: 'find the Lex Fridman podcast',
   });
   const [copied, setCopied] = useState(false);
-  // Clear the "Copied ✓" reset-timer on unmount.
+  // Clear the "Copied ✓" reset-timer on unmount (the ask-bar request is aborted
+  // by useAskLar; this timer is block-local so it needs its own cleanup).
   const copyResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (copyResetRef.current) clearTimeout(copyResetRef.current);
+    };
+  }, []);
 
   async function copyRss(feedUrl: string) {
     try {
