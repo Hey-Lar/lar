@@ -413,7 +413,7 @@ zero extra assets); selected = `--hearth` ring.
 
 `packages/ui/src/appearance.ts` (mirrors `themes.ts`): `SCENES`, `MotionMode`,
 `Appearance { theme, scene, sceneIntensity, glassBlur, motion, accent? }`,
-`DEFAULT_APPEARANCE { scene:'hearth', sceneIntensity:60, glassBlur:26, motion:'system' }`,
+`DEFAULT_APPEARANCE { scene:'hearth', sceneIntensity:60, glassBlur:20, motion:'system' }`,
 `coerceScene()`. Persist one JSON blob under **`lar-appearance`** (keep writing
 `theme` through to `lar-theme` so `ThemeToggle` stays in sync). Extend the existing
 pre-paint boot script in `layout.tsx` to set `data-scene` / `data-motion` + the two

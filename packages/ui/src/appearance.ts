@@ -43,7 +43,7 @@ export const DEFAULT_APPEARANCE: Appearance = {
   theme: DEFAULT_THEME,
   scene: 'hearth',
   sceneIntensity: 60,
-  glassBlur: 26,
+  glassBlur: 20,
   motion: 'system',
 };
 
