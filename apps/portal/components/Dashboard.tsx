@@ -13,11 +13,13 @@ import { ThemeToggle } from './ThemeToggle';
 import { VaultPanel } from './VaultPanel';
 import { HealthBlock } from './HealthBlock';
 import { WeatherBlock } from './WeatherBlock';
+import { PlacesBlock } from './PlacesBlock';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
   { key: 'agenda', label: 'Agenda', ico: '⌖' },
   { key: 'weather', label: 'Weather', ico: '⛅' },
+  { key: 'place', label: 'Places', ico: '📍' },
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'books', label: 'Books', ico: '📚' },
@@ -64,6 +66,7 @@ export function Dashboard() {
           {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
           {tab === 'agenda' && <AgendaBlock />}
           {tab === 'weather' && <WeatherBlock />}
+          {tab === 'place' && <PlacesBlock />}
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'books' && <BooksBlock />}
