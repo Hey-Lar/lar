@@ -220,7 +220,7 @@ body {
   display: block;
 }
 [data-scene='living-room'] .scene-scrim {
-  opacity: calc(0.32 + 0.3 * (1 - var(--scene-intensity, 0.6)));
+  opacity: calc(0.3 + 0.28 * (1 - var(--scene-intensity, 0.6)));
 }
 /*
  * Optional photoreal layer: paints ABOVE the stylized SVG room, BELOW the scrim.
@@ -640,7 +640,7 @@ body {
   border-radius: inherit;
   pointer-events: none;
   background: linear-gradient(to bottom, var(--glass-scrim), transparent 78%);
-  opacity: 0.7;
+  opacity: 0.78;
 }
 /* result / route panels carry a lot of text → frostier fill + full scrim. */
 .np.card {
