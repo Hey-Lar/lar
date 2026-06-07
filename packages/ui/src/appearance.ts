@@ -12,6 +12,7 @@ import { DEFAULT_THEME, type ThemeName } from './themes';
 
 /** Bundled ambient scenes, in picker order. */
 export const SCENES = [
+  'living-room',
   'calm',
   'hearth',
   'dawn-skyline',
@@ -41,7 +42,7 @@ export const APPEARANCE_STORAGE_KEY = 'lar-appearance';
 
 export const DEFAULT_APPEARANCE: Appearance = {
   theme: DEFAULT_THEME,
-  scene: 'hearth',
+  scene: 'living-room',
   sceneIntensity: 60,
   // Richer default frost so the now-clearer glass tiles still read as glass
   // (the Glass-intensity slider scales all three elevation rungs from this).
@@ -49,9 +50,9 @@ export const DEFAULT_APPEARANCE: Appearance = {
   motion: 'system',
 };
 
-/** Narrow an unknown value to a valid `SceneName`, defaulting to hearth. */
+/** Narrow an unknown value to a valid `SceneName`, defaulting to the living room. */
 export function coerceScene(v: unknown): SceneName {
-  return (SCENES as readonly string[]).includes(v as string) ? (v as SceneName) : 'hearth';
+  return (SCENES as readonly string[]).includes(v as string) ? (v as SceneName) : 'living-room';
 }
 
 /** Narrow an unknown value to a valid `MotionMode`, defaulting to system. */

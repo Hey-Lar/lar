@@ -58,6 +58,12 @@ Thumbs.db
 # turbo
 .turbo/
 
+# Local-only bundled assets (real background photos, etc.) — never committed
+# (privacy). The dir + its README are kept; everything else is ignored.
+apps/portal/public/local/*
+!apps/portal/public/local/
+!apps/portal/public/local/README.md
+
 # test / coverage
 coverage/
 
