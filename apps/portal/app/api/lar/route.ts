@@ -3,6 +3,7 @@ import type { Platform } from '@lar/shared';
 import { parseIntentDeterministic, resolveMusic } from '@lar/connector-music';
 import { resolvePodcast } from '@lar/connector-podcasts';
 import { resolveBook } from '@lar/connector-books';
+import { resolveFilm } from '@lar/connector-filmtv';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 import { authorize } from '../../../lib/authz';
 
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as {
       transcript?: string;
       platformPriority?: Platform[];
-      forceDomain?: 'music' | 'podcast' | 'book';
+      forceDomain?: 'music' | 'podcast' | 'book' | 'film';
     };
     const transcript = body.transcript?.trim();
     if (!transcript) {
@@ -37,10 +38,13 @@ export async function POST(req: Request) {
 
     // Phase 1 handles media-launch intents; transport (pause/next) arrives with
     // the Android MediaController phase, so we surface a note rather than guess.
-    // Domain must also be routable (music/podcast/book) — film actions fall
-    // through to the note branch even when the intent looks launchable.
+    // Launchable = a routable media domain (music/podcast/book/film) paired with
+    // a launch-style intent (play/open/recommend/queue); anything else gets a note.
     const launchable =
-      (routed.domain === 'music' || routed.domain === 'podcast' || routed.domain === 'book') &&
+      (routed.domain === 'music' ||
+        routed.domain === 'podcast' ||
+        routed.domain === 'book' ||
+        routed.domain === 'film') &&
       (routed.intent === 'play' ||
         routed.intent === 'open' ||
         routed.intent === 'recommend' ||
@@ -64,6 +68,11 @@ export async function POST(req: Request) {
     if (routed.domain === 'book') {
       const resolution = await resolveBook(routed);
       return NextResponse.json({ ok: true, kind: 'book', action: routed, resolution });
+    }
+
+    if (routed.domain === 'film') {
+      const resolution = await resolveFilm(routed);
+      return NextResponse.json({ ok: true, kind: 'film', action: routed, resolution });
     }
 
     // Default: music routing (back-compat — resolution field always present).
