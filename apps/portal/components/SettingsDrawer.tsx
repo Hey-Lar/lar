@@ -36,6 +36,7 @@ const THEME_PREVIEW: Record<ThemeName, string> = {
 };
 
 const SCENE_LABEL: Record<SceneName, string> = {
+  'living-room': 'Living room',
   calm: 'Calm',
   hearth: 'Hearth',
   'dawn-skyline': 'Dawn',
@@ -56,6 +57,17 @@ const SCENE_LABEL: Record<SceneName, string> = {
  * teal/indigo ribbons with a warm accent, warm-mesh = a warm multi-color mesh.
  */
 const SCENE_THUMB: Record<SceneName, string> = {
+  // a warm interior: cream wall + honey floor split, a bright daylight window
+  // (upper-right), warm light pooling on the floor, and a low cream sofa hint.
+  'living-room':
+    // sofa hint — a low rounded ivory bar across the lower third
+    'linear-gradient(180deg, transparent 60%, rgba(250,244,233,0.92) 60%, rgba(231,221,205,0.92) 78%, transparent 78%), ' +
+    // warm light pool spilling onto the floor from the window
+    'radial-gradient(42% 30% at 70% 70%, rgba(253,228,168,0.7) 0, transparent 70%), ' +
+    // bright window pane, upper-right
+    'linear-gradient(160deg, #fef6df 0%, #ffe6b0 55%, #f4cf86 100%) 64% 14% / 30% 34% no-repeat, ' +
+    // wall (top) → warm wood floor (bottom)
+    'linear-gradient(180deg, #efe6d6 0%, #e7ddcf 52%, #cb9e6e 52%, #b98a58 100%)',
   // soft multi-color radial blobs in the corners (the calm mesh)
   calm: 'radial-gradient(circle at 18% 22%, #ffd9a8 0, transparent 46%), radial-gradient(circle at 84% 16%, #c9c1ff 0, transparent 44%), radial-gradient(circle at 64% 86%, #a8ead9 0, transparent 48%), radial-gradient(circle at 8% 90%, #ffc6c0 0, transparent 44%), linear-gradient(135deg, #1a1f2b, #15171d)',
   // dark field with a warm glow rising from the bottom-center (the fireplace)

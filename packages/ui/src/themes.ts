@@ -68,6 +68,27 @@ export type Palette = {
   silNear: string;
   /** Legibility wash painted over the scene + under the glass. */
   sceneScrim: string;
+  /**
+   * Living-room scene fills (the stylized 3D room behind the glass). Each is a
+   * base color the SVG gradients lighten toward the window side + darken away
+   * from it. Sunlit + warm on ember/light; cozy + dim on dark.
+   *   roomWall     — back-wall panel base
+   *   roomWallHi   — wall lit edge (window side / upper)
+   *   roomFloor    — wood floor base
+   *   roomFloorHi  — floor lit pool near the window
+   *   roomFurniture— sofa / table body base
+   *   roomFurnitureHi — sofa cushion / lit-side highlight
+   *   roomShadow   — soft contact-shadow ink under furniture
+   *   roomWindow   — glazing / daylight tint (kept warm via --hearth-glow too)
+   */
+  roomWall: string;
+  roomWallHi: string;
+  roomFloor: string;
+  roomFloorHi: string;
+  roomFurniture: string;
+  roomFurnitureHi: string;
+  roomShadow: string;
+  roomWindow: string;
   /** Rail nav button colors. */
   navIdle: string;
   navActiveBg: string;
@@ -111,6 +132,15 @@ const ember: Palette = {
   silFar: 'rgba(40,52,68,.10)',
   silNear: 'rgba(40,52,68,.16)',
   sceneScrim: 'rgba(242,245,250,.24)',
+  // Sunlit warm room: cream-plaster walls, honey-oak floor, ivory sofa.
+  roomWall: '#e7ddcf',
+  roomWallHi: '#f6efe3',
+  roomFloor: '#c79a6a',
+  roomFloorHi: '#e6c79a',
+  roomFurniture: '#e9e0d2',
+  roomFurnitureHi: '#fbf6ec',
+  roomShadow: 'rgba(74,54,34,0.26)',
+  roomWindow: '#fdf3da',
   navIdle: '#8b96a4',
   navActiveBg: 'rgba(255,255,255,0.66)',
 };
@@ -142,6 +172,15 @@ const light: Palette = {
   silFar: 'rgba(40,52,68,.08)',
   silNear: 'rgba(40,52,68,.13)',
   sceneScrim: 'rgba(247,249,252,.26)',
+  // Sunlit cool-stone room: pale greige walls, light-oak floor, off-white sofa.
+  roomWall: '#e4e3df',
+  roomWallHi: '#f4f3ef',
+  roomFloor: '#cdac82',
+  roomFloorHi: '#ead0a8',
+  roomFurniture: '#e7e6e1',
+  roomFurnitureHi: '#fafaf6',
+  roomShadow: 'rgba(56,52,46,0.22)',
+  roomWindow: '#fdf6e6',
   navIdle: '#8b96a4',
   navActiveBg: 'rgba(255,255,255,0.64)',
 };
@@ -172,6 +211,16 @@ const dark: Palette = {
   silFar: 'rgba(255,255,255,.05)',
   silNear: 'rgba(255,255,255,.09)',
   sceneScrim: 'rgba(14,17,22,.34)',
+  // Cozy dim room: deep charcoal-warm walls, dark walnut floor, slate sofa lit
+  // only on its window-facing edge by the warm glazing glow.
+  roomWall: '#1c1f27',
+  roomWallHi: '#2b2a2c',
+  roomFloor: '#241c16',
+  roomFloorHi: '#473221',
+  roomFurniture: '#23262d',
+  roomFurnitureHi: '#3a342f',
+  roomShadow: 'rgba(0,0,0,0.42)',
+  roomWindow: '#f3d9a0',
   navIdle: '#6e6e66',
   navActiveBg: 'rgba(255,255,255,0.10)',
 };
@@ -210,6 +259,14 @@ export const CSS_VARS = [
   '--sil-far',
   '--sil-near',
   '--scene-scrim',
+  '--room-wall',
+  '--room-wall-hi',
+  '--room-floor',
+  '--room-floor-hi',
+  '--room-furniture',
+  '--room-furniture-hi',
+  '--room-shadow',
+  '--room-window',
   '--nav-idle',
   '--nav-active-bg',
 ] as const;
@@ -252,6 +309,14 @@ export function themeCss(): string {
       `--sil-far: ${p.silFar};`,
       `--sil-near: ${p.silNear};`,
       `--scene-scrim: ${p.sceneScrim};`,
+      `--room-wall: ${p.roomWall};`,
+      `--room-wall-hi: ${p.roomWallHi};`,
+      `--room-floor: ${p.roomFloor};`,
+      `--room-floor-hi: ${p.roomFloorHi};`,
+      `--room-furniture: ${p.roomFurniture};`,
+      `--room-furniture-hi: ${p.roomFurnitureHi};`,
+      `--room-shadow: ${p.roomShadow};`,
+      `--room-window: ${p.roomWindow};`,
       `--nav-idle: ${p.navIdle};`,
       `--nav-active-bg: ${p.navActiveBg};`,
     ].join(' ');
