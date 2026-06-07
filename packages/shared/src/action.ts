@@ -13,8 +13,16 @@ import { z } from 'zod';
  */
 
 export const INTENTS = ['play', 'pause', 'next', 'queue', 'open', 'recommend'] as const;
-export const DOMAINS = ['music', 'podcast', 'film', 'book'] as const;
-export const ENTITY_TYPES = ['track', 'artist', 'album', 'show', 'movie', 'episode'] as const;
+export const DOMAINS = ['music', 'podcast', 'film', 'book', 'place'] as const;
+export const ENTITY_TYPES = [
+  'track',
+  'artist',
+  'album',
+  'show',
+  'movie',
+  'episode',
+  'location',
+] as const;
 
 /** Platforms Lar can route to. `auto` = let the dispatcher pick from user prefs. */
 export const PLATFORMS = [

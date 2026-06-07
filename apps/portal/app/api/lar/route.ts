@@ -4,6 +4,7 @@ import { parseIntentDeterministic, resolveMusic } from '@lar/connector-music';
 import { resolvePodcast } from '@lar/connector-podcasts';
 import { resolveBook } from '@lar/connector-books';
 import { resolveFilm } from '@lar/connector-filmtv';
+import { resolvePlace } from '@lar/connector-places';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 import { authorize } from '../../../lib/authz';
 
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as {
       transcript?: string;
       platformPriority?: Platform[];
-      forceDomain?: 'music' | 'podcast' | 'book' | 'film';
+      forceDomain?: 'music' | 'podcast' | 'book' | 'film' | 'place';
     };
     const transcript = body.transcript?.trim();
     if (!transcript) {
@@ -44,7 +45,8 @@ export async function POST(req: Request) {
       (routed.domain === 'music' ||
         routed.domain === 'podcast' ||
         routed.domain === 'book' ||
-        routed.domain === 'film') &&
+        routed.domain === 'film' ||
+        routed.domain === 'place') &&
       (routed.intent === 'play' ||
         routed.intent === 'open' ||
         routed.intent === 'recommend' ||
@@ -73,6 +75,13 @@ export async function POST(req: Request) {
     if (routed.domain === 'film') {
       const resolution = await resolveFilm(routed);
       return NextResponse.json({ ok: true, kind: 'film', action: routed, resolution });
+    }
+
+    if (routed.domain === 'place') {
+      // Nominatim fetch runs server-side only — browser calls same-origin /api/lar.
+      // Bright-line: links only, Lar never stores or transmits the user's location.
+      const resolution = await resolvePlace(routed);
+      return NextResponse.json({ ok: true, kind: 'place', action: routed, resolution });
     }
 
     // Default: music routing (back-compat — resolution field always present).
