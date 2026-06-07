@@ -23,7 +23,7 @@ describe('appearance', () => {
     expect(DEFAULT_APPEARANCE.theme).toBe(DEFAULT_THEME);
     expect(DEFAULT_APPEARANCE.scene).toBe('hearth');
     expect(DEFAULT_APPEARANCE.sceneIntensity).toBe(60);
-    expect(DEFAULT_APPEARANCE.glassBlur).toBe(26);
+    expect(DEFAULT_APPEARANCE.glassBlur).toBe(20);
     expect(DEFAULT_APPEARANCE.motion).toBe('system');
   });
 
