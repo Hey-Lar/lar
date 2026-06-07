@@ -48,21 +48,31 @@ const SCENE_LABEL: Record<SceneName, string> = {
  * Representative gradient thumbnails for the scene picker. True full-fidelity
  * live previews are impractical because the real scene layers are
  * `position: fixed` full-viewport; these inline gradients approximate each
- * scene's dominant colors at thumbnail scale (zero extra assets, theme-neutral
- * so they read in all three themes).
+ * scene's dominant colors + signature shape at thumbnail scale (zero extra
+ * assets, theme-neutral so they read in all three themes). Each is tuned to be
+ * clearly differentiable at a glance: calm = multi-color blobs, hearth = warm
+ * glow rising from the bottom-center, dawn = gradient + a dark skyline strip,
+ * deep-night = dark field + a cool top glow + tiny stars, aurora = cool
+ * teal/indigo ribbons with a warm accent, warm-mesh = a warm multi-color mesh.
  */
 const SCENE_THUMB: Record<SceneName, string> = {
-  calm: 'radial-gradient(at 20% 24%, #ffd9a8 0, transparent 55%), radial-gradient(at 84% 16%, #c9c1ff 0, transparent 52%), radial-gradient(at 60% 86%, #a8ead9 0, transparent 55%), linear-gradient(135deg, #1a1f2b, #15171d)',
+  // soft multi-color radial blobs in the corners (the calm mesh)
+  calm: 'radial-gradient(circle at 18% 22%, #ffd9a8 0, transparent 46%), radial-gradient(circle at 84% 16%, #c9c1ff 0, transparent 44%), radial-gradient(circle at 64% 86%, #a8ead9 0, transparent 48%), radial-gradient(circle at 8% 90%, #ffc6c0 0, transparent 44%), linear-gradient(135deg, #1a1f2b, #15171d)',
+  // dark field with a warm glow rising from the bottom-center (the fireplace)
   hearth:
-    'radial-gradient(60% 45% at 50% 116%, rgba(217,138,43,0.85) 0, transparent 70%), radial-gradient(at 16% 18%, #1a2540 0, transparent 60%), linear-gradient(135deg, #141823, #16161c)',
+    'radial-gradient(60% 46% at 50% 112%, rgba(240,179,87,0.95) 0, rgba(217,138,43,0.5) 38%, transparent 74%), linear-gradient(180deg, #161a26 0%, #101319 100%)',
+  // dawn vertical gradient + a tiny dark skyline strip pinned to the bottom
   'dawn-skyline':
-    'linear-gradient(180deg, #2a2540 0%, #16161c 64%), radial-gradient(40% 34% at 78% 22%, rgba(240,179,87,0.7) 0, transparent 70%)',
+    'linear-gradient(180deg, #f3b86a 0%, #c98a78 26%, #4a3f63 60%, #1c1b2a 100%), linear-gradient(180deg, transparent 78%, #121119 78%)',
+  // very dark with a faint cool top glow + 2–3 tiny star dots
   'deep-night':
-    'radial-gradient(70% 50% at 50% -10%, #1a2540 0, transparent 60%), linear-gradient(180deg, #0e1116, #0b0d11)',
+    'radial-gradient(1.2px 1.2px at 26% 30%, rgba(220,228,245,0.9) 50%, transparent 51%), radial-gradient(1.2px 1.2px at 70% 22%, rgba(220,228,245,0.85) 50%, transparent 51%), radial-gradient(1px 1px at 50% 42%, rgba(220,228,245,0.75) 50%, transparent 51%), radial-gradient(80% 55% at 50% -16%, #243456 0, transparent 62%), linear-gradient(180deg, #0d1016, #090b0f)',
+  // diagonal teal → indigo ribbons with a small warm accent (cool-dominant)
   aurora:
-    'linear-gradient(110deg, transparent, rgba(58,166,160,0.65) 42%, transparent 78%), linear-gradient(70deg, transparent, rgba(240,179,87,0.45) 52%, transparent 86%), linear-gradient(135deg, #0e1116, #131826)',
+    'linear-gradient(118deg, transparent 10%, rgba(58,166,160,0.85) 40%, transparent 68%), linear-gradient(135deg, transparent 30%, rgba(86,96,210,0.7) 58%, transparent 86%), linear-gradient(72deg, transparent 48%, rgba(240,179,87,0.42) 60%, transparent 74%), linear-gradient(135deg, #0c1014, #111726)',
+  // warm multi-color mesh (the legacy scene)
   'warm-mesh':
-    'radial-gradient(46% 46% at 24% 18%, #3a2a14 0, transparent 70%), radial-gradient(42% 42% at 40% 100%, #1a2540 0, transparent 70%), linear-gradient(135deg, #0e1116, #16161c)',
+    'radial-gradient(circle at 22% 20%, #f0b357 0, transparent 50%), radial-gradient(circle at 80% 28%, #d98a2b 0, transparent 48%), radial-gradient(circle at 50% 100%, #8a4a2c 0, transparent 60%), linear-gradient(135deg, #2a1d12, #1a1410)',
 };
 
 const MOTION_LABEL: Record<MotionMode, string> = {
