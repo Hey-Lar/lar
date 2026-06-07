@@ -351,7 +351,30 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
       led CTA + Merriam-Webster/Google chips). **Browser-verified live** (serendipity
       → IPA + 2 noun senses + Wiktionary). Bright-line: keyless, read-only, never
       stores queries.
-  - **NEXT (suggested), pick one:**
+  - **Parser detects all 6 domains ✅ MERGED (`f013d99`)** — the deterministic
+    intent parser (`connector-music/src/intent.ts`) now recognises **place** +
+    **define** and broadens film/book (was podcast/film/book → music-default),
+    and strips the new domain trigger words from `entity.query` so connectors get
+    a clean entity (e.g. "define serendipity" → domain `define`, query
+    `serendipity`). ZERO risk to existing blocks (they send `forceDomain`, which
+    overrides detection); this only powers the no-`forceDomain` path. Music wedge
+    unchanged (10 original specs green); +8 detection specs (music now 25+1 live).
+  - **🌟 Global "Hey Lar" router bar ✅ MERGED (`be9038b`) — THE THESIS, REALIZED.**
+    `apps/portal/components/GlobalAsk.tsx` sits at the top of the Overview: ask
+    ANYTHING → POST `/api/lar` with **no** forceDomain → the parser picks the
+    domain → the bar shows the resolved primary outward link + "Open <Tab> →".
+    Kind-agnostic run (AbortController leak-safety) + a typed
+    `summarise(kind,resolution)` → {label,tab,title,openLabel,openUrl} for all 6
+    domains; **weather** is special-cased client-side (→ navigate to Weather).
+    **Browser-verified live**: "define serendipity" → Dictionary/Wiktionary,
+    "where can I watch Dune" → Film & TV/JustWatch. 6 no-forceDomain kinds
+    curl-verified. This is the "say what you want, Lar routes you outward" promise
+    working end-to-end, keyless.
+  - **NEXT (suggested), pick one:** 0. **Enrich the global bar:** show richer inline results (cover art / chips,
+    not just the primary link), wire its 🎤 mic, route low-confidence parses to
+    the Claude API (`LAR_ANTHROPIC_KEY` gate) for fuzzy intent, and let the
+    target tab open pre-filled with the query (lift resolution state or pass an
+    initial-query prop).
     1. **Another keyless block** (additive, lowest-risk, now ~1 connector + a thin
        block): **News/Reading** route-outward (topic → neutral sources), a
        **Translate** block (MyMemory API is keyless), or **Sports/Transit**.
