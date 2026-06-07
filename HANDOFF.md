@@ -411,12 +411,34 @@ aurora·warm-mesh`) via `SceneBackground.tsx` + `[data-scene]` CSS + the
     sparse tab); scene-picker thumbnails are distinct per-scene previews; the
     **aurora** scene rebalanced cool (teal+indigo dominant, warm a small accent);
     the hero **weather** icon is hearth-amber with muted forecast icons.
-  - _Design polish backlog (still open, next iteration):_ scene thumbnails could
-    be more vivid still (subtle at thumbnail size); tune **ember/light** tile
-    transparency (frosted-white on light — could be glassier); maybe make the
-    hearth room silhouette a touch more present; the dev **cold-start tab-click
-    race** (first click after a cold `next dev` start can miss — prod/`next
-start` unaffected; a dev-only hydration timing thing).
+  - **Touch + light + glass ✅ MERGED (`9919094`)** — user direction (more
+    transparency, light-themed, touchscreen sizing). **`DEFAULT_THEME` → `ember`**
+    (warm light). Light-theme glass fills dropped hard (ember `--glass` .55→.34,
+    `--glass-strong` .70→.50; light .32/.48) so tiles read as **clear glass with
+    the room showing through**; legibility held via behind-text `--glass-scrim`
+    pseudo on cards + `--num-shadow`; brighter `--body`; default frost 20→23.
+    **Touchscreen sizing** throughout: rail 104→124px, navbtn →88×72 (≥48px) w/
+    bigger icons+labels, tiles +padding & bigger titles/lead, ask input →62px,
+    mic/Ask →62, chips ≥44px, `.open` ≥48px. Browser-verified warm/airy/glassy.
+  - **3D living-room scene ✅ MERGED (`f7d1502`)** — user direction (realistic 3D
+    living room). New **`living-room`** scene (now DEFAULT) in inline SVG/CSS
+    (privacy-safe, no fetch): daylight window (light source) + perspective floor +
+    rug + volume-shaded 3-seat sofa + coffee table + muted-sage plant + floor lamp
+    - framed art + soft shadows + center-calm vignette. Per-theme `--room-*`
+      tokens (ember/light sunlit, dark cozy-dim); scene-scrim dialled light so the
+      room reads through the clear tiles. **Honest note:** it's a _stylized_ room
+      (SVG can't be photoreal). **Optional photoreal path wired:** drop an AI image
+      at `apps/portal/public/local/living-room.jpg` (git-ignored; README there) →
+      `.scene-photo` makes it the real background, SVG room as fallback. Browser-
+      verified on ember (sofa/lamp/floor/window read, warm).
+  - _Design polish backlog (still open):_ the stylized room reads **soft/washed-
+    out** behind the very-clear tiles — sharpen furniture contrast or (better) use
+    the photo layer; scene thumbnails could be more vivid; the dev **cold-start
+    theme/click race** (single cold `next dev` navigate can render unstyled/miss a
+    click — a **double-navigate** or reload fixes it; prod/`next start`
+    unaffected). **Platform:** touch-PWA now; **React Native + Expo** is the
+    recommended next surface (reuses all `@lar/*` pure-TS packages; only UI is
+    rebuilt) when ready for device-native (Keystore, gestures, Android roadmap).
 
   - **NEXT (suggested), pick one:** 0. **Enrich the global bar:** show richer inline results (cover art / chips,
     not just the primary link), wire its mic, route low-confidence parses to
