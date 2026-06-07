@@ -7,6 +7,7 @@ const nextConfig = {
     '@lar/crypto',
     '@lar/shared',
     '@lar/ui',
+    '@lar/connector-books',
     '@lar/connector-music',
     '@lar/connector-finance',
     '@lar/connector-podcasts',

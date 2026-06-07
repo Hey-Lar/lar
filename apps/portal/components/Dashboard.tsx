@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AgendaBlock } from './AgendaBlock';
+import { BooksBlock } from './BooksBlock';
 import { MusicBlock } from './MusicBlock';
 import { PodcastsBlock } from './PodcastsBlock';
 import { WealthBlock } from './WealthBlock';
@@ -15,6 +16,7 @@ const TABS = [
   { key: 'agenda', label: 'Agenda', ico: '⌖' },
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
+  { key: 'books', label: 'Books', ico: '📚' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
   { key: 'markets', label: 'Markets', ico: '📈' },
   { key: 'health', label: 'Health', ico: '♥' },
@@ -58,6 +60,7 @@ export function Dashboard() {
           {tab === 'agenda' && <AgendaBlock />}
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
+          {tab === 'books' && <BooksBlock />}
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'markets' && <MarketsBlock />}
           {tab === 'health' && <HealthBlock />}
