@@ -126,7 +126,14 @@ export function BooksBlock() {
           <div className="np-head">
             {res.coverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={res.coverUrl} alt="" className="cover" />
+              <img
+                src={res.coverUrl}
+                alt=""
+                className="cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             ) : null}
             <div>
               <div className="np-title">{res.title}</div>
