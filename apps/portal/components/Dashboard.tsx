@@ -12,10 +12,12 @@ import { OverviewBlock } from './OverviewBlock';
 import { ThemeToggle } from './ThemeToggle';
 import { VaultPanel } from './VaultPanel';
 import { HealthBlock } from './HealthBlock';
+import { WeatherBlock } from './WeatherBlock';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
   { key: 'agenda', label: 'Agenda', ico: '⌖' },
+  { key: 'weather', label: 'Weather', ico: '⛅' },
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'books', label: 'Books', ico: '📚' },
@@ -61,6 +63,7 @@ export function Dashboard() {
         <main className="stage glass">
           {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
           {tab === 'agenda' && <AgendaBlock />}
+          {tab === 'weather' && <WeatherBlock />}
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'books' && <BooksBlock />}
