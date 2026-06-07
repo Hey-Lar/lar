@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Icon, type IconName } from '@lar/ui';
 import { AgendaBlock } from './AgendaBlock';
 import { BooksBlock } from './BooksBlock';
 import { FilmBlock } from './FilmBlock';
@@ -16,23 +17,36 @@ import { WeatherBlock } from './WeatherBlock';
 import { PlacesBlock } from './PlacesBlock';
 import { DictionaryBlock } from './DictionaryBlock';
 
-const TABS = [
-  { key: 'home', label: 'Overview', ico: '◫' },
-  { key: 'agenda', label: 'Agenda', ico: '⌖' },
-  { key: 'weather', label: 'Weather', ico: '⛅' },
-  { key: 'place', label: 'Places', ico: '📍' },
-  { key: 'music', label: 'Music', ico: '♪' },
-  { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
-  { key: 'books', label: 'Books', ico: '📚' },
-  { key: 'define', label: 'Dictionary', ico: '📖' },
-  { key: 'film', label: 'Film & TV', ico: '🎬' },
-  { key: 'wealth', label: 'Wealth', ico: '◈' },
-  { key: 'markets', label: 'Markets', ico: '📈' },
-  { key: 'health', label: 'Health', ico: '♥' },
-  { key: 'connect', label: 'Connect', ico: '🔒' },
+const TABS: ReadonlyArray<{ key: string; label: string; ico: IconName }> = [
+  { key: 'home', label: 'Overview', ico: 'home' },
+  { key: 'agenda', label: 'Agenda', ico: 'agenda' },
+  { key: 'weather', label: 'Weather', ico: 'weather' },
+  { key: 'place', label: 'Places', ico: 'places' },
+  { key: 'music', label: 'Music', ico: 'music' },
+  { key: 'podcasts', label: 'Podcasts', ico: 'podcasts' },
+  { key: 'books', label: 'Books', ico: 'books' },
+  { key: 'define', label: 'Dictionary', ico: 'dictionary' },
+  { key: 'film', label: 'Film & TV', ico: 'film' },
+  { key: 'wealth', label: 'Wealth', ico: 'wealth' },
+  { key: 'markets', label: 'Markets', ico: 'markets' },
+  { key: 'health', label: 'Health', ico: 'health' },
+  { key: 'connect', label: 'Connect', ico: 'connect' },
 ] as const;
 
-type TabKey = (typeof TABS)[number]['key'];
+type TabKey =
+  | 'home'
+  | 'agenda'
+  | 'weather'
+  | 'place'
+  | 'music'
+  | 'podcasts'
+  | 'books'
+  | 'define'
+  | 'film'
+  | 'wealth'
+  | 'markets'
+  | 'health'
+  | 'connect';
 
 export function Dashboard() {
   const [tab, setTab] = useState<TabKey>('home');
@@ -44,18 +58,20 @@ export function Dashboard() {
       <div className="grain" />
       <div className="app">
         <nav className="rail glass" aria-label="Primary">
-          <div className="mark">◆</div>
+          <div className="mark">
+            <Icon name="mark" size={22} />
+          </div>
           {TABS.map((t) => (
             <button
               key={t.key}
               className={`navbtn ${tab === t.key ? 'active' : ''}`}
-              onClick={() => setTab(t.key)}
+              onClick={() => setTab(t.key as TabKey)}
               aria-current={tab === t.key ? 'page' : undefined}
               aria-label={`Open ${t.label} tab`}
               type="button"
             >
               <span className="ico" aria-hidden>
-                {t.ico}
+                <Icon name={t.ico} size={20} />
               </span>
               <span>{t.label}</span>
             </button>

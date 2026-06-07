@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '@lar/ui';
 import type { BookResolution } from '@lar/connector-books';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -62,7 +63,7 @@ export function BooksBlock() {
           {/* PRIMARY: library-first — the standout, free, anti-lock-in link */}
           {ask.res.links.library && (
             <a className="open" href={ask.res.links.library} target="_blank" rel="noreferrer">
-              Borrow from a library →
+              Borrow from a library <Icon name="route" size={14} className="chip-arrow" />
             </a>
           )}
 

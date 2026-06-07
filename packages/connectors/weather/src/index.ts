@@ -1,4 +1,4 @@
-export { weatherFromCode, type WeatherDescription } from './wmo.js';
+export { weatherFromCode, type WeatherDescription, type WeatherIcon } from './wmo.js';
 export { geocode, fetchForecast, type GeoPlace, type RawForecast } from './openmeteo.js';
 export {
   resolveWeather,

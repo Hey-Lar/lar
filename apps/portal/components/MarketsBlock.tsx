@@ -72,7 +72,7 @@ const HOLDING_COLORS = ['#d98a2b', '#3aa6a0', '#6c8cff', '#b0bac7'];
 // Success-band presentation (label + colour)
 //
 // Band classification is harvested from @lar/connector-finance
-// (classifySuccessBand → SuccessBand); this map only drives the display.
+// (classifySuccessBand -> SuccessBand); this map only drives the display.
 // ---------------------------------------------------------------------------
 
 const SUCCESS_BAND: Record<SuccessBand, { label: string; color: string }> = {

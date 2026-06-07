@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { Icon } from '@lar/ui';
 import { formatCurrency, formatPercent } from '@lar/shared';
 import { closesOf, generateBars, type Bar } from '../lib/synthetic-ohlc';
 import { Sparkline } from './Sparkline';
@@ -242,7 +243,9 @@ function SortHeader({
         }}
       >
         {label}
-        {isActive ? <span aria-hidden>{dir === 'asc' ? '▲' : '▼'}</span> : null}
+        {isActive ? (
+          <Icon name="chevron" direction={dir === 'asc' ? 'up' : 'down'} size={12} />
+        ) : null}
       </button>
     </th>
   );

@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { Icon, type IconName } from '@lar/ui';
 import type { WeatherSnapshot } from '@lar/connector-weather';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -112,7 +113,7 @@ export function WeatherBlock() {
       </form>
 
       {/* Error */}
-      {error && <div className="err">⚠ {error}</div>}
+      {error && <div className="err">{error}</div>}
 
       {/* Loading */}
       {loading && !error && (
@@ -134,8 +135,8 @@ export function WeatherBlock() {
                 marginBottom: 18,
               }}
             >
-              <span style={{ fontSize: 64, lineHeight: 1 }} aria-hidden>
-                {snapshot.current.icon}
+              <span style={{ lineHeight: 1, color: 'var(--hearth)' }} aria-hidden>
+                <Icon name={snapshot.current.icon as IconName} size={64} strokeWidth={1.5} />
               </span>
               <div>
                 <div
@@ -194,8 +195,8 @@ export function WeatherBlock() {
             {snapshot.daily.map((day) => (
               <div key={day.date} className="card" style={{ textAlign: 'center' }}>
                 <div className="eyebrow">{weekday(day.date)}</div>
-                <div style={{ fontSize: 28, margin: '8px 0 4px' }} aria-hidden>
-                  {day.icon}
+                <div style={{ margin: '8px 0 4px', color: 'var(--hearth)' }} aria-hidden>
+                  <Icon name={day.icon as IconName} size={28} strokeWidth={1.5} />
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{day.maxC}°</div>
                 <div className="note">{day.minC}°</div>

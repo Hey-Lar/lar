@@ -3,6 +3,7 @@
 // Use the connector's exported (total) resolution type so the contract — every
 // watch link is always present — propagates end-to-end and the primary
 // "Where to watch" CTA can never silently disappear behind a Partial.
+import { Icon } from '@lar/ui';
 import type { FilmResolution } from '@lar/connector-filmtv';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -64,7 +65,7 @@ export function FilmBlock() {
           {/* PRIMARY: JustWatch — the neutral aggregator, where the user picks where to watch */}
           {ask.res.links.justwatch && (
             <a className="open" href={ask.res.links.justwatch} target="_blank" rel="noreferrer">
-              Where to watch →
+              Where to watch <Icon name="route" size={14} className="chip-arrow" />
             </a>
           )}
 
@@ -104,7 +105,7 @@ export function FilmBlock() {
 
           <div className="avail" style={{ marginTop: '0.5rem' }}>
             <a href={ask.res.wikipediaUrl} target="_blank" rel="noreferrer" className="chip">
-              Wikipedia ↗
+              Wikipedia <Icon name="route" size={14} className="chip-arrow" />
             </a>
           </div>
 

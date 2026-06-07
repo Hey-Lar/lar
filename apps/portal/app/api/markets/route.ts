@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   const gate = authorize(req);
   if (!gate.ok) return gate.response;
 
-  // Fixed seed → deterministic response across server restarts.
+  // Fixed seed -> deterministic response across server restarts.
   const projection = projectMonteCarlo(DEMO_PROJECTION_INPUTS, { seed: 0xdeadbeef });
 
   // Compute drift against the demo holdings (cash = 0 extra, it's already in holdings).

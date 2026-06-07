@@ -3,6 +3,7 @@
 // Use the connector's exported (total) resolution type so the contract — every
 // map link is always present — propagates end-to-end and the primary OSM CTA
 // can never silently disappear behind a Partial.
+import { Icon } from '@lar/ui';
 import type { PlaceResolution } from '@lar/connector-places';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -55,7 +56,7 @@ export function PlacesBlock() {
 
           {/* PRIMARY: OpenStreetMap — neutral open-data map, no commercial lock-in */}
           <a className="open" href={ask.res.links.openstreetmap} target="_blank" rel="noreferrer">
-            Open in OpenStreetMap →
+            Open in OpenStreetMap <Icon name="route" size={14} className="chip-arrow" />
           </a>
 
           <div className="avail">

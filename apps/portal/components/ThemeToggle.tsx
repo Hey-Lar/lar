@@ -1,7 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DEFAULT_THEME, THEME_STORAGE_KEY, type ThemeName, coerceTheme, nextTheme } from '@lar/ui';
+import {
+  DEFAULT_THEME,
+  THEME_STORAGE_KEY,
+  type ThemeName,
+  Icon,
+  type IconName,
+  coerceTheme,
+  nextTheme,
+} from '@lar/ui';
 
 const THEME_LABEL: Record<ThemeName, string> = {
   dark: 'Dark — Synex',
@@ -9,14 +17,14 @@ const THEME_LABEL: Record<ThemeName, string> = {
   light: 'Light — Stone',
 };
 
-const THEME_GLYPH: Record<ThemeName, string> = {
-  dark: '◐',
-  ember: '✺',
-  light: '☀︎',
+const THEME_GLYPH: Record<ThemeName, IconName> = {
+  dark: 'moon',
+  ember: 'mark',
+  light: 'wx-clear',
 };
 
 /**
- * Cycles dark → ember → light. The pre-hydration script in layout.tsx already
+ * Cycles dark -> ember -> light. The pre-hydration script in layout.tsx already
  * set `data-theme` on <html> from localStorage before paint, so we read it
  * back on mount instead of rendering a default that would flash.
  */
@@ -56,7 +64,9 @@ export function ThemeToggle() {
       title={`Theme: ${THEME_LABEL[theme]} (click to cycle)`}
       aria-label={`Theme: ${THEME_LABEL[theme]}. Click to cycle to the next theme.`}
     >
-      <span aria-hidden>{THEME_GLYPH[theme]}</span>
+      <span aria-hidden>
+        <Icon name={THEME_GLYPH[theme]} size={18} />
+      </span>
     </button>
   );
 }
