@@ -41,11 +41,16 @@ export async function geocode(query: string, fetchImpl: typeof fetch = fetch): P
   if (!r) {
     throw new Error(`No place found for "${query}"`);
   }
+  // Guard against a matched result that is missing usable coordinates.
+  // Defaulting to 0,0 would silently point the forecast at the Gulf of Guinea.
+  if (typeof r.latitude !== 'number' || typeof r.longitude !== 'number') {
+    throw new Error(`No coordinates for "${query}"`);
+  }
   return {
     name: r.name ?? query,
     country: r.country ?? '',
-    latitude: r.latitude ?? 0,
-    longitude: r.longitude ?? 0,
+    latitude: r.latitude,
+    longitude: r.longitude,
     timezone: r.timezone ?? 'UTC',
   };
 }

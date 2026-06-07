@@ -35,6 +35,17 @@ export function HealthBlock() {
   // This mirrors the pattern used in AgendaBlock / OverviewBlock — start with
   // a known anchor so the server and initial client render agree, then refine
   // to the real local time on the first paint.
+  // SSR/CSR ANCHOR — KEEP THIS A FIXED LITERAL.
+  // The argument to generateHealth must be a compile-time constant so the server
+  // and the browser produce identical HTML on the first render.  Specifically:
+  //   • Do NOT replace this with Date.now() — that produces different values on
+  //     the server vs the client and causes a React hydration mismatch.
+  //   • Do NOT render `snap.generatedFor` in JSX — it is intentionally kept out
+  //     of the DOM so a server/browser timezone difference cannot create a
+  //     visible mismatch (the two environments may be in different TZs).
+  //   • The useEffect below swaps in the real Date.now() after mount, so the
+  //     data shown to the user is always correct; only the very first paint uses
+  //     this anchor.
   const [snap, setSnap] = useState<HealthSnapshot>(() =>
     // Use a stable fixed anchor for SSR / initial hydration.
     generateHealth(new Date(2026, 5, 6, 12, 0, 0, 0).getTime()),
