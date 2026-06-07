@@ -41,6 +41,7 @@ const QUICK: Array<{ tab: string; label: string; desc: string; ico: string }> = 
     desc: 'Live local forecast — keyless, no tracking',
     ico: '⛅',
   },
+  { tab: 'place', label: 'Places', desc: 'Find a place — open-data first, your map', ico: '📍' },
   { tab: 'music', label: 'Music', desc: 'Play anything — your platform, your choice', ico: '♪' },
   { tab: 'podcasts', label: 'Podcasts', desc: 'Find a show + its open RSS feed', ico: '🎙' },
   { tab: 'books', label: 'Books', desc: 'Find a book — library-first, your store', ico: '📚' },
