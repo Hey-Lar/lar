@@ -1,94 +1,25 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-interface PodcastResolution {
-  title: string;
-  author: string;
-  artworkUrl?: string;
-  applePodcastsUrl: string;
-  feedUrl?: string;
-  genre?: string;
-  links: Partial<Record<'apple_podcasts' | 'rss' | 'spotify' | 'youtube', string>>;
-}
+import type { PodcastResolution } from '@lar/connector-podcasts';
+import { AskBar } from './AskBar';
+import { useAskLar } from '../lib/useAskLar';
 
 export function PodcastsBlock() {
-  const [text, setText] = useState('find the Lex Fridman podcast');
-  const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState<PodcastResolution | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [listening, setListening] = useState(false);
+  const ask = useAskLar<PodcastResolution>({
+    kind: 'podcast',
+    forceDomain: 'podcast',
+    initial: 'find the Lex Fridman podcast',
+  });
   const [copied, setCopied] = useState(false);
-  // Race / leak guards: abort prior request when a new one starts and
-  // on unmount; clear the "Copied ✓" reset-timer on unmount.
-  const inflightRef = useRef<AbortController | null>(null);
+  // Clear the "Copied ✓" reset-timer on unmount (the ask-bar request is aborted
+  // by useAskLar; this timer is block-local so it needs its own cleanup).
   const copyResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     return () => {
-      inflightRef.current?.abort();
       if (copyResetRef.current) clearTimeout(copyResetRef.current);
     };
   }, []);
-
-  async function run(transcript: string) {
-    if (!transcript.trim()) return;
-    inflightRef.current?.abort();
-    const ctrl = new AbortController();
-    inflightRef.current = ctrl;
-    setLoading(true);
-    setMsg(null);
-    setRes(null);
-    try {
-      const r = await fetch('/api/lar', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ transcript, forceDomain: 'podcast' }),
-        signal: ctrl.signal,
-      });
-      const d = await r.json();
-      if (ctrl.signal.aborted) return;
-      if (!d.ok) throw new Error(d.error ?? 'request failed');
-      if (d.kind === 'podcast' && d.resolution) {
-        setRes(d.resolution);
-      } else {
-        setMsg(d.note ?? 'Nothing to route.');
-      }
-    } catch (e) {
-      if ((e as { name?: string }).name === 'AbortError') return;
-      setMsg((e as Error).message);
-    } finally {
-      if (inflightRef.current === ctrl) {
-        inflightRef.current = null;
-        setLoading(false);
-      }
-    }
-  }
-
-  function mic() {
-    const w = window as unknown as {
-      SpeechRecognition?: new () => SpeechRecognitionLike;
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-    };
-    const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
-    if (!SR) {
-      setMsg('Voice capture is not supported in this browser — type your request instead.');
-      return;
-    }
-    const rec = new SR();
-    rec.lang = 'en-US';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    setListening(true);
-    rec.onresult = (e) => {
-      const t = e.results[0]?.[0]?.transcript ?? '';
-      setText(t);
-      void run(t);
-    };
-    rec.onerror = () => setMsg('Mic error — try typing.');
-    rec.onend = () => setListening(false);
-    rec.start();
-  }
 
   async function copyRss(feedUrl: string) {
     try {
@@ -103,10 +34,11 @@ export function PodcastsBlock() {
         setCopied(false);
       }, 2000);
     } catch {
-      setMsg('Could not copy — please copy the URL manually.');
+      ask.setMsg('Could not copy — please copy the URL manually.');
     }
   }
 
+  const res = ask.res;
   const feedUrl = res?.links.rss ?? res?.feedUrl;
   const appleUrl = res?.links.apple_podcasts ?? res?.applePodcastsUrl;
 
@@ -123,25 +55,17 @@ export function PodcastsBlock() {
         reader — it never streams audio itself.
       </p>
 
-      <div className="ask">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') void run(text);
-          }}
-          placeholder="find the Lex Fridman podcast"
-          aria-label="Ask Lar"
-        />
-        <button className={`mic ${listening ? 'on' : ''}`} onClick={mic} aria-label="Speak to Lar">
-          🎤
-        </button>
-        <button className="go" onClick={() => void run(text)} disabled={loading}>
-          {loading ? '…' : 'Ask Lar'}
-        </button>
-      </div>
+      <AskBar
+        value={ask.text}
+        onChange={ask.setText}
+        onSubmit={() => ask.run(ask.text)}
+        onMic={ask.mic}
+        loading={ask.loading}
+        listening={ask.listening}
+        placeholder="find the Lex Fridman podcast"
+      />
 
-      {msg && <div className="err">{msg}</div>}
+      {ask.msg && <div className="err">{ask.msg}</div>}
 
       {res && (
         <div className="np card">
@@ -202,15 +126,4 @@ export function PodcastsBlock() {
       )}
     </div>
   );
-}
-
-/** Minimal Web Speech typings (avoid a lib dependency). */
-interface SpeechRecognitionLike {
-  lang: string;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start(): void;
-  onresult: (e: { results: Array<Array<{ transcript: string }>> }) => void;
-  onerror: () => void;
-  onend: () => void;
 }
