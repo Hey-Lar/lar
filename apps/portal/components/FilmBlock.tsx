@@ -1,25 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-interface FilmResolution {
-  title: string;
-  description?: string;
-  thumbnailUrl?: string;
-  wikipediaUrl: string;
-  links: Partial<
-    Record<
-      | 'justwatch'
-      | 'netflix'
-      | 'prime_video'
-      | 'disney_plus'
-      | 'apple_tv'
-      | 'youtube'
-      | 'letterboxd',
-      string
-    >
-  >;
-}
+// Use the connector's exported (total) resolution type so the contract — every
+// watch link is always present — propagates end-to-end and the primary
+// "Where to watch" CTA can never silently disappear behind a Partial.
+import type { FilmResolution } from '@lar/connector-filmtv';
 
 export function FilmBlock() {
   const [text, setText] = useState('Dune');
