@@ -11,6 +11,7 @@ import { WealthBlock } from './WealthBlock';
 import { MarketsBlock } from './MarketsBlock';
 import { OverviewBlock } from './OverviewBlock';
 import { ThemeToggle } from './ThemeToggle';
+import { SettingsDrawer } from './SettingsDrawer';
 import { VaultPanel } from './VaultPanel';
 import { HealthBlock } from './HealthBlock';
 import { WeatherBlock } from './WeatherBlock';
@@ -50,6 +51,7 @@ type TabKey =
 
 export function Dashboard() {
   const [tab, setTab] = useState<TabKey>('home');
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <div className="app">
@@ -72,9 +74,24 @@ export function Dashboard() {
             <span>{t.label}</span>
           </button>
         ))}
+        <button
+          type="button"
+          className="theme-btn"
+          onClick={() => setSettingsOpen(true)}
+          aria-label="Appearance settings"
+          aria-haspopup="dialog"
+          aria-expanded={settingsOpen}
+          title="Appearance settings"
+        >
+          <span aria-hidden>
+            <Icon name="settings" size={18} />
+          </span>
+        </button>
         <ThemeToggle />
         <div className="avatar">AM</div>
       </nav>
+
+      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       <main className="stage glass">
         <div key={tab} className="stage-anim">
