@@ -370,8 +370,50 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     "where can I watch Dune" → Film & TV/JustWatch. 6 no-forceDomain kinds
     curl-verified. This is the "say what you want, Lar routes you outward" promise
     working end-to-end, keyless.
+
+  ### 🎨 DESIGN OVERHAUL (DESIGN.md-driven — user direction, ITERATING)
+
+  A from-research design pass. Guidelines in **`docs/DESIGN.md`** (authored from a
+  4-stream research sweep: glassmorphism · iconography · motion · ambient
+  backgrounds). **We iterate on DESIGN.md + redesign elements toward perfection.**
+  HARD RULE captured: **NEVER use emojis** — everything is the `@lar/ui` `<Icon>`.
+  - **Custom `<Icon>` system ✅ MERGED (`91911e6`)** — `@lar/ui` ships
+    `packages/ui/src/icons/{Icon.tsx,registry.ts}` (24×24, 1.75 stroke,
+    `currentColor`, a11y). 43 glyphs adapted from Lucide (ISC — notice in
+    `packages/ui/LICENSES.md`). **Every emoji replaced** app-wide (rail + brand
+    hearth-flame mark, tiles, ask-bar mic, weather `wx-*`, arrows, theme toggle,
+    vault, marketing). `wmo.ts` returns semantic `wx-*` names. Browser-verified.
+  - **Liquid-glass pass ✅ MERGED (`6083935`)** — elevation token scale in
+    `themes.ts` (`--glass-strong/-tint/-stroke/-highlight/-scrim`, `--shadow-1/2/3`;
+    `--elev-1/2/3`). `.glass` recipe = specular highlight + hairline + layered
+    float shadow + `.glass--clear/--frost` + `prefers-reduced-transparency`.
+    Depth: rail+ask-bar+tiles frosted & FLOAT (hover-lift); stage clear so the
+    scene reads through. Browser-verified: dark theme = true translucent panes.
+  - **Ambient scene backgrounds ✅ MERGED (`20f8af8`)** — replaced the flat warm
+    mesh with 6 privacy-safe CSS/SVG scenes (`calm·hearth·dawn-skyline·deep-night·
+aurora·warm-mesh`) via `SceneBackground.tsx` + `[data-scene]` CSS + the
+    `appearance.ts` model + pre-paint boot. **`DEFAULT_THEME` → `dark`, default
+    scene `hearth`** (dark hearth-room is the new default — FIXES the "orange
+    glowing cursor": the harsh top-left orange blob is gone, replaced by a subtle
+    warm fire-glow bottom-center). Browser-verified gorgeous.
+  - **Fluid motion ✅ MERGED (`3d4fddf`)** — CSS-only (0 deps, reuses `--ease`):
+    keyed `stage-anim` remount → tab cross-enter; `--i`-staggered Overview tiles;
+    `result-in` for the Hey Lar card; `prefers-reduced-motion` fade-only.
+  - **Appearance settings drawer ✅ MERGED (`<this>`)** — rail settings button →
+    glass drawer: theme swatches · 6-scene picker · scene-intensity + frost(glass-
+    blur) sliders · motion toggle. Live + persisted (`lar-appearance`; theme→
+    `lar-theme`); the frost slider scales `--glass-blur` through the elevations.
+    Browser-verified: opens, scene-swap/sliders apply live.
+  - _Design polish backlog (next iteration):_ scene-picker thumbnails are samey
+    (make each scene's preview more distinct); the **aurora** scene reads warm-
+    heavy (rebalance teal/indigo ribbons); the hero **weather** icon is muted-gray
+    (consider `--hearth`); tune **ember/light** tile transparency (they read
+    frosted-white on light — fine, but could be glassier); optional `hearth` SVG
+    mantel silhouette; the dev **cold-start tab-click race** (first click after a
+    cold `next dev` start can miss — prod/`next start` unaffected).
+
   - **NEXT (suggested), pick one:** 0. **Enrich the global bar:** show richer inline results (cover art / chips,
-    not just the primary link), wire its 🎤 mic, route low-confidence parses to
+    not just the primary link), wire its mic, route low-confidence parses to
     the Claude API (`LAR_ANTHROPIC_KEY` gate) for fuzzy intent, and let the
     target tab open pre-filled with the query (lift resolution state or pass an
     initial-query prop).
