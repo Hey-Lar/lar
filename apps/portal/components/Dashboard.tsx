@@ -10,6 +10,7 @@ import { MarketsBlock } from './MarketsBlock';
 import { OverviewBlock } from './OverviewBlock';
 import { ThemeToggle } from './ThemeToggle';
 import { VaultPanel } from './VaultPanel';
+import { HealthBlock } from './HealthBlock';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
@@ -66,39 +67,6 @@ export function Dashboard() {
           {tab === 'health' && <HealthBlock />}
           {tab === 'connect' && <VaultPanel />}
         </main>
-      </div>
-    </div>
-  );
-}
-
-function HealthBlock() {
-  return (
-    <div className="block-pad">
-      <div className="head">
-        <div>
-          <div className="eyebrow">Local-first · private</div>
-          <h1 className="h1">Health</h1>
-        </div>
-      </div>
-      <p className="lead">
-        Steps, sleep and rings from Health Connect / wearables — kept on-device, never sold. A later
-        block; the data stays yours.
-      </p>
-      <div className="tiles">
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-          <div className="ring" style={{ ['--p' as string]: '68%' }}>
-            <i>68%</i>
-          </div>
-          <div>
-            <div className="eyebrow">Move</div>
-            <div className="note">5,400 / 8,000 steps</div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="eyebrow">Sleep</div>
-          <div className="tile-big">7h 12m</div>
-          <div className="note">last night</div>
-        </div>
       </div>
     </div>
   );
