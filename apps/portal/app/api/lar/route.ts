@@ -5,6 +5,7 @@ import { resolvePodcast } from '@lar/connector-podcasts';
 import { resolveBook } from '@lar/connector-books';
 import { resolveFilm } from '@lar/connector-filmtv';
 import { resolvePlace } from '@lar/connector-places';
+import { resolveWord } from '@lar/connector-dictionary';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 import { authorize } from '../../../lib/authz';
 
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as {
       transcript?: string;
       platformPriority?: Platform[];
-      forceDomain?: 'music' | 'podcast' | 'book' | 'film' | 'place';
+      forceDomain?: 'music' | 'podcast' | 'book' | 'film' | 'place' | 'define';
     };
     const transcript = body.transcript?.trim();
     if (!transcript) {
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
         routed.domain === 'podcast' ||
         routed.domain === 'book' ||
         routed.domain === 'film' ||
-        routed.domain === 'place') &&
+        routed.domain === 'place' ||
+        routed.domain === 'define') &&
       (routed.intent === 'play' ||
         routed.intent === 'open' ||
         routed.intent === 'recommend' ||
@@ -82,6 +84,13 @@ export async function POST(req: Request) {
       // Bright-line: links only, Lar never stores or transmits the user's location.
       const resolution = await resolvePlace(routed);
       return NextResponse.json({ ok: true, kind: 'place', action: routed, resolution });
+    }
+
+    if (routed.domain === 'define') {
+      // dictionaryapi.dev fetch runs server-side only — browser calls same-origin /api/lar.
+      // Bright-line: read-only, keyless open-dictionary data; links only.
+      const resolution = await resolveWord(routed);
+      return NextResponse.json({ ok: true, kind: 'define', action: routed, resolution });
     }
 
     // Default: music routing (back-compat — resolution field always present).

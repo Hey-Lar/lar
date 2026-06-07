@@ -8,6 +8,7 @@ const nextConfig = {
     '@lar/shared',
     '@lar/ui',
     '@lar/connector-books',
+    '@lar/connector-dictionary',
     '@lar/connector-filmtv',
     '@lar/connector-music',
     '@lar/connector-places',
