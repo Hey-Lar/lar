@@ -140,6 +140,19 @@ body {
   height: 46vh;
   display: none;
 }
+/*
+ * living-room scene canvas — the stylized 3D room (SVG), pinned to the bottom
+ * edge and occupying the lower ~78vh so the furniture sits in the lower half
+ * while the wall + window fill the calm upper-center behind the tiles. Hidden
+ * by default; revealed only on [data-scene='living-room'].
+ */
+.scene-living {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 78vh;
+  display: none;
+}
 .grain {
   position: absolute;
   inset: 0;
@@ -174,12 +187,40 @@ body {
  * below reveals its own layers and inherits the --scene-intensity opacity.
  */
 .glow-hearth,
+.scene-living,
 .scene-room,
 .scene-svg,
 .aurora-ribbon,
 .scene .blob {
   display: none;
   opacity: var(--scene-intensity, 0.6);
+}
+/*
+ * The room is a literal scene, not a glow — at the default 0.6 intensity it
+ * should read clearly, not at 60% opacity. Lift its floor so it stays present
+ * while the intensity slider still nudges it (0 → ~0.55, 100 → 1).
+ */
+[data-scene='living-room'] .scene-living {
+  opacity: calc(0.55 + 0.45 * var(--scene-intensity, 0.6));
+}
+
+/*
+ * ── living-room (default) — the stylized 3D room behind very-clear glass ────
+ * The .scene-root carries a soft sky/daylight glow from the window side (upper-
+ * right, matching the SVG window position) over --body; the .scene-living SVG
+ * paints the room itself. The scrim is dialled LIGHTER here than the other
+ * scenes so the room reads clearly through the clear tiles, while the per-card
+ * text scrims still guarantee glyph contrast.
+ */
+[data-scene='living-room'] .scene-root {
+  background-color: var(--body);
+  background-image: radial-gradient(60% 40% at 78% 8%, var(--hearth-glow) 0, transparent 60%);
+}
+[data-scene='living-room'] .scene-living {
+  display: block;
+}
+[data-scene='living-room'] .scene-scrim {
+  opacity: calc(0.32 + 0.3 * (1 - var(--scene-intensity, 0.6)));
 }
 
 /* ── calm — 4 corner-anchored soft radial blobs over --body ──────────────── */
