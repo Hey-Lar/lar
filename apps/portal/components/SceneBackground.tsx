@@ -194,8 +194,8 @@ export function SceneBackground() {
             fill="var(--room-shadow)"
             filter="url(#lr-blur)"
           />
-          {/* fronds */}
-          <g fill="var(--teal, #3aa6a0)" opacity="0.8">
+          {/* fronds — muted sage so the plant sits in the warm room, not over it */}
+          <g fill="#7e8c66" opacity="0.5">
             <path d="M470 520 C432 506 410 452 422 396 C456 414 478 458 472 516 Z" />
             <path d="M470 520 C508 506 530 452 518 396 C484 414 462 458 468 516 Z" />
             <path d="M470 524 C440 520 412 488 410 446 C444 456 466 484 470 522 Z" />
@@ -419,6 +419,12 @@ export function SceneBackground() {
       {/* warm-mesh — today's two corner blobs, preserved as a named scene */}
       <div className="blob m1" />
       <div className="blob m2" />
+
+      {/* Optional photoreal layer for the living-room scene: if a bundled image
+          exists at /local/living-room.jpg it covers the stylized SVG room; if
+          absent the CSS background simply doesn't render (no network fetch),
+          so the SVG room remains the fallback. Privacy: local, git-ignored. */}
+      <div className="scene-photo" />
 
       <div className="scene-scrim" />
       <div className="grain" />

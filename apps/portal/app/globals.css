@@ -222,6 +222,24 @@ body {
 [data-scene='living-room'] .scene-scrim {
   opacity: calc(0.32 + 0.3 * (1 - var(--scene-intensity, 0.6)));
 }
+/*
+ * Optional photoreal layer: paints ABOVE the stylized SVG room, BELOW the scrim.
+ * Drop an AI-generated image at `apps/portal/public/local/living-room.jpg`
+ * (served at /local/living-room.jpg) and it becomes the real background. If the
+ * file is absent the background-image simply doesn't render (CSS makes no error,
+ * no broken-image), so the SVG room remains the fallback. Local + git-ignored.
+ */
+.scene-photo {
+  display: none;
+}
+[data-scene='living-room'] .scene-photo {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background-image: url('/local/living-room.jpg');
+  background-size: cover;
+  background-position: center 38%;
+}
 
 /* ── calm — 4 corner-anchored soft radial blobs over --body ──────────────── */
 [data-scene='calm'] .scene-root {
