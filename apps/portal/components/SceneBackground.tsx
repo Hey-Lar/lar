@@ -55,45 +55,52 @@ export function SceneBackground() {
           {/* wood floor — receding plane: lighter at the far edge, warm + deep near */}
           <linearGradient id="lr-floor" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="var(--room-floor-hi)" />
-            <stop offset="1" stopColor="var(--room-floor)" />
+            <stop offset="0.5" stopColor="var(--room-floor)" />
+            <stop offset="1" stopColor="var(--room-shadow)" />
           </linearGradient>
           {/* warm pool of daylight spilling onto the floor near the window */}
           <radialGradient id="lr-floorglow" cx="0.72" cy="0.28" r="0.6">
             <stop offset="0" stopColor="var(--hearth-glow)" />
             <stop offset="1" stopColor="var(--hearth-glow)" stopOpacity="0" />
           </radialGradient>
-          {/* daylight in the glazing — warm top → cooler bottom, bright */}
-          <linearGradient id="lr-sky" x1="0" y1="0" x2="0.35" y2="1">
+          {/* daylight in the glazing — clear warm top → cooler bottom, brighter */}
+          <linearGradient id="lr-sky" x1="0" y1="0" x2="0.3" y2="1">
             <stop offset="0" stopColor="var(--room-window)" />
-            <stop offset="0.55" stopColor="var(--hearth-lo)" stopOpacity="0.55" />
-            <stop offset="1" stopColor="var(--room-window)" stopOpacity="0.85" />
+            <stop offset="0.32" stopColor="var(--hearth-lo)" stopOpacity="0.4" />
+            <stop offset="0.62" stopColor="var(--teal)" stopOpacity="0.16" />
+            <stop offset="1" stopColor="var(--room-window)" stopOpacity="0.9" />
           </linearGradient>
-          {/* sofa body — lit on top/window edge, darker at the base */}
-          <linearGradient id="lr-sofa" x1="0.2" y1="0" x2="0.8" y2="1">
+          {/* sofa body — strongly lit on top/window edge, deep at the base.
+              More stops + a wider lit→dark range so the volume reads as solid. */}
+          <linearGradient id="lr-sofa" x1="0.2" y1="0" x2="0.85" y2="1.05">
             <stop offset="0" stopColor="var(--room-furniture-hi)" />
-            <stop offset="1" stopColor="var(--room-furniture)" />
+            <stop offset="0.4" stopColor="var(--room-furniture)" />
+            <stop offset="1" stopColor="var(--room-shadow)" />
           </linearGradient>
-          {/* cushion — soft top-lit rounded volume */}
-          <linearGradient id="lr-cushion" x1="0" y1="0" x2="0" y2="1">
+          {/* cushion — top-lit rounded volume, crisper falloff to a shaded base */}
+          <linearGradient id="lr-cushion" x1="0" y1="0" x2="0.18" y2="1">
             <stop offset="0" stopColor="var(--room-furniture-hi)" />
-            <stop offset="1" stopColor="var(--room-furniture)" />
+            <stop offset="0.42" stopColor="var(--room-furniture)" />
+            <stop offset="1" stopColor="var(--room-shadow)" />
           </linearGradient>
-          {/* table top — thin lit slab */}
-          <linearGradient id="lr-table" x1="0" y1="0" x2="0.4" y2="1">
+          {/* table top — thin lit slab, crisp lit edge → deep front lip */}
+          <linearGradient id="lr-table" x1="0" y1="0" x2="0.35" y2="1">
             <stop offset="0" stopColor="var(--room-floor-hi)" />
-            <stop offset="1" stopColor="var(--room-floor)" />
+            <stop offset="0.5" stopColor="var(--room-floor)" />
+            <stop offset="1" stopColor="var(--room-shadow)" />
           </linearGradient>
           {/* lamp shade glow */}
           <radialGradient id="lr-lamp" cx="0.5" cy="0.4" r="0.7">
             <stop offset="0" stopColor="var(--hearth-lo)" />
             <stop offset="1" stopColor="var(--hearth-lo)" stopOpacity="0" />
           </radialGradient>
-          {/* soft blur for contact shadows */}
+          {/* tight contact shadow — crisper now (less blur) so furniture grounds */}
           <filter id="lr-blur" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="11" />
+            <feGaussianBlur stdDeviation="7" />
           </filter>
+          {/* soft ambient shadow */}
           <filter id="lr-blur-lg" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="26" />
+            <feGaussianBlur stdDeviation="22" />
           </filter>
           {/* center-calm vignette: clear middle, gently darkened edges */}
           <radialGradient id="lr-vignette" cx="0.5" cy="0.42" r="0.75">
@@ -148,30 +155,71 @@ export function SceneBackground() {
           />
           {/* glazing (daylight) */}
           <rect x="990" y="92" width="302" height="254" rx="8" fill="url(#lr-sky)" />
+          {/* bright sky-glow blooming from the top of the glazing */}
+          <rect
+            x="990"
+            y="92"
+            width="302"
+            height="120"
+            rx="8"
+            fill="url(#lr-floorglow)"
+            opacity="0.5"
+          />
           {/* muntins — a simple cross */}
           <rect x="1135" y="92" width="12" height="254" fill="var(--room-furniture-hi)" />
           <rect x="990" y="212" width="302" height="12" fill="var(--room-furniture-hi)" />
           {/* sill slab */}
           <rect x="960" y="364" width="362" height="14" rx="5" fill="var(--room-furniture-hi)" />
+          {/* bright sill highlight — daylight catching the front lip */}
+          <rect
+            x="964"
+            y="364"
+            width="354"
+            height="5"
+            rx="3"
+            fill="var(--room-window)"
+            opacity="0.9"
+          />
         </g>
 
-        {/* soft light beam spilling from the window into the room (down-left) */}
+        {/* soft light beam spilling from the window into the room (down-left) —
+            a touch more visible but still soft */}
         <polygon
           points="996,118 1286,118 1180,470 612,470"
           fill="url(#lr-sky)"
-          opacity="0.16"
+          opacity="0.22"
           filter="url(#lr-blur-lg)"
         />
 
         {/* ── floor — perspective plane (trapezoid, wider at the bottom) ─ */}
         <polygon points="0,470 1440,470 1440,720 0,720" fill="url(#lr-floor)" />
-        {/* baseboard / horizon line where wall meets floor */}
-        <rect x="0" y="464" width="1440" height="10" fill="var(--room-shadow)" opacity="0.5" />
+        {/* faint perspective floor-board lines fanning toward the viewer so the
+            floor reads as a real receding wood surface (calm, low-opacity) */}
+        <g stroke="var(--room-shadow)" strokeWidth="2" opacity="0.16">
+          <line x1="250" y1="474" x2="-120" y2="720" />
+          <line x1="520" y1="474" x2="360" y2="720" />
+          <line x1="760" y1="474" x2="760" y2="720" />
+          <line x1="1000" y1="474" x2="1190" y2="720" />
+          <line x1="1240" y1="474" x2="1620" y2="720" />
+        </g>
+        {/* baseboard / ambient-occlusion line where wall meets floor (crisper) */}
+        <rect x="0" y="466" width="1440" height="6" fill="var(--room-shadow)" opacity="0.85" />
+        <rect x="0" y="472" width="1440" height="12" fill="var(--room-shadow)" opacity="0.4" />
         {/* warm daylight pool on the floor near the window */}
         <ellipse cx="1040" cy="560" rx="430" ry="150" fill="url(#lr-floorglow)" />
 
-        {/* rug — low-contrast soft ellipse on the floor */}
-        <ellipse cx="700" cy="624" rx="500" ry="86" fill="var(--room-floor-hi)" opacity="0.4" />
+        {/* rug — soft ellipse with a concentric border so it reads as a surface */}
+        <ellipse cx="700" cy="624" rx="500" ry="86" fill="var(--room-floor-hi)" opacity="0.42" />
+        <ellipse
+          cx="700"
+          cy="624"
+          rx="466"
+          ry="78"
+          fill="none"
+          stroke="var(--room-window)"
+          strokeWidth="3"
+          opacity="0.35"
+        />
         <ellipse
           cx="700"
           cy="624"
@@ -180,18 +228,37 @@ export function SceneBackground() {
           fill="none"
           stroke="var(--room-shadow)"
           strokeWidth="3"
-          opacity="0.35"
+          opacity="0.38"
+        />
+        <ellipse
+          cx="700"
+          cy="624"
+          rx="396"
+          ry="56"
+          fill="none"
+          stroke="var(--room-shadow)"
+          strokeWidth="2"
+          opacity="0.22"
         />
 
         {/* ── potted plant — left of the window ─────────────────────── */}
         <g>
-          {/* contact shadow */}
+          {/* contact shadow — soft + a tight darker core for grounding */}
           <ellipse
             cx="470"
-            cy="588"
-            rx="78"
-            ry="20"
+            cy="590"
+            rx="80"
+            ry="18"
             fill="var(--room-shadow)"
+            filter="url(#lr-blur-lg)"
+          />
+          <ellipse
+            cx="470"
+            cy="589"
+            rx="56"
+            ry="11"
+            fill="var(--room-shadow)"
+            opacity="0.7"
             filter="url(#lr-blur)"
           />
           {/* fronds — muted sage so the plant sits in the warm room, not over it */}
@@ -209,53 +276,105 @@ export function SceneBackground() {
 
         {/* ── floor lamp — left side, warm glow ─────────────────────── */}
         <g>
+          {/* soft + tight grounding shadow */}
+          <ellipse
+            cx="150"
+            cy="602"
+            rx="60"
+            ry="14"
+            fill="var(--room-shadow)"
+            filter="url(#lr-blur-lg)"
+          />
           <ellipse
             cx="150"
             cy="600"
-            rx="58"
-            ry="16"
+            rx="40"
+            ry="8"
             fill="var(--room-shadow)"
+            opacity="0.7"
             filter="url(#lr-blur)"
           />
           {/* warm bloom around the shade */}
-          <circle cx="150" cy="300" r="120" fill="url(#lr-lamp)" opacity="0.7" />
+          <circle cx="150" cy="300" r="124" fill="url(#lr-lamp)" opacity="0.8" />
           {/* pole + base */}
           <rect x="145" y="318" width="10" height="270" rx="5" fill="var(--room-furniture)" />
           <rect x="118" y="584" width="64" height="12" rx="5" fill="var(--room-furniture)" />
-          {/* drum shade, warm-lit */}
-          <path d="M112 318 h76 l-14 -56 h-48 Z" fill="var(--hearth-lo)" opacity="0.85" />
+          {/* drum shade, warm-lit, with a brighter front-lit edge */}
+          <path d="M112 318 h76 l-14 -56 h-48 Z" fill="var(--hearth-lo)" opacity="0.9" />
+          <path d="M118 312 h64 l-4 -16 h-56 Z" fill="var(--room-window)" opacity="0.5" />
         </g>
 
         {/* ── sofa — 3-seat, centered-lowish, volume-shaded ─────────── */}
         <g>
-          {/* big soft contact shadow grounding the whole sofa */}
+          {/* big soft ambient shadow grounding the whole sofa */}
           <ellipse
             cx="700"
-            cy="660"
-            rx="370"
-            ry="46"
+            cy="662"
+            rx="372"
+            ry="44"
             fill="var(--room-shadow)"
             filter="url(#lr-blur-lg)"
+          />
+          {/* tight, darker contact shadow right under the base for crisp grounding */}
+          <ellipse
+            cx="700"
+            cy="656"
+            rx="312"
+            ry="22"
+            fill="var(--room-shadow)"
+            opacity="0.7"
+            filter="url(#lr-blur)"
           />
 
           {/* back rest (sits behind cushions) */}
           <rect x="452" y="470" width="496" height="120" rx="26" fill="url(#lr-sofa)" />
           {/* base / seat block */}
           <rect x="452" y="560" width="496" height="98" rx="20" fill="url(#lr-sofa)" />
+          {/* AO seam where the back rest meets the seat block */}
+          <rect
+            x="470"
+            y="566"
+            width="460"
+            height="6"
+            rx="3"
+            fill="var(--room-shadow)"
+            opacity="0.4"
+          />
 
           {/* three back cushions */}
           <rect x="476" y="486" width="148" height="96" rx="22" fill="url(#lr-cushion)" />
           <rect x="630" y="486" width="148" height="96" rx="22" fill="url(#lr-cushion)" />
           <rect x="784" y="486" width="148" height="96" rx="22" fill="url(#lr-cushion)" />
+          {/* crisp top-lit edge along each back cushion */}
+          <g fill="var(--room-furniture-hi)" opacity="0.7">
+            <rect x="492" y="492" width="116" height="9" rx="5" />
+            <rect x="646" y="492" width="116" height="9" rx="5" />
+            <rect x="800" y="492" width="116" height="9" rx="5" />
+          </g>
+          {/* AO lines in the gaps between back cushions (definition) */}
+          <g stroke="var(--room-shadow)" strokeWidth="3" opacity="0.5" strokeLinecap="round">
+            <line x1="627" y1="494" x2="627" y2="576" />
+            <line x1="781" y1="494" x2="781" y2="576" />
+          </g>
 
           {/* three seat cushions */}
           <rect x="476" y="568" width="148" height="58" rx="18" fill="url(#lr-cushion)" />
           <rect x="630" y="568" width="148" height="58" rx="18" fill="url(#lr-cushion)" />
           <rect x="784" y="568" width="148" height="58" rx="18" fill="url(#lr-cushion)" />
+          {/* AO lines between seat cushions */}
+          <g stroke="var(--room-shadow)" strokeWidth="3" opacity="0.45" strokeLinecap="round">
+            <line x1="627" y1="574" x2="627" y2="620" />
+            <line x1="781" y1="574" x2="781" y2="620" />
+          </g>
 
           {/* arms — rounded, lit on top (drawn last so they overlap cushions) */}
           <rect x="430" y="500" width="64" height="158" rx="24" fill="url(#lr-sofa)" />
           <rect x="906" y="500" width="64" height="158" rx="24" fill="url(#lr-sofa)" />
+          {/* AO where each arm meets the cushions */}
+          <g stroke="var(--room-shadow)" strokeWidth="4" opacity="0.4" strokeLinecap="round">
+            <line x1="494" y1="512" x2="494" y2="640" />
+            <line x1="906" y1="512" x2="906" y2="640" />
+          </g>
           {/* arm top highlights */}
           <rect
             x="436"
@@ -264,7 +383,7 @@ export function SceneBackground() {
             height="20"
             rx="10"
             fill="var(--room-furniture-hi)"
-            opacity="0.6"
+            opacity="0.75"
           />
           <rect
             x="912"
@@ -273,7 +392,7 @@ export function SceneBackground() {
             height="20"
             rx="10"
             fill="var(--room-furniture-hi)"
-            opacity="0.6"
+            opacity="0.75"
           />
           {/* short legs */}
           <rect x="470" y="654" width="16" height="20" rx="4" fill="var(--room-shadow)" />
@@ -282,12 +401,22 @@ export function SceneBackground() {
 
         {/* ── coffee table — low rounded rect in front of the sofa ──── */}
         <g>
+          {/* soft ambient + tight contact shadow for crisp grounding */}
+          <ellipse
+            cx="700"
+            cy="702"
+            rx="184"
+            ry="22"
+            fill="var(--room-shadow)"
+            filter="url(#lr-blur-lg)"
+          />
           <ellipse
             cx="700"
             cy="700"
-            rx="180"
-            ry="24"
+            rx="150"
+            ry="13"
             fill="var(--room-shadow)"
+            opacity="0.7"
             filter="url(#lr-blur)"
           />
           {/* legs */}
@@ -295,6 +424,7 @@ export function SceneBackground() {
           <rect x="802" y="678" width="12" height="30" rx="4" fill="var(--room-floor)" />
           {/* top slab */}
           <rect x="560" y="664" width="280" height="26" rx="13" fill="url(#lr-table)" />
+          {/* bright lit top edge */}
           <rect
             x="560"
             y="664"
@@ -302,7 +432,17 @@ export function SceneBackground() {
             height="9"
             rx="13"
             fill="var(--room-floor-hi)"
-            opacity="0.7"
+            opacity="0.85"
+          />
+          {/* dark front lip so the slab reads as a thick surface */}
+          <rect
+            x="566"
+            y="684"
+            width="268"
+            height="5"
+            rx="3"
+            fill="var(--room-shadow)"
+            opacity="0.5"
           />
         </g>
 
