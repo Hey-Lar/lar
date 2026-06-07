@@ -11,6 +11,31 @@
 :root {
   --radius: 30px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /*
+   * Liquid-glass elevation filters (theme-invariant). Elevation = blur + alpha
+   * + shadow together; three rungs only, higher = more blur + saturation.
+   *   elev-1 resting tiles / chips · elev-2 rail + stage chrome · elev-3 ask bar.
+   */
+  --elev-1: blur(12px) saturate(150%);
+  --elev-2: blur(20px) saturate(165%);
+  --elev-3: blur(32px) saturate(180%);
+
+  /* Numeral legibility over very transparent glass (overridden per theme). */
+  --num-shadow: 0 1px 1.5px rgba(255, 255, 255, 0.55);
+}
+
+/*
+ * Big numerals sit over busy glass — protect single-line glyph contrast with a
+ * text-shadow (DESIGN.md §3): dark gets a dark drop, the light themes a soft
+ * white lift. Driven per-theme so the .gradnum / .ov-clock rules stay simple.
+ */
+[data-theme='dark'] {
+  --num-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+[data-theme='ember'],
+[data-theme='light'] {
+  --num-shadow: 0 1px 1.5px rgba(255, 255, 255, 0.55);
 }
 
 /*
@@ -123,23 +148,69 @@ body {
   height: 100vh;
   padding: 22px;
 }
+/*
+ * Liquid-glass panel recipe (DESIGN.md §3): a material, not a fill. Three
+ * optical layers — the 1px specular highlight (inner top edge), the hairline
+ * stroke (so the pane doesn't read as a hole), and the layered float shadow.
+ * Default = elev-2 (rail / stage chrome). `--clear` drops to elev-1 for the
+ * quiet backplate; `--frost` lifts to elev-3 for the frostiest surfaces.
+ */
 .glass {
-  background: var(--glass);
-  backdrop-filter: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: blur(26px) saturate(170%);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
   position: relative;
+  background: var(--glass);
+  border: 1px solid var(--glass-stroke);
+  border-radius: var(--radius);
+  backdrop-filter: var(--elev-2);
+  -webkit-backdrop-filter: var(--elev-2);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-2);
+}
+.glass--clear {
+  background: var(--glass);
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+}
+.glass--frost {
+  background: var(--glass-strong);
+  backdrop-filter: var(--elev-3);
+  -webkit-backdrop-filter: var(--elev-3);
 }
 
-/* rail */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass--clear,
+  .glass--frost {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* rail — frosted nav layer (elev-2 via .glass); brighter-at-top right hairline */
 .rail {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 18px 0;
   gap: 6px;
+}
+.rail::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  background: linear-gradient(
+    to bottom,
+    var(--glass-highlight),
+    var(--glass-stroke) 38%,
+    transparent 100%
+  );
 }
 .mark {
   width: 50px;
@@ -211,10 +282,31 @@ body {
   font-size: 14px;
 }
 
-/* stage */
+/*
+ * stage — the QUIET, CLEAR backplate. Even though it carries `.glass`, it must
+ * NOT out-frost the tiles: drop to elev-1 + a very low fill so the ambient
+ * background reads through it, letting the frosted tiles read as floating ABOVE
+ * it. (Avoids muddy glass-on-glass.) The specular highlight + hairline edge are
+ * kept (inherited from .glass) so the pane still has an edge.
+ */
 .stage {
   overflow: auto;
   border-radius: 36px;
+}
+.stage.glass {
+  background: var(--glass);
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-1);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .stage.glass {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 .block-pad {
   padding: 34px 38px;
@@ -247,11 +339,33 @@ body {
   max-width: 60ch;
   margin: 0 0 22px;
 }
+/*
+ * card — a floating frosted object above the clear stage. Glass-recipe look
+ * (highlight + hairline + shadow-1), pushed transparent. Text-heavy panels
+ * (.np card) get the frostier --glass-strong fill below.
+ */
 .card {
-  background: var(--glass-2);
-  border: 1px solid var(--stroke);
+  position: relative;
+  background: var(--glass);
+  border: 1px solid var(--glass-stroke);
   border-radius: 26px;
   padding: 22px 24px;
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-1);
+}
+/* result / route panels carry a lot of text → frostier fill for legibility */
+.np.card {
+  background: var(--glass-strong);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 /* ask bar */
@@ -261,20 +375,44 @@ body {
   align-items: center;
   margin-bottom: 18px;
 }
+/*
+ * ask bar — the highest, frostiest surface (elev-3). Must stay legible while
+ * typing: --glass-strong layered over --glass-tint (content-aware floor) + the
+ * specular highlight + shadow-3 float. Focus brightens the highlight and
+ * tightens the --hearth-glow ring.
+ */
 .ask input {
   flex: 1;
   height: 56px;
   padding: 0 20px;
   border-radius: 18px;
-  border: 1px solid var(--stroke);
-  background: var(--glass);
+  border: 1px solid var(--glass-stroke);
+  background: linear-gradient(var(--glass-tint), var(--glass-tint)), var(--glass-strong);
+  backdrop-filter: var(--elev-3);
+  -webkit-backdrop-filter: var(--elev-3);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-3);
   font-size: 16px;
   color: var(--ink);
   outline: none;
+  transition:
+    border-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
 }
 .ask input:focus {
   border-color: var(--hearth);
-  box-shadow: 0 0 0 3px var(--hearth-glow);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    0 0 0 3px var(--hearth-glow),
+    var(--shadow-3);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ask input {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 .mic,
 .go {
@@ -289,9 +427,21 @@ body {
 .mic {
   width: 56px;
   font-size: 20px;
-  background: var(--glass);
-  border: 1px solid var(--stroke);
+  background: linear-gradient(var(--glass-tint), var(--glass-tint)), var(--glass-strong);
+  border: 1px solid var(--glass-stroke);
+  backdrop-filter: var(--elev-3);
+  -webkit-backdrop-filter: var(--elev-3);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-3);
   color: var(--ink);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mic {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 .mic.on {
   background: var(--hearth);
@@ -552,6 +702,12 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /*
+   * The fill is gradient-clipped (transparent text), so text-shadow renders
+   * nothing — use a drop-shadow filter (same --num-shadow token) so the
+   * legibility lift actually shows on the rendered gradient glyphs.
+   */
+  filter: drop-shadow(var(--num-shadow));
 }
 .delta {
   margin-top: 8px;
@@ -683,22 +839,30 @@ body {
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  text-shadow: var(--num-shadow);
 }
 .ov-sec {
   color: var(--teal);
 }
 .ov-net {
   display: block;
+  position: relative;
   width: 100%;
   text-align: left;
   cursor: pointer;
-  border: 1px solid var(--stroke);
-  background: var(--glass-2);
+  border: 1px solid var(--glass-stroke);
+  background: var(--glass);
   border-radius: 26px;
   padding: 22px 24px;
   margin-bottom: 16px;
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-1);
   transition:
     transform 0.18s var(--ease),
+    background-color 0.18s var(--ease),
     box-shadow 0.18s var(--ease);
 }
 .gradnum.sm {
@@ -715,23 +879,34 @@ body {
   }
 }
 .ov-card {
+  position: relative;
   text-align: left;
   cursor: pointer;
-  border: 1px solid var(--stroke);
-  background: var(--glass-2);
+  border: 1px solid var(--glass-stroke);
+  background: var(--glass);
   border-radius: 26px;
   padding: 22px 24px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-1);
   transition:
     transform 0.18s var(--ease),
+    background-color 0.18s var(--ease),
     box-shadow 0.18s var(--ease);
 }
+/* hover lift: stronger fill (blur 12→16px feel) + shadow-1 → shadow-2 + rise */
 .ov-net:hover,
 .ov-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 34px -18px rgba(40, 52, 68, 0.45);
+  transform: translateY(-2px);
+  background: var(--glass-strong);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-2);
 }
 .ov-card.ov-soon {
   cursor: default;
@@ -739,7 +914,18 @@ body {
 }
 .ov-card.ov-soon:hover {
   transform: none;
-  box-shadow: none;
+  background: var(--glass);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--shadow-1);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ov-net,
+  .ov-card {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 .ov-ico {
   font-size: 22px;

@@ -36,9 +36,25 @@ export type Palette = {
   glass: string;
   /** Secondary glass-card fill (inner cards). */
   glass2: string;
+  /** Frostier glass fill for text-heavy / highest surfaces (ask bar, popovers). */
+  glassStrong: string;
+  /** Content-aware tint (a translucent --body) folded into the fill stack. */
+  glassTint: string;
+  /** Glass hairline border (the edge that stops a pane reading as a hole). */
+  glassStroke: string;
+  /** 1px inner-top specular highlight on glass. */
+  glassHighlight: string;
+  /** Soft behind-text scrim to protect glyph contrast on clear panes. */
+  glassScrim: string;
+  /** Elevation shadow rung 1 (resting tiles). */
+  shadow1: string;
+  /** Elevation shadow rung 2 (rail, stage chrome, default glass). */
+  shadow2: string;
+  /** Elevation shadow rung 3 (ask bar, popovers, palette). */
+  shadow3: string;
   /** Glass-card stroke. */
   stroke: string;
-  /** Glass-card drop shadow. */
+  /** Glass-card drop shadow (legacy — superseded by the shadow1/2/3 scale). */
   shadow: string;
   /** Ambient mesh: base linear-gradient on the page. */
   meshBase: string;
@@ -69,6 +85,14 @@ const ember: Palette = {
   body: '#eef1f6',
   glass: 'rgba(255,255,255,0.55)',
   glass2: 'rgba(255,255,255,0.42)',
+  glassStrong: 'rgba(255,255,255,0.70)',
+  glassTint: 'rgba(255,255,255,0.10)',
+  glassStroke: 'rgba(40,52,68,0.10)',
+  glassHighlight: 'rgba(255,255,255,0.85)',
+  glassScrim: 'rgba(255,255,255,0.55)',
+  shadow1: '0 1px 2px rgba(40,52,68,.06), 0 8px 20px -8px rgba(40,52,68,.12)',
+  shadow2: '0 1px 2px rgba(40,52,68,.07), 0 12px 32px -8px rgba(40,52,68,.16)',
+  shadow3: '0 2px 4px rgba(40,52,68,.08), 0 24px 56px -12px rgba(40,52,68,.20)',
   stroke: 'rgba(255,255,255,0.65)',
   shadow: '0 18px 50px -20px rgba(40,52,68,.45), 0 6px 18px -10px rgba(40,52,68,.25)',
   meshBase: 'linear-gradient(135deg, #f6efe7 0%, #eef0f7 45%, #e9f3ef 100%)',
@@ -86,8 +110,16 @@ const light: Palette = {
   inkSoft: '#5a6573',
   inkFaint: '#8b96a4',
   body: '#f4f6fa',
-  glass: 'rgba(255,255,255,0.62)',
+  glass: 'rgba(255,255,255,0.55)',
   glass2: 'rgba(255,255,255,0.5)',
+  glassStrong: 'rgba(255,255,255,0.70)',
+  glassTint: 'rgba(255,255,255,0.10)',
+  glassStroke: 'rgba(40,52,68,0.10)',
+  glassHighlight: 'rgba(255,255,255,0.85)',
+  glassScrim: 'rgba(255,255,255,0.55)',
+  shadow1: '0 1px 2px rgba(40,52,68,.06), 0 8px 20px -8px rgba(40,52,68,.12)',
+  shadow2: '0 1px 2px rgba(40,52,68,.07), 0 12px 32px -8px rgba(40,52,68,.16)',
+  shadow3: '0 2px 4px rgba(40,52,68,.08), 0 24px 56px -12px rgba(40,52,68,.20)',
   stroke: 'rgba(255,255,255,0.72)',
   shadow: '0 18px 50px -20px rgba(40,52,68,.35), 0 6px 18px -10px rgba(40,52,68,.2)',
   meshBase: 'linear-gradient(135deg, #eef0f7 0%, #f3f0f8 45%, #ecf3f1 100%)',
@@ -107,6 +139,14 @@ const dark: Palette = {
   body: '#0e1116',
   glass: 'rgba(255,255,255,0.06)',
   glass2: 'rgba(255,255,255,0.04)',
+  glassStrong: 'rgba(255,255,255,0.11)',
+  glassTint: 'rgba(10,11,15,0.10)',
+  glassStroke: 'rgba(255,255,255,0.12)',
+  glassHighlight: 'rgba(255,255,255,0.26)',
+  glassScrim: 'rgba(8,9,13,0.30)',
+  shadow1: '0 1px 2px rgba(0,0,0,.20), 0 8px 20px -8px rgba(0,0,0,.40)',
+  shadow2: '0 1px 2px rgba(0,0,0,.22), 0 12px 32px -8px rgba(0,0,0,.45)',
+  shadow3: '0 2px 4px rgba(0,0,0,.28), 0 24px 56px -12px rgba(0,0,0,.55)',
   stroke: 'rgba(255,255,255,0.12)',
   shadow: '0 24px 60px -22px rgba(0,0,0,0.6), 0 8px 20px -12px rgba(0,0,0,0.5)',
   meshBase: 'linear-gradient(135deg, #0e1116 0%, #131826 45%, #16161c 100%)',
@@ -134,6 +174,14 @@ export const CSS_VARS = [
   '--body',
   '--glass',
   '--glass-2',
+  '--glass-strong',
+  '--glass-tint',
+  '--glass-stroke',
+  '--glass-highlight',
+  '--glass-scrim',
+  '--shadow-1',
+  '--shadow-2',
+  '--shadow-3',
   '--stroke',
   '--shadow',
   '--mesh-base',
@@ -165,6 +213,14 @@ export function themeCss(): string {
       `--body: ${p.body};`,
       `--glass: ${p.glass};`,
       `--glass-2: ${p.glass2};`,
+      `--glass-strong: ${p.glassStrong};`,
+      `--glass-tint: ${p.glassTint};`,
+      `--glass-stroke: ${p.glassStroke};`,
+      `--glass-highlight: ${p.glassHighlight};`,
+      `--glass-scrim: ${p.glassScrim};`,
+      `--shadow-1: ${p.shadow1};`,
+      `--shadow-2: ${p.shadow2};`,
+      `--shadow-3: ${p.shadow3};`,
       `--stroke: ${p.stroke};`,
       `--shadow: ${p.shadow};`,
       `--mesh-base: ${p.meshBase};`,
