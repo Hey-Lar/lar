@@ -15,7 +15,7 @@
 export const THEMES = ['dark', 'ember', 'light'] as const;
 export type ThemeName = (typeof THEMES)[number];
 
-export const DEFAULT_THEME: ThemeName = 'ember';
+export const DEFAULT_THEME: ThemeName = 'dark';
 export const THEME_STORAGE_KEY = 'lar-theme';
 
 export type Palette = {
@@ -63,6 +63,11 @@ export type Palette = {
   meshB: string;
   meshC: string;
   meshD: string;
+  /** Ambient scene silhouette inks (far / near building + mantel rows). */
+  silFar: string;
+  silNear: string;
+  /** Legibility wash painted over the scene + under the glass. */
+  sceneScrim: string;
   /** Rail nav button colors. */
   navIdle: string;
   navActiveBg: string;
@@ -100,6 +105,9 @@ const ember: Palette = {
   meshB: '#c9c1ff',
   meshC: '#a8ead9',
   meshD: '#ffc6c0',
+  silFar: 'rgba(40,52,68,.10)',
+  silNear: 'rgba(40,52,68,.16)',
+  sceneScrim: 'rgba(238,241,246,.26)',
   navIdle: '#8b96a4',
   navActiveBg: 'rgba(255,255,255,0.62)',
 };
@@ -127,6 +135,9 @@ const light: Palette = {
   meshB: '#a8ead9',
   meshC: '#ffd9a8',
   meshD: '#cfe6ff',
+  silFar: 'rgba(40,52,68,.08)',
+  silNear: 'rgba(40,52,68,.13)',
+  sceneScrim: 'rgba(244,246,250,.28)',
   navIdle: '#8b96a4',
   navActiveBg: 'rgba(255,255,255,0.7)',
 };
@@ -154,6 +165,9 @@ const dark: Palette = {
   meshB: '#1a2540',
   meshC: '#0f2a26',
   meshD: '#2c1518',
+  silFar: 'rgba(255,255,255,.05)',
+  silNear: 'rgba(255,255,255,.09)',
+  sceneScrim: 'rgba(14,17,22,.34)',
   navIdle: '#6e6e66',
   navActiveBg: 'rgba(255,255,255,0.10)',
 };
@@ -189,6 +203,9 @@ export const CSS_VARS = [
   '--mesh-b',
   '--mesh-c',
   '--mesh-d',
+  '--sil-far',
+  '--sil-near',
+  '--scene-scrim',
   '--nav-idle',
   '--nav-active-bg',
 ] as const;
@@ -228,6 +245,9 @@ export function themeCss(): string {
       `--mesh-b: ${p.meshB};`,
       `--mesh-c: ${p.meshC};`,
       `--mesh-d: ${p.meshD};`,
+      `--sil-far: ${p.silFar};`,
+      `--sil-near: ${p.silNear};`,
+      `--scene-scrim: ${p.sceneScrim};`,
       `--nav-idle: ${p.navIdle};`,
       `--nav-active-bg: ${p.navActiveBg};`,
     ].join(' ');
@@ -236,7 +256,7 @@ export function themeCss(): string {
   return blocks.join('\n');
 }
 
-/** Narrow an unknown value to a valid `ThemeName`, defaulting to ember. */
+/** Narrow an unknown value to a valid `ThemeName`, defaulting to DEFAULT_THEME. */
 export function coerceTheme(raw: unknown): ThemeName {
   return (THEMES as readonly string[]).includes(raw as string) ? (raw as ThemeName) : DEFAULT_THEME;
 }
