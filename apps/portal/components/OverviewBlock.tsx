@@ -198,7 +198,7 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
             style={{ ['--i' as string]: i }}
           >
             <div className="ov-ico" aria-hidden>
-              <Icon name={q.ico} size={22} />
+              <Icon name={q.ico} size={26} />
             </div>
             <div className="ov-card-t">{q.label}</div>
             <div className="ov-card-d">{q.desc}</div>
@@ -209,7 +209,7 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
         ))}
         <div className="card ov-card ov-soon" style={{ ['--i' as string]: QUICK.length }}>
           <div className="ov-ico" aria-hidden>
-            <Icon name="smart-home" size={22} />
+            <Icon name="smart-home" size={26} />
           </div>
           <div className="ov-card-t">Home</div>
           <div className="ov-card-d">Lights, climate &amp; scenes over Matter</div>
