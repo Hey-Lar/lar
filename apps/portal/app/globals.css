@@ -13,6 +13,14 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   /*
+   * Ambient-scene knobs (overridable pre-paint by the boot script from
+   * `lar-appearance`). --scene-intensity (0–1) scales scene-layer opacity +
+   * drift and inversely scales the legibility scrim. --glass-blur is a future
+   * user contrast control wired through the boot script.
+   */
+  --scene-intensity: 0.6;
+
+  /*
    * Liquid-glass elevation filters (theme-invariant). Elevation = blur + alpha
    * + shadow together; three rungs only, higher = more blur + saturation.
    *   elev-1 resting tiles / chips · elev-2 rail + stage chrome · elev-3 ask bar.
@@ -80,62 +88,210 @@ body {
     color 0.4s var(--ease);
 }
 
-/* ambient mesh — colors driven by the active theme */
-.bg-mesh {
+/*
+ * ── Ambient scene system ──────────────────────────────────────────────────
+ * Privacy-safe: every layer is CSS / inline-SVG (no <img>, no network fetch).
+ * <SceneBackground /> renders ALL scene layers once; the active [data-scene] on
+ * <html> reveals only its set. `contain: strict` + fixed positioning keep it
+ * cheap; only transform/opacity animate (never background-position/backdrop).
+ */
+.scene {
   position: fixed;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
-  background: var(--mesh-base);
+  contain: strict;
 }
-.bg-mesh::before,
-.bg-mesh::after {
-  content: '';
+.scene-root {
+  position: absolute;
+  inset: 0;
+  background-color: var(--body);
+  transition: background-color 0.4s var(--ease);
+}
+/* legibility wash over the scene, under the glass — louder scene → lighter wash */
+.scene-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--scene-scrim);
+  opacity: calc(0.55 + 0.45 * (1 - var(--scene-intensity, 0.6)));
+}
+/* dawn-skyline silhouette canvas, pinned to the bottom edge */
+.scene-svg {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 42vh;
+}
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* warm-mesh's two corner blobs (scoped to .scene; revealed only on warm-mesh) */
+.scene .blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0.7;
 }
-.bg-mesh::before {
-  width: 46vw;
-  height: 46vw;
-  background: radial-gradient(circle at 30% 30%, var(--mesh-a), transparent 70%);
-  top: -12vw;
-  left: -6vw;
-}
-.bg-mesh::after {
-  width: 42vw;
-  height: 42vw;
-  background: radial-gradient(circle at 50% 50%, var(--mesh-b), transparent 70%);
-  bottom: -14vw;
-  left: 26vw;
-}
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.6;
-}
-.blob.m1 {
+.scene .blob.m1 {
   width: 40vw;
   height: 40vw;
   background: radial-gradient(circle at 50% 50%, var(--mesh-c), transparent 70%);
   top: -6vw;
   right: -10vw;
 }
-.blob.m2 {
+.scene .blob.m2 {
   width: 34vw;
   height: 34vw;
   background: radial-gradient(circle at 50% 50%, var(--mesh-d), transparent 70%);
   bottom: -10vw;
   right: 8vw;
 }
-.grain {
-  position: fixed;
+
+/*
+ * Every scene-specific layer is hidden by default; each [data-scene] block
+ * below reveals its own layers and inherits the --scene-intensity opacity.
+ */
+.glow-hearth,
+.scene-svg,
+.aurora-ribbon,
+.scene .blob {
+  display: none;
+  opacity: var(--scene-intensity, 0.6);
+}
+
+/* ── calm — 4 corner-anchored soft radial blobs over --body ──────────────── */
+[data-scene='calm'] .scene-root {
+  background-image:
+    radial-gradient(at 18% 22%, var(--mesh-a) 0, transparent 55%),
+    radial-gradient(at 84% 16%, var(--mesh-b) 0, transparent 52%),
+    radial-gradient(at 60% 84%, var(--mesh-c) 0, transparent 55%),
+    radial-gradient(at 6% 90%, var(--mesh-d) 0, transparent 50%);
+}
+
+/* ── hearth (default) — calm base + faint cool counter-glow + warm fire bloom ─ */
+[data-scene='hearth'] .scene-root {
+  background-image:
+    radial-gradient(at 16% 18%, var(--mesh-b) 0, transparent 48%),
+    radial-gradient(at 88% 12%, var(--mesh-c) 0, transparent 46%),
+    radial-gradient(at 50% 96%, var(--mesh-a) 0, transparent 60%);
+}
+[data-scene='hearth'] .glow-hearth {
+  display: block;
+  position: absolute;
   inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background:
+    radial-gradient(60% 45% at 50% 108%, var(--hearth-glow) 0, transparent 70%),
+    conic-gradient(
+      from 200deg at 50% 118%,
+      transparent,
+      var(--hearth-glow) 30deg,
+      transparent 90deg
+    );
+}
+
+/* ── dawn-skyline — dawn gradient + low sun + the 2-row SVG silhouette ────── */
+[data-scene='dawn-skyline'] .scene-root {
+  background: linear-gradient(180deg, var(--mesh-b) 0%, var(--body) 60%);
+  background-image: radial-gradient(40% 30% at 78% 18%, var(--hearth-glow) 0, transparent 70%);
+}
+[data-scene='dawn-skyline'] .scene-svg {
+  display: block;
+}
+
+/* ── deep-night — near-flat field + cool top glow + sparse star dots ─────── */
+[data-scene='deep-night'] .scene-root {
+  background-image:
+    radial-gradient(60% 40% at 50% -8%, var(--mesh-b) 0, transparent 60%),
+    radial-gradient(1.5px 1.5px at 14% 24%, var(--ink-faint) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 72% 16%, var(--ink-faint) 50%, transparent 51%),
+    radial-gradient(1px 1px at 38% 40%, var(--ink-faint) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 34%, var(--ink-faint) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 56% 12%, var(--ink-faint) 50%, transparent 51%),
+    radial-gradient(1px 1px at 26% 8%, var(--ink-faint) 50%, transparent 51%);
+}
+
+/* ── aurora — 3 tall blurred ribbons drifting (screen-blended on dark/ember) ─ */
+[data-scene='aurora'] .aurora-ribbon {
+  display: block;
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 70%;
+  filter: blur(40px);
+  mix-blend-mode: screen;
+}
+[data-scene='aurora'] .aurora-ribbon.r1 {
+  background: linear-gradient(110deg, transparent, var(--mesh-c) 45%, transparent 80%);
+}
+[data-scene='aurora'] .aurora-ribbon.r2 {
+  inset: -10% -10% auto -10%;
+  background: linear-gradient(80deg, transparent, var(--hearth-lo) 50%, transparent 85%);
+}
+[data-scene='aurora'] .aurora-ribbon.r3 {
+  inset: 0% -10% auto -10%;
+  background: linear-gradient(130deg, transparent, var(--mesh-b) 48%, transparent 82%);
+}
+/* screen blending washes out on a light page — fall back to a soft normal blend */
+[data-theme='light'] .aurora-ribbon {
+  mix-blend-mode: normal;
+  opacity: 0.3;
+}
+
+/* ── warm-mesh — today's mesh base + blobs, preserved verbatim ───────────── */
+[data-scene='warm-mesh'] .scene-root {
+  background: var(--mesh-base);
+  background-image:
+    radial-gradient(46vw 46vw at 24% 18%, var(--mesh-a) 0, transparent 70%),
+    radial-gradient(42vw 42vw at 40% 100%, var(--mesh-b) 0, transparent 70%);
+}
+[data-scene='warm-mesh'] .scene .blob {
+  display: block;
+  opacity: calc(0.6 * var(--scene-intensity, 0.6) / 0.6);
+}
+
+/* ── Motion gating ──────────────────────────────────────────────────────── */
+@keyframes scene-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4vw, -3vh, 0) scale(1.08);
+  }
+}
+@keyframes scene-drift-b {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-3vw, 2vh, 0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion='on'] .glow-hearth,
+  [data-motion='system'] .glow-hearth,
+  [data-motion='on'] .aurora-ribbon,
+  [data-motion='system'] .aurora-ribbon,
+  [data-motion='on'] .scene .blob,
+  [data-motion='system'] .scene .blob {
+    animation: scene-drift-a 64s var(--ease) infinite alternate;
+    will-change: transform;
+  }
+  .aurora-ribbon.r2 {
+    animation-name: scene-drift-b;
+    animation-duration: 52s;
+  }
+}
+[data-motion='off'] .scene * {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='system'] .scene * {
+    animation: none !important;
+  }
 }
 
 /* shell */

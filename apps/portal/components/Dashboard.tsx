@@ -52,50 +52,45 @@ export function Dashboard() {
   const [tab, setTab] = useState<TabKey>('home');
 
   return (
-    <div className="bg-mesh">
-      <div className="blob m1" />
-      <div className="blob m2" />
-      <div className="grain" />
-      <div className="app">
-        <nav className="rail glass" aria-label="Primary">
-          <div className="mark">
-            <Icon name="mark" size={22} />
-          </div>
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              className={`navbtn ${tab === t.key ? 'active' : ''}`}
-              onClick={() => setTab(t.key as TabKey)}
-              aria-current={tab === t.key ? 'page' : undefined}
-              aria-label={`Open ${t.label} tab`}
-              type="button"
-            >
-              <span className="ico" aria-hidden>
-                <Icon name={t.ico} size={20} />
-              </span>
-              <span>{t.label}</span>
-            </button>
-          ))}
-          <ThemeToggle />
-          <div className="avatar">AM</div>
-        </nav>
+    <div className="app">
+      <nav className="rail glass" aria-label="Primary">
+        <div className="mark">
+          <Icon name="mark" size={22} />
+        </div>
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            className={`navbtn ${tab === t.key ? 'active' : ''}`}
+            onClick={() => setTab(t.key as TabKey)}
+            aria-current={tab === t.key ? 'page' : undefined}
+            aria-label={`Open ${t.label} tab`}
+            type="button"
+          >
+            <span className="ico" aria-hidden>
+              <Icon name={t.ico} size={20} />
+            </span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+        <ThemeToggle />
+        <div className="avatar">AM</div>
+      </nav>
 
-        <main className="stage glass">
-          {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
-          {tab === 'agenda' && <AgendaBlock />}
-          {tab === 'weather' && <WeatherBlock />}
-          {tab === 'place' && <PlacesBlock />}
-          {tab === 'music' && <MusicBlock />}
-          {tab === 'podcasts' && <PodcastsBlock />}
-          {tab === 'books' && <BooksBlock />}
-          {tab === 'define' && <DictionaryBlock />}
-          {tab === 'film' && <FilmBlock />}
-          {tab === 'wealth' && <WealthBlock />}
-          {tab === 'markets' && <MarketsBlock />}
-          {tab === 'health' && <HealthBlock />}
-          {tab === 'connect' && <VaultPanel />}
-        </main>
-      </div>
+      <main className="stage glass">
+        {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
+        {tab === 'agenda' && <AgendaBlock />}
+        {tab === 'weather' && <WeatherBlock />}
+        {tab === 'place' && <PlacesBlock />}
+        {tab === 'music' && <MusicBlock />}
+        {tab === 'podcasts' && <PodcastsBlock />}
+        {tab === 'books' && <BooksBlock />}
+        {tab === 'define' && <DictionaryBlock />}
+        {tab === 'film' && <FilmBlock />}
+        {tab === 'wealth' && <WealthBlock />}
+        {tab === 'markets' && <MarketsBlock />}
+        {tab === 'health' && <HealthBlock />}
+        {tab === 'connect' && <VaultPanel />}
+      </main>
     </div>
   );
 }
