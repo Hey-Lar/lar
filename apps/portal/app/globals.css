@@ -1244,3 +1244,82 @@ body {
   font-weight: 650;
   color: var(--ink);
 }
+
+/*
+ * ── Fluid tab-navigation motion (DESIGN.md §5) ────────────────────────────
+ * Zero-dependency CSS @keyframes on transform+opacity only (compositor-only —
+ * no layout/paint), re-fired by a React `key`. Reuses the invariant --ease
+ * (easeOutQuint). Three core animations: the stage enter on tab change, the
+ * staggered Overview tile reveal (--i index drives the delay), and the
+ * "Hey Lar" result card animating in. Reduced-motion collapses all three to a
+ * gentle opacity-only fade with the stagger zeroed (vestibular-safe).
+ */
+@keyframes stage-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.stage-anim {
+  animation: stage-enter 0.3s var(--ease) both;
+  will-change: transform, opacity;
+}
+
+@keyframes tile-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ov-grid > .card {
+  animation: tile-rise 0.3s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 36ms);
+}
+
+@keyframes result-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.np {
+  animation: result-in 0.32s var(--ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .stage-anim,
+  .reveal,
+  .np {
+    animation: rm-fade 0.18s ease both !important;
+    transform: none !important;
+  }
+  .ov-grid > .card {
+    animation-delay: 0 !important;
+  }
+}
+@keyframes rm-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
