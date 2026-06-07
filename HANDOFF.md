@@ -304,11 +304,25 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     tab after Agenda. **Browser-verified live** (Lisbon 16°C "Mainly clear", 87%
     humidity, 12 km/h, 5-day 26/24/24/27/32°). Bright-line: keyless, read-only,
     no location stored, no client→third-party fetch.
-  - _Tabs now (11):_ Overview · Agenda · **Weather** · Music · Podcasts ·
-    **Books** · **Film & TV** · Wealth · Markets · **Health** · Connect.
+  - **Places block ✅ MERGED (`12b2b1c`)** — fifth route-outward pillar, KEYLESS
+    via **OpenStreetMap Nominatim** (server-side, descriptive User-Agent). Added
+    a `'place'` domain + `'location'` entity to `@lar/shared` (exhaustive
+    `ENTITY_FOR_DOMAIN` updated in connector-music). `@lar/connector-places`:
+    `searchPlace` (fail-loud on non-finite coords) + pure total `buildMapLinks`
+    (lat/lon-encoded) + `resolvePlace`. 13 vitest specs + 1 live-gated. `/api/lar`
+    `forceDomain:'place'` branch (server-side fetch → CSP unchanged);
+    `PlacesBlock.tsx` (OSM-led "Open in OpenStreetMap →" + Directions/Google/
+    Apple/Waze chips). **Browser-verified live** (Time Out Market Lisboa →
+    address + OSM link + 4 map chips). Bright-line: links only — never embeds a
+    map tile service, uses geolocation, or stores location.
+  - _Tabs now (12):_ Overview · Agenda · **Weather** · **Places** · Music ·
+    Podcasts · **Books** · **Film & TV** · Wealth · Markets · **Health** ·
+    Connect.
   - **Overview surfacing ✅ MERGED (`110b263`)** — the landing quick-launch grid
     now surfaces Weather/Books/Film alongside Music/Podcasts/Health (was just
-    Music/Podcasts/Health). Browser-verified themed.
+    Music/Podcasts/Health). _Minor: Places not yet added to the Overview QUICK
+    array (`OverviewBlock.tsx`) — one-line follow-up; it's reachable from the rail._
+    Browser-verified themed.
   - **CSP regression guard ✅ MERGED (`3dceeae`)** — `apps/portal/middleware.test.ts`
     (5 specs). The key spec asserts the **request-side** CSP carries the same
     nonce as the response CSP (fails closed if the `c38cb71` fix is ever undone),
