@@ -66,4 +66,50 @@ describe('themes', () => {
     expect(THEME_PALETTES.dark.body).toMatch(/^#0[a-f0-9]{5}$/i);
     expect(THEME_PALETTES.dark.ink.toLowerCase()).not.toBe('#26303c');
   });
+
+  it('every theme defines the liquid-glass elevation scale (no undefined tokens)', () => {
+    for (const name of THEMES) {
+      const p = THEME_PALETTES[name];
+      for (const key of [
+        'glassStrong',
+        'glassTint',
+        'glassStroke',
+        'glassHighlight',
+        'glassScrim',
+        'shadow1',
+        'shadow2',
+        'shadow3',
+      ] as const) {
+        expect(p[key], `${name}.${key}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('glass fills follow the light/dark alpha rule (dark low-alpha, ember/light high-alpha)', () => {
+    // dark: white glass sits LOW (0.06) so a near-black body shows through.
+    expect(THEME_PALETTES.dark.glass).toBe('rgba(255,255,255,0.06)');
+    expect(THEME_PALETTES.dark.glassStrong).toBe('rgba(255,255,255,0.11)');
+    // ember + light: white frost sits HIGH so it reads on a light page.
+    for (const name of ['ember', 'light'] as const) {
+      expect(THEME_PALETTES[name].glass).toBe('rgba(255,255,255,0.55)');
+      expect(THEME_PALETTES[name].glassStrong).toBe('rgba(255,255,255,0.70)');
+    }
+  });
+
+  it('themeCss() emits the new glass + shadow scale once per theme', () => {
+    const css = themeCss();
+    for (const v of [
+      '--glass-strong',
+      '--glass-tint',
+      '--glass-stroke',
+      '--glass-highlight',
+      '--glass-scrim',
+      '--shadow-1',
+      '--shadow-2',
+      '--shadow-3',
+    ]) {
+      const occurrences = css.split(`${v}:`).length - 1;
+      expect(occurrences, `${v} appears once per theme`).toBe(THEMES.length);
+    }
+  });
 });
