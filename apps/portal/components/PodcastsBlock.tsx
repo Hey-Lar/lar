@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Icon } from '@lar/ui';
 import type { PodcastResolution } from '@lar/connector-podcasts';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -12,7 +13,7 @@ export function PodcastsBlock() {
     initial: 'find the Lex Fridman podcast',
   });
   const [copied, setCopied] = useState(false);
-  // Clear the "Copied ✓" reset-timer on unmount (the ask-bar request is aborted
+  // Clear the "Copied" reset-timer on unmount (the ask-bar request is aborted
   // by useAskLar; this timer is block-local so it needs its own cleanup).
   const copyResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -25,8 +26,8 @@ export function PodcastsBlock() {
     try {
       await navigator.clipboard.writeText(feedUrl);
       setCopied(true);
-      // Cancel any prior reset still pending — keeps the "✓" visible for
-      // exactly 2s after the LATEST copy click instead of an earlier one,
+      // Cancel any prior reset still pending — keeps the "Copied" state visible
+      // for exactly 2s after the LATEST copy click instead of an earlier one,
       // and the unmount-effect above clears the handle if we navigate away.
       if (copyResetRef.current) clearTimeout(copyResetRef.current);
       copyResetRef.current = setTimeout(() => {
@@ -89,7 +90,7 @@ export function PodcastsBlock() {
 
           {appleUrl && (
             <a className="open" href={appleUrl} target="_blank" rel="noreferrer">
-              Open in Apple Podcasts →
+              Open in Apple Podcasts <Icon name="route" size={14} className="chip-arrow" />
             </a>
           )}
 
@@ -99,7 +100,13 @@ export function PodcastsBlock() {
               style={{ alignSelf: 'flex-start', cursor: 'pointer', border: 'none' }}
               onClick={() => void copyRss(feedUrl)}
             >
-              {copied ? 'Copied ✓' : 'Copy RSS feed'}
+              {copied ? (
+                <>
+                  Copied <Icon name="check" size={14} className="chip-arrow" />
+                </>
+              ) : (
+                'Copy RSS feed'
+              )}
             </button>
           )}
 

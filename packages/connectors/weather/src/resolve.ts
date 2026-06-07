@@ -1,5 +1,5 @@
 /**
- * High-level resolver: city query → WeatherSnapshot.
+ * High-level resolver: city query -> WeatherSnapshot.
  *
  * Bright-line: read-only, keyless, live public data.
  * Lar reads to show; it never writes location or weather data anywhere.
@@ -7,7 +7,7 @@
  */
 
 import { geocode, fetchForecast } from './openmeteo.js';
-import { weatherFromCode } from './wmo.js';
+import { weatherFromCode, type WeatherIcon } from './wmo.js';
 
 export interface CurrentWeather {
   tempC: number;
@@ -16,14 +16,14 @@ export interface CurrentWeather {
   windKph: number;
   code: number;
   label: string;
-  icon: string;
+  icon: WeatherIcon;
 }
 
 export interface DailyForecast {
   date: string;
   code: number;
   label: string;
-  icon: string;
+  icon: WeatherIcon;
   maxC: number;
   minC: number;
 }

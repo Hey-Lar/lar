@@ -1,9 +1,11 @@
+import { Icon } from '@lar/ui';
+
 export function Nav() {
   return (
     <nav className="nav glass" aria-label="Primary">
       <a className="brand" href="/">
         <span className="mark" aria-hidden>
-          ✺
+          <Icon name="mark" size={20} />
         </span>
         Lar
       </a>

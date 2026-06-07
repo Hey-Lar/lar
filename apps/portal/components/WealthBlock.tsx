@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Icon } from '@lar/ui';
 import { allocationSlices } from '@lar/connector-finance';
 
 interface Snapshot {
@@ -101,7 +102,13 @@ export function WealthBlock() {
         <div className="eyebrow">Net worth</div>
         <div className="gradnum">{eur(snap.netWorthEur)}</div>
         <div className={`delta ${delta >= 0 ? 'pos' : 'neg'}`}>
-          {delta >= 0 ? '▲ +' : '▼ −'}
+          <Icon
+            name="chevron"
+            direction={delta >= 0 ? 'up' : 'down'}
+            size={14}
+            className="delta-arrow"
+          />
+          {delta >= 0 ? '+' : '−'}
           {eur(Math.abs(delta))} · {snap.history.length}w
           {snap.emergencyFundMonths != null && (
             <span className="dim"> · {snap.emergencyFundMonths.toFixed(1)} mo runway</span>

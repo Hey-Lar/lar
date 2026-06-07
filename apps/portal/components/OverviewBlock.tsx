@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Icon, type IconName } from '@lar/ui';
 import type { AgendaItem } from '../lib/agenda-demo';
 import { currentItem, nextUpcoming } from '../lib/agenda-demo';
 import { GlobalAsk } from './GlobalAsk';
@@ -35,19 +36,34 @@ function greeting(h: number): string {
   return 'Good evening';
 }
 
-const QUICK: Array<{ tab: string; label: string; desc: string; ico: string }> = [
+const QUICK: Array<{ tab: string; label: string; desc: string; ico: IconName }> = [
   {
     tab: 'weather',
     label: 'Weather',
     desc: 'Live local forecast — keyless, no tracking',
-    ico: '⛅',
+    ico: 'weather',
   },
-  { tab: 'place', label: 'Places', desc: 'Find a place — open-data first, your map', ico: '📍' },
-  { tab: 'music', label: 'Music', desc: 'Play anything — your platform, your choice', ico: '♪' },
-  { tab: 'podcasts', label: 'Podcasts', desc: 'Find a show + its open RSS feed', ico: '🎙' },
-  { tab: 'books', label: 'Books', desc: 'Find a book — library-first, your store', ico: '📚' },
-  { tab: 'film', label: 'Film & TV', desc: 'Where to watch — JustWatch-led, neutral', ico: '🎬' },
-  { tab: 'health', label: 'Health', desc: 'Steps & sleep — local-first, private', ico: '♥' },
+  {
+    tab: 'place',
+    label: 'Places',
+    desc: 'Find a place — open-data first, your map',
+    ico: 'places',
+  },
+  {
+    tab: 'music',
+    label: 'Music',
+    desc: 'Play anything — your platform, your choice',
+    ico: 'music',
+  },
+  { tab: 'podcasts', label: 'Podcasts', desc: 'Find a show + its open RSS feed', ico: 'podcasts' },
+  { tab: 'books', label: 'Books', desc: 'Find a book — library-first, your store', ico: 'books' },
+  {
+    tab: 'film',
+    label: 'Film & TV',
+    desc: 'Where to watch — JustWatch-led, neutral',
+    ico: 'film',
+  },
+  { tab: 'health', label: 'Health', desc: 'Steps & sleep — local-first, private', ico: 'health' },
 ];
 
 export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => void }) {
@@ -128,12 +144,20 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
         <div className="gradnum sm">{fin ? eur(fin.netWorthEur) : '—'}</div>
         {fin && fin.history.length >= 2 && (
           <div className={`delta ${delta >= 0 ? 'pos' : 'neg'}`}>
-            {delta >= 0 ? '▲ +' : '▼ −'}
+            <Icon
+              name="chevron"
+              direction={delta >= 0 ? 'up' : 'down'}
+              size={14}
+              className="delta-arrow"
+            />
+            {delta >= 0 ? '+' : '−'}
             {eur(Math.abs(delta))} · {fin.history.length}w
             <span className="dim"> · {fin.source === 'demo' ? 'demo data' : 'your data'}</span>
           </div>
         )}
-        <div className="ov-go">Open Wealth →</div>
+        <div className="ov-go">
+          Open Wealth <Icon name="route" size={14} className="ov-go-arrow" />
+        </div>
       </button>
 
       {agendaNext && (
@@ -159,7 +183,9 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
             {agendaNext.location ? ` · ${agendaNext.location}` : ''} · {agenda?.items.length ?? 0}{' '}
             on today's schedule
           </div>
-          <div className="ov-go">Open Agenda →</div>
+          <div className="ov-go">
+            Open Agenda <Icon name="route" size={14} className="ov-go-arrow" />
+          </div>
         </button>
       )}
 
@@ -167,20 +193,24 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
         {QUICK.map((q) => (
           <button key={q.tab} className="card ov-card" onClick={() => onNavigate(q.tab)}>
             <div className="ov-ico" aria-hidden>
-              {q.ico}
+              <Icon name={q.ico} size={22} />
             </div>
             <div className="ov-card-t">{q.label}</div>
             <div className="ov-card-d">{q.desc}</div>
-            <div className="ov-go">Open →</div>
+            <div className="ov-go">
+              Open <Icon name="route" size={14} className="ov-go-arrow" />
+            </div>
           </button>
         ))}
         <div className="card ov-card ov-soon">
           <div className="ov-ico" aria-hidden>
-            ⌂
+            <Icon name="smart-home" size={22} />
           </div>
           <div className="ov-card-t">Home</div>
           <div className="ov-card-d">Lights, climate &amp; scenes over Matter</div>
-          <div className="ov-go dim">Android phase →</div>
+          <div className="ov-go dim">
+            Android phase <Icon name="route" size={14} className="ov-go-arrow" />
+          </div>
         </div>
       </div>
     </div>
