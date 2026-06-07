@@ -77,19 +77,21 @@ export function Dashboard() {
       </nav>
 
       <main className="stage glass">
-        {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
-        {tab === 'agenda' && <AgendaBlock />}
-        {tab === 'weather' && <WeatherBlock />}
-        {tab === 'place' && <PlacesBlock />}
-        {tab === 'music' && <MusicBlock />}
-        {tab === 'podcasts' && <PodcastsBlock />}
-        {tab === 'books' && <BooksBlock />}
-        {tab === 'define' && <DictionaryBlock />}
-        {tab === 'film' && <FilmBlock />}
-        {tab === 'wealth' && <WealthBlock />}
-        {tab === 'markets' && <MarketsBlock />}
-        {tab === 'health' && <HealthBlock />}
-        {tab === 'connect' && <VaultPanel />}
+        <div key={tab} className="stage-anim">
+          {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
+          {tab === 'agenda' && <AgendaBlock />}
+          {tab === 'weather' && <WeatherBlock />}
+          {tab === 'place' && <PlacesBlock />}
+          {tab === 'music' && <MusicBlock />}
+          {tab === 'podcasts' && <PodcastsBlock />}
+          {tab === 'books' && <BooksBlock />}
+          {tab === 'define' && <DictionaryBlock />}
+          {tab === 'film' && <FilmBlock />}
+          {tab === 'wealth' && <WealthBlock />}
+          {tab === 'markets' && <MarketsBlock />}
+          {tab === 'health' && <HealthBlock />}
+          {tab === 'connect' && <VaultPanel />}
+        </div>
       </main>
     </div>
   );
