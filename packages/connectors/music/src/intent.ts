@@ -72,9 +72,17 @@ function detectIntent(t: string): Intent {
 }
 
 function detectDomain(t: string): Domain {
-  if (/\bpodcast\b/.test(t)) return 'podcast';
-  if (/\bmovie\b|\bfilm\b|\bseries\b/.test(t)) return 'film';
-  if (/\baudiobook\b|\bbook\b/.test(t)) return 'book';
+  if (/\bpodcasts?\b/.test(t)) return 'podcast';
+  if (/\bdefine\b|\bdefinition\b|\bwhat does\b|\bmeaning of\b|\bspell\b/.test(t)) return 'define';
+  if (
+    /\bdirections?\b|\bnear me\b|\bnavigate\b|\bwhere is\b|\bhow do i get to\b|\bon the map\b|\bmap to\b/.test(
+      t,
+    )
+  )
+    return 'place';
+  if (/\bmovies?\b|\bfilms?\b|\bseries\b|\btv show\b|\bwhere to watch\b|\bwatch\b/.test(t))
+    return 'film';
+  if (/\baudiobooks?\b|\bbooks?\b|\bnovels?\b/.test(t)) return 'book';
   return 'music';
 }
 
@@ -108,7 +116,16 @@ export function parseIntentDeterministic(transcript: string): LarAction {
     /\b(play|pause|stop|next|skip|queue|open|launch|recommend|suggest|put on|listen to|search for|look up|show me|get me|find|lookup)\b/g,
     ' ',
   );
-  t = t.replace(/\b(podcast|movie|film|series|audiobook|book)\b/g, ' ');
+  // Multi-word domain phrases first (so partials don't linger).
+  t = t.replace(
+    /\b(where can i watch|where to watch|how do i get to|directions to|near me|where is|meaning of|definition of|what does|on the map|map to)\b/g,
+    ' ',
+  );
+  // Single domain trigger words.
+  t = t.replace(
+    /\b(podcasts?|movies?|films?|series|tv show|audiobooks?|books?|novels?|directions?|navigate|define|definition|spell|meaning|mean|watch)\b/g,
+    ' ',
+  );
   for (const f of FILLERS) t = t.replace(new RegExp(`\\b${f}\\b`, 'g'), ' ');
   let query = t.replace(/\s+/g, ' ').trim();
 
