@@ -21,7 +21,7 @@
    * elevation rungs below, so one slider scales the whole glass stack.
    */
   --scene-intensity: 0.6;
-  --glass-blur: 20px;
+  --glass-blur: 23px;
 
   /*
    * Liquid-glass elevation filters (theme-invariant). Elevation = blur + alpha
@@ -340,10 +340,10 @@ body {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 104px 1fr;
-  gap: 22px;
+  grid-template-columns: 124px 1fr;
+  gap: 26px;
   height: 100vh;
-  padding: 22px;
+  padding: 26px;
 }
 /*
  * Liquid-glass panel recipe (DESIGN.md §3): a material, not a fill. Three
@@ -389,8 +389,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18px 0;
-  gap: 6px;
+  padding: 20px 0;
+  gap: 8px;
 }
 .rail::after {
   content: '';
@@ -410,39 +410,44 @@ body {
   );
 }
 .mark {
-  width: 50px;
-  height: 50px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  margin-bottom: 14px;
-  font-size: 22px;
+  margin-bottom: 16px;
+  font-size: 24px;
   color: #fff;
   background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
   box-shadow: 0 8px 20px -6px var(--hearth-glow);
 }
+/* Touch-comfortable nav target: ≥48px tap area, generous icon + label. */
 .navbtn {
-  width: 72px;
-  height: 64px;
+  width: 88px;
+  height: 72px;
   border: none;
   background: transparent;
-  border-radius: 20px;
+  border-radius: 22px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--nav-idle);
   transition: all 0.3s var(--ease);
   position: relative;
 }
 .navbtn .ico {
-  font-size: 18px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: 22px;
   line-height: 1;
 }
 .navbtn span {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -458,17 +463,17 @@ body {
 .navbtn.active::after {
   content: '';
   position: absolute;
-  left: -10px;
+  left: -13px;
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
-  height: 26px;
+  height: 30px;
   border-radius: 4px;
   background: var(--hearth);
 }
 .avatar {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   margin-top: auto;
   background: linear-gradient(150deg, #cdd6e4, #aeb9cc);
@@ -476,7 +481,7 @@ body {
   place-items: center;
   color: #fff;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /*
@@ -506,7 +511,7 @@ body {
   }
 }
 .block-pad {
-  padding: 34px 38px;
+  padding: 40px 44px;
 }
 .head {
   display: flex;
@@ -523,7 +528,7 @@ body {
 }
 .h1 {
   font-family: 'Fraunces', serif;
-  font-size: 40px;
+  font-size: 46px;
   font-weight: 500;
   line-height: 1.04;
   letter-spacing: -0.01em;
@@ -531,10 +536,10 @@ body {
 }
 .lead {
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: 16.5px;
   line-height: 1.55;
   max-width: 60ch;
-  margin: 0 0 22px;
+  margin: 0 0 24px;
 }
 /*
  * card — a floating frosted object above the clear stage. Glass-recipe look
@@ -546,16 +551,45 @@ body {
   background: var(--glass);
   border: 1px solid var(--glass-stroke);
   border-radius: 26px;
-  padding: 22px 24px;
+  padding: 26px 28px;
   backdrop-filter: var(--elev-1);
   -webkit-backdrop-filter: var(--elev-1);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
     var(--shadow-1);
 }
-/* result / route panels carry a lot of text → frostier fill for legibility */
+/*
+ * Behind-text scrim (DESIGN.md §3): because the tile fill is now CLEAR glass,
+ * a soft gradient wash sits UNDER the content (z-index:1) and over the glass —
+ * strongest at the top where the eyebrow/title sit, fading to clear lower down.
+ * This guarantees ≥4.5:1 glyph contrast over a busy room without re-frosting the
+ * whole pane. The scrim itself is theme-driven (--glass-scrim).
+ */
+.card > *,
+.ov-card > *,
+.ov-net > * {
+  position: relative;
+  z-index: 1;
+}
+.card::before,
+.ov-card::before,
+.ov-net::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--glass-scrim), transparent 78%);
+  opacity: 0.7;
+}
+/* result / route panels carry a lot of text → frostier fill + full scrim. */
 .np.card {
   background: var(--glass-strong);
+}
+.np.card::before {
+  background: var(--glass-scrim);
+  opacity: 0.5;
 }
 @media (prefers-reduced-transparency: reduce) {
   .card {
@@ -563,14 +597,20 @@ body {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
+  .card::before,
+  .ov-card::before,
+  .ov-net::before,
+  .np.card::before {
+    display: none;
+  }
 }
 
 /* ask bar */
 .ask {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 /*
  * ask bar — the highest, frostiest surface (elev-3). Must stay legible while
@@ -580,9 +620,9 @@ body {
  */
 .ask input {
   flex: 1;
-  height: 56px;
-  padding: 0 20px;
-  border-radius: 18px;
+  height: 62px;
+  padding: 0 24px;
+  border-radius: 20px;
   border: 1px solid var(--glass-stroke);
   background: linear-gradient(var(--glass-tint), var(--glass-tint)), var(--glass-strong);
   backdrop-filter: var(--elev-3);
@@ -590,7 +630,7 @@ body {
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
     var(--shadow-3);
-  font-size: 16px;
+  font-size: 17px;
   color: var(--ink);
   outline: none;
   transition:
@@ -613,17 +653,19 @@ body {
 }
 .mic,
 .go {
-  height: 56px;
+  height: 62px;
   border: none;
-  border-radius: 18px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
   transition: transform 0.12s var(--ease);
 }
 .mic {
-  width: 56px;
-  font-size: 20px;
+  width: 62px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
   background: linear-gradient(var(--glass-tint), var(--glass-tint)), var(--glass-strong);
   border: 1px solid var(--glass-stroke);
   backdrop-filter: var(--elev-3);
@@ -646,7 +688,7 @@ body {
   animation: pulse 1.1s infinite;
 }
 .go {
-  padding: 0 24px;
+  padding: 0 28px;
   color: #fff;
   background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
   box-shadow: 0 8px 20px -6px var(--hearth-glow);
@@ -691,12 +733,12 @@ body {
 }
 .np-title {
   font-family: 'Fraunces', serif;
-  font-size: 24px;
+  font-size: 27px;
   font-weight: 500;
 }
 .np-artist {
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 15px;
   margin-top: 2px;
 }
 .np-route {
@@ -709,11 +751,15 @@ body {
 }
 .open {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
   text-decoration: none;
   color: #fff;
   font-weight: 700;
-  font-size: 15px;
-  padding: 14px 22px;
+  font-size: 16px;
+  padding: 14px 24px;
   border-radius: 16px;
   background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
   box-shadow: 0 8px 20px -6px var(--hearth-glow);
@@ -733,11 +779,15 @@ body {
   margin-right: 4px;
 }
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ink);
-  padding: 7px 14px;
+  padding: 10px 18px;
   border-radius: 999px;
   background: var(--glass);
   border: 1px solid var(--stroke);
@@ -795,7 +845,7 @@ body {
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 18px;
 }
 .tile-big {
   font-family: 'Fraunces', serif;
@@ -825,13 +875,13 @@ body {
 
 /* theme cycle button on the rail */
 .theme-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   border: 1px solid var(--stroke);
   background: var(--glass);
   color: var(--ink-soft);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   display: grid;
@@ -840,7 +890,7 @@ body {
     background-color 0.2s var(--ease),
     color 0.2s var(--ease),
     transform 0.12s var(--ease);
-  margin-top: 6px;
+  margin-top: 8px;
 }
 .theme-btn:hover {
   background: var(--nav-active-bg);
@@ -1050,8 +1100,8 @@ body {
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
   border-radius: 26px;
-  padding: 22px 24px;
-  margin-bottom: 16px;
+  padding: 26px 28px;
+  margin-bottom: 18px;
   backdrop-filter: var(--elev-1);
   -webkit-backdrop-filter: var(--elev-1);
   box-shadow:
@@ -1068,7 +1118,7 @@ body {
 .ov-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--gap, 16px);
+  gap: var(--gap, 18px);
 }
 @media (max-width: 720px) {
   .ov-grid {
@@ -1082,10 +1132,10 @@ body {
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
   border-radius: 26px;
-  padding: 22px 24px;
+  padding: 26px 28px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   backdrop-filter: var(--elev-1);
   -webkit-backdrop-filter: var(--elev-1);
   box-shadow:
@@ -1125,24 +1175,24 @@ body {
   }
 }
 .ov-ico {
-  font-size: 22px;
+  font-size: 26px;
   line-height: 1;
   color: var(--hearth);
 }
 .ov-card-t {
   font-family: 'Fraunces', serif;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 500;
   margin-top: 4px;
 }
 .ov-card-d {
-  font-size: 13px;
+  font-size: 14.5px;
   color: var(--ink-soft);
   line-height: 1.45;
 }
 .ov-go {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: 8px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--hearth);
 }
@@ -1425,9 +1475,9 @@ body {
   color: var(--hearth);
 }
 .sd-close {
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
   border: 1px solid var(--stroke);
   background: var(--glass);
   color: var(--ink-soft);

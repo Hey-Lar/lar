@@ -27,7 +27,7 @@ export function AskBar(props: {
         onClick={props.onMic}
         aria-label="Speak to Lar"
       >
-        <Icon name="mic" size={18} />
+        <Icon name="mic" size={22} />
       </button>
       <button className="go" onClick={props.onSubmit} disabled={props.loading}>
         {props.loading ? '…' : 'Ask Lar'}

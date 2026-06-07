@@ -15,8 +15,8 @@ describe('themes', () => {
     expect(THEMES).toEqual(['dark', 'ember', 'light']);
   });
 
-  it('defaults to dark (the glassy showcase where the hearth scene shines)', () => {
-    expect(DEFAULT_THEME).toBe('dark');
+  it('defaults to ember (the warm light "living room" — light-themed by default)', () => {
+    expect(DEFAULT_THEME).toBe('ember');
     expect(THEME_STORAGE_KEY).toBe('lar-theme');
   });
 
@@ -85,14 +85,20 @@ describe('themes', () => {
     }
   });
 
-  it('glass fills follow the light/dark alpha rule (dark low-alpha, ember/light high-alpha)', () => {
+  it('glass fills stay clearly see-through: dark very low, ember/light clear (well under 0.55)', () => {
     // dark: white glass sits LOW (0.06) so a near-black body shows through.
     expect(THEME_PALETTES.dark.glass).toBe('rgba(255,255,255,0.06)');
     expect(THEME_PALETTES.dark.glassStrong).toBe('rgba(255,255,255,0.11)');
-    // ember + light: white frost sits HIGH so it reads on a light page.
+    // ember + light: clear glass — the room reads THROUGH the tiles. Fill alpha
+    // is well below the old frosted-white 0.55; legibility comes from the
+    // behind-text scrim + glass cues, not an opaque fill.
+    const alpha = (rgba: string) => Number(rgba.match(/[\d.]+(?=\)$)/)![0]);
     for (const name of ['ember', 'light'] as const) {
-      expect(THEME_PALETTES[name].glass).toBe('rgba(255,255,255,0.55)');
-      expect(THEME_PALETTES[name].glassStrong).toBe('rgba(255,255,255,0.70)');
+      const p = THEME_PALETTES[name];
+      expect(alpha(p.glass)).toBeLessThan(0.4);
+      expect(alpha(p.glassStrong)).toBeLessThan(0.55);
+      // …but still a distinct floating pane, not invisible.
+      expect(alpha(p.glass)).toBeGreaterThan(0.2);
     }
   });
 
