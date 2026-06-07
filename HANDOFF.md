@@ -328,17 +328,31 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     plus the hardening-header set, fresh-nonce-per-request, and kill-switch
     header. Portal vitest now 47 specs (5 files). **This guards the most
     important fix of the session** — the one that build/test/review all missed.
+  - **DRY refactor ✅ MERGED (`efc81f3`)** — extracted the duplicated ask-bar +
+    mic + AbortController + `run()` logic (and the inline Resolution/
+    SpeechRecognition types) from all 5 route-outward blocks into a generic
+    **`apps/portal/lib/useAskLar.ts`** hook + **`apps/portal/components/AskBar.tsx`**.
+    Each block keeps its unique card verbatim and imports its Resolution type
+    from its connector. **Net −300 lines.** Behavior byte-for-byte preserved —
+    a review caught two divergences (the right-kind-no-resolution message must be
+    "Nothing to route.", and PodcastsBlock's copy-timer needs its own unmount
+    cleanup) and both were fixed (`a744de4`). **Browser-verified live**: Music
+    resolves (Calm → Routing to Tidal) + Podcasts resolves + "Copied ✓" works.
+    A new block now = `useAskLar<XResolution>({kind,forceDomain,initial})` +
+    `<AskBar/>` + the card. (Also cleaned up ~10 stale already-merged branches;
+    only `master` remains.)
   - **NEXT (suggested), pick one:**
-    1. **DRY refactor — shared `useAskLar` hook + `<AskBar>`/`<ResolveCard>`
-       shell** across the 4 route-outward blocks (Music/Podcasts/Books/Film
-       duplicate the ask-bar + mic + AbortController + `run()` + the inline
-       `Resolution` types). Highest engineering value; touches 4 WORKING blocks
-       → **re-browser-verify all 4 after** (UI regressions slip past build/test —
-       see the CSP lesson below).
-    2. **Another keyless block** (additive, lower-risk than refactoring): a
-       **News/Reading** route-outward block (topic → neutral sources), or a
-       **Maps/Places** route-outward (OpenStreetMap/Nominatim is keyless) "near
-       me / take me there" link block.
+    1. **Another keyless block** (additive, lowest-risk): **News/Reading**
+       route-outward (topic → neutral sources, e.g. Wikipedia/Google News
+       search), or a **Sports/Scores** or **Transit** route-outward. Each is now
+       ~1 connector + a thin block thanks to `useAskLar`/`AskBar`.
+    2. **Depth over breadth:** wire a real Lumina API (`LUMINA_API_BASE`) so the
+       Wealth block shows live net worth (proves the finance harvest E2E), or
+       enrich Markets/Wealth analytics.
+    3. **`@lar/connector-*` Resolution-card DRY** — the `.np`/`.avail`/`.chip`
+       card shells still repeat across blocks; a `<ResolveCard>` could take
+       primary-CTA + chips as props (only do if a clean abstraction emerges —
+       the cards genuinely differ, so don't force it).
   - _Review-nit backlog ✅ ALL CLEARED (`0063981`):_ health-demo "different-day"
     test now asserts a real metric differs; `HealthBlock` SSR-anchor TZ-footgun
     comment added; Weather — split `openmeteo.js` import merged, `geocode` throws
