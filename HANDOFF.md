@@ -256,20 +256,47 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     (`trend[6]` === today's move pct). 19 vitest specs. `HealthBlock.tsx` =
     rings + steps/sleep/HR tiles + Sparkline trend + local-first note. Read-only
     — Lar never writes/syncs/sells health data. Build+test+review verified.
-  - **NEXT: Film & TV "where to watch" block** — a fourth media pillar, same
-    route-outward shape as Music/Podcasts/Books, KEYLESS. Resolve a title →
-    outward links: JustWatch search (the neutral "where can I watch this"
-    aggregator — the standout, like WorldCat for books), plus Netflix / Prime
-    Video / Disney+ / Apple TV / YouTube search deep-links. Bright-line: Lar
-    never hosts/streams — links only. (TMDB would enrich but needs a key →
-    keyless title-search/demo resolver instead, no key.)
-  - _Browser spot-check pending:_ Books + Health tabs are build/test/review
-    green; a consolidated Chrome-MCP screenshot pass across the 9 tabs is
-    queued for the next checkpoint.
+  - **Film & TV "where to watch" block ✅ MERGED (`ba7366f`)** — fourth media
+    pillar, same route-outward shape, KEYLESS. `@lar/connector-filmtv`:
+    `searchTitle` (Wikipedia REST — keyless card art + description) + pure total
+    `buildWatchLinks` (`Record<WatchLink,string>`, encodeURIComponent-safe) +
+    `resolveFilm`. Routes OUTWARD JustWatch-led ("where can I watch this" neutral
+    aggregator — the standout, like WorldCat) + Netflix / Prime / Disney+ / Apple
+    TV / YouTube / Letterboxd. 16 vitest specs + 1 live-gated. `/api/lar`
+    `forceDomain:'film'` branch; `FilmBlock.tsx` (JustWatch-led CTA + chips +
+    Wikipedia link). Bright-line: never hosts/streams — links only.
+  - **🔴 CRITICAL FIX — CSP nonce / theming (`c38cb71`)** — the Phase-3 nonce-CSP
+    middleware set `x-nonce` on the request + CSP on the **response only**.
+    Next.js derives the nonce for its OWN framework `<script>` tags from the
+    **request-side** `Content-Security-Policy` header; absent that, Next minted a
+    different nonce than the one `layout.tsx` stamps on the inline themeCss
+    `<style>` + theme-boot `<script>`. The response CSP whitelisted only one, so
+    the browser **blocked the themeCss `<style>` (`style.sheet === null`)** →
+    every theme variable resolved empty → ALL accent CTAs, glass + mesh vanished
+    app-wide (page fell back to black-on-white). Fix: also set the CSP on the
+    **request** headers (the documented Next.js nonce contract) in
+    `middleware.ts`. **This passed build + test + code-review and only surfaced
+    under live browser verification — UI changes MUST be browser-checked.**
+  - **All 10 tabs browser-verified ✅** (Chrome MCP, ember theme): theme vars
+    resolve (`--hearth #d98a2b`, `--body #eef1f6`), warm mesh + glass render,
+    Books resolves live (Open Library → "Borrow from a library →" amber CTA),
+    Film resolves live (Wikipedia + "Where to watch →"), Health rings/tiles/
+    sparkline render (Move/Exercise/Stand 73/100/83%, steps, sleep 7h18m, HR 67).
+  - **Media-block polish ✅ MERGED (`a051d63`)** — Music/Podcasts/Books/Film
+    `.cover` `<img>` now hides itself `onError` (no broken-image box on a 404
+    cover/artwork/thumbnail); Film default query `Dune` → `Dune movie` (Wikipedia
+    card resolves the film, not the sand-dune article).
+  - **NEXT (suggested): keyless Weather block** — first block with REAL live
+    keyless data via **Open-Meteo** (no API key, no token; geocoding + forecast
+    both keyless). "Guardian of your home" → weather at home. Dashboard shape like
+    Health/Wealth (current conditions + a few-day forecast, themed). Read-only.
+    Alternatively: the **shared `useAskLar` hook / `<MediaBlock>` shell** DRY
+    refactor across the 4 route-outward blocks (they duplicate the ask-bar +
+    AbortController + mic + `run()` logic) — higher value but touches 4 working
+    blocks, so re-browser-verify after.
   - _Optional follow-ups (non-blocking nits):_ strengthen health-demo
     "different-day" test to assert a metric value differs (not just
-    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor;
-    shared resolution-types DRY refactor across the media blocks.
+    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor.
 
   **Everything in V2 that does not need an account is done.** What remains in
   V2 is account-gated:
