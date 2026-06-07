@@ -14,6 +14,7 @@ import { VaultPanel } from './VaultPanel';
 import { HealthBlock } from './HealthBlock';
 import { WeatherBlock } from './WeatherBlock';
 import { PlacesBlock } from './PlacesBlock';
+import { DictionaryBlock } from './DictionaryBlock';
 
 const TABS = [
   { key: 'home', label: 'Overview', ico: '◫' },
@@ -23,6 +24,7 @@ const TABS = [
   { key: 'music', label: 'Music', ico: '♪' },
   { key: 'podcasts', label: 'Podcasts', ico: '🎙' },
   { key: 'books', label: 'Books', ico: '📚' },
+  { key: 'define', label: 'Dictionary', ico: '📖' },
   { key: 'film', label: 'Film & TV', ico: '🎬' },
   { key: 'wealth', label: 'Wealth', ico: '◈' },
   { key: 'markets', label: 'Markets', ico: '📈' },
@@ -70,6 +72,7 @@ export function Dashboard() {
           {tab === 'music' && <MusicBlock />}
           {tab === 'podcasts' && <PodcastsBlock />}
           {tab === 'books' && <BooksBlock />}
+          {tab === 'define' && <DictionaryBlock />}
           {tab === 'film' && <FilmBlock />}
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'markets' && <MarketsBlock />}

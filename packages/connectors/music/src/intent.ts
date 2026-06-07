@@ -59,6 +59,7 @@ const ENTITY_FOR_DOMAIN: Record<Domain, EntityType> = {
   film: 'movie',
   book: 'album',
   place: 'location',
+  define: 'word',
 };
 
 function detectIntent(t: string): Intent {
