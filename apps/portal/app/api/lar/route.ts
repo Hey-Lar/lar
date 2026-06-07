@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { Platform } from '@lar/shared';
 import { parseIntentDeterministic, resolveMusic } from '@lar/connector-music';
 import { resolvePodcast } from '@lar/connector-podcasts';
+import { resolveBook } from '@lar/connector-books';
 import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 import { authorize } from '../../../lib/authz';
 
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
     const body = (await req.json()) as {
       transcript?: string;
       platformPriority?: Platform[];
-      forceDomain?: 'music' | 'podcast';
+      forceDomain?: 'music' | 'podcast' | 'book';
     };
     const transcript = body.transcript?.trim();
     if (!transcript) {
@@ -36,10 +37,10 @@ export async function POST(req: Request) {
 
     // Phase 1 handles media-launch intents; transport (pause/next) arrives with
     // the Android MediaController phase, so we surface a note rather than guess.
-    // Domain must also be routable (music/podcast) — film/book actions fall
+    // Domain must also be routable (music/podcast/book) — film actions fall
     // through to the note branch even when the intent looks launchable.
     const launchable =
-      (routed.domain === 'music' || routed.domain === 'podcast') &&
+      (routed.domain === 'music' || routed.domain === 'podcast' || routed.domain === 'book') &&
       (routed.intent === 'play' ||
         routed.intent === 'open' ||
         routed.intent === 'recommend' ||
@@ -58,6 +59,11 @@ export async function POST(req: Request) {
     if (routed.domain === 'podcast') {
       const resolution = await resolvePodcast(routed);
       return NextResponse.json({ ok: true, kind: 'podcast', action: routed, resolution });
+    }
+
+    if (routed.domain === 'book') {
+      const resolution = await resolveBook(routed);
+      return NextResponse.json({ ok: true, kind: 'book', action: routed, resolution });
     }
 
     // Default: music routing (back-compat — resolution field always present).
