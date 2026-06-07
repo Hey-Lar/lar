@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Icon } from '@lar/ui';
 import { AskBar } from './AskBar';
 import type { SpeechRecognitionLike } from '../lib/useAskLar';
 
@@ -234,7 +235,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
             style={{ marginTop: 12, cursor: 'pointer', border: 'none', background: 'none' }}
             onClick={() => onNavigate('weather')}
           >
-            Open Weather →
+            Open Weather <Icon name="route" size={14} className="chip-arrow" />
           </button>
         </div>
       )}
@@ -254,7 +255,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
               rel="noreferrer"
               style={{ marginTop: 14, display: 'inline-block' }}
             >
-              {summary.openLabel} →
+              {summary.openLabel} <Icon name="route" size={14} className="chip-arrow" />
             </a>
           )}
           <button
@@ -262,7 +263,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
             style={{ marginTop: 10, cursor: 'pointer', border: '1px solid var(--stroke)' }}
             onClick={() => onNavigate(summary.tab)}
           >
-            Open {summary.label} tab →
+            Open {summary.label} tab <Icon name="route" size={14} className="chip-arrow" />
           </button>
           <div className="note" style={{ marginTop: 10 }}>
             Lar routes you outward — your choice of app. Read-only.

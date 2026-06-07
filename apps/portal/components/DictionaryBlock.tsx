@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '@lar/ui';
 import type { WordResolution } from '@lar/connector-dictionary';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -51,9 +52,9 @@ export function DictionaryBlock() {
               target="_blank"
               rel="noreferrer"
               className="chip"
-              style={{ display: 'inline-block', marginBottom: 12 }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12 }}
             >
-              🔊 Listen
+              <Icon name="play" size={14} /> Listen
             </a>
           )}
 
@@ -79,7 +80,7 @@ export function DictionaryBlock() {
 
           {/* PRIMARY: Wiktionary — neutral open-data dictionary, no commercial lock-in */}
           <a className="open" href={ask.res.links.wiktionary} target="_blank" rel="noreferrer">
-            Open in Wiktionary →
+            Open in Wiktionary <Icon name="route" size={14} className="chip-arrow" />
           </a>
 
           <div className="avail">
