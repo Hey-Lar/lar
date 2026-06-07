@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@lar/connector-books": "*",
+    "@lar/connector-dictionary": "*",
     "@lar/connector-filmtv": "*",
     "@lar/connector-places": "*",
     "@lar/connector-finance": "*",
