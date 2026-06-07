@@ -12,6 +12,7 @@ const nextConfig = {
     '@lar/connector-music',
     '@lar/connector-finance',
     '@lar/connector-podcasts',
+    '@lar/connector-weather',
   ],
   webpack(config) {
     // @lar/crypto uses ESM-style `.js` extension imports on `.ts` source files
