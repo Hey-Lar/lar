@@ -61,43 +61,43 @@ describe('weatherFromCode', () => {
   it('returns clear for code 0', () => {
     const r = weatherFromCode(0);
     expect(r.label).toBe('Clear sky');
-    expect(r.icon).toBe('☀️');
+    expect(r.icon).toBe('wx-clear');
   });
 
   it('returns partly cloudy for code 2', () => {
     const r = weatherFromCode(2);
     expect(r.label).toBe('Partly cloudy');
-    expect(r.icon).toBe('⛅');
+    expect(r.icon).toBe('wx-partly');
   });
 
   it('returns rain for code 63', () => {
     const r = weatherFromCode(63);
     expect(r.label).toBe('Rain');
-    expect(r.icon).toBe('🌧️');
+    expect(r.icon).toBe('wx-rain');
   });
 
   it('returns snow for code 73', () => {
     const r = weatherFromCode(73);
     expect(r.label).toBe('Snow');
-    expect(r.icon).toBe('🌨️');
+    expect(r.icon).toBe('wx-snow');
   });
 
   it('returns thunderstorm for code 95', () => {
     const r = weatherFromCode(95);
     expect(r.label).toBe('Thunderstorm');
-    expect(r.icon).toBe('⛈️');
+    expect(r.icon).toBe('wx-storm');
   });
 
   it('returns thunderstorm with hail for code 96', () => {
     const r = weatherFromCode(96);
     expect(r.label).toContain('Thunderstorm');
-    expect(r.icon).toBe('⛈️');
+    expect(r.icon).toBe('wx-storm');
   });
 
   it('returns unknown for unrecognised code', () => {
     const r = weatherFromCode(999);
     expect(r.label).toBe('Unknown');
-    expect(r.icon).toBe('❓');
+    expect(r.icon).toBe('wx-unknown');
   });
 });
 
@@ -131,7 +131,7 @@ describe('resolveWeather', () => {
     expect(snap.current.windKph).toBe(14);
     // weather_code 2 → Partly cloudy
     expect(snap.current.label).toBe('Partly cloudy');
-    expect(snap.current.icon).toBe('⛅');
+    expect(snap.current.icon).toBe('wx-partly');
   });
 
   it('builds daily array with length 5', async () => {
@@ -153,13 +153,13 @@ describe('resolveWeather', () => {
     const d0 = snap.daily[0]!;
     expect(d0.date).toBe('2026-06-07');
     expect(d0.label).toBe('Partly cloudy');
-    expect(d0.icon).toBe('⛅');
+    expect(d0.icon).toBe('wx-partly');
     expect(d0.maxC).toBe(25);
     expect(d0.minC).toBe(16);
     // day[2]: code=61 (Slight rain)
     const d2 = snap.daily[2]!;
     expect(d2.label).toBe('Slight rain');
-    expect(d2.icon).toBe('🌧️');
+    expect(d2.icon).toBe('wx-rain');
   });
 
   it('rejects with "No place found" when geocoding returns no results', async () => {

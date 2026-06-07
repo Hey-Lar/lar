@@ -10,7 +10,7 @@ import { DEFAULT_PLATFORM_PRIORITY } from '../../../lib/prefs';
 import { authorize } from '../../../lib/authz';
 
 /**
- * "Hey Lar" → action → dispatch.
+ * "Hey Lar" -> action -> dispatch.
  *
  * Keyless brain: the deterministic parser turns a transcript into a LarAction.
  * (Cloud escalation to the Claude API plugs in HERE when LAR_ANTHROPIC_KEY is

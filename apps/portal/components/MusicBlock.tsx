@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '@lar/ui';
 import type { MusicResolution } from '@lar/connector-music';
 import { AskBar } from './AskBar';
 import { useAskLar } from '../lib/useAskLar';
@@ -72,7 +73,8 @@ export function MusicBlock() {
             </div>
           </div>
           <a className="open" href={ask.res.openUrl} target="_blank" rel="noreferrer">
-            Open in {label(ask.res.chosenPlatform)} →
+            Open in {label(ask.res.chosenPlatform)}{' '}
+            <Icon name="route" size={14} className="chip-arrow" />
           </a>
           <div className="avail">
             <span className="avail-l">Available on</span>

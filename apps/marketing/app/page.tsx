@@ -1,3 +1,4 @@
+import { Icon } from '@lar/ui';
 import { AvailableOnDemo } from '../components/AvailableOnDemo';
 import { Nav } from '../components/Nav';
 import { PitchGrid } from '../components/PitchGrid';
@@ -17,7 +18,10 @@ export default function HomePage() {
         {/* HERO */}
         <section className="hero glass">
           <span className="hero-eyebrow">
-            <span aria-hidden>✺</span> The guardian of your home
+            <span aria-hidden>
+              <Icon name="mark" size={16} />
+            </span>{' '}
+            The guardian of your home
           </span>
           <h1>
             One <em>warm</em> surface for everything you control.
@@ -29,7 +33,7 @@ export default function HomePage() {
           </p>
           <div className="hero-actions">
             <a className="btn primary" href="http://localhost:4200/">
-              See the portal →
+              See the portal <Icon name="route" size={16} className="chip-arrow" />
             </a>
             <a className="btn ghost" href="https://github.com/amari/lar" rel="noreferrer">
               Read the build
@@ -41,7 +45,7 @@ export default function HomePage() {
         <section className="avail-demo glass">
           <div className="avail-track">
             <div className="avail-cover" aria-hidden>
-              ♪
+              <Icon name="music" size={28} />
             </div>
             <div>
               <div className="eyebrow">Try it · keyless demo</div>

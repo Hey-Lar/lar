@@ -1,5 +1,7 @@
 'use client';
 
+import { Icon } from '@lar/ui';
+
 export function AskBar(props: {
   value: string;
   onChange: (s: string) => void;
@@ -25,7 +27,7 @@ export function AskBar(props: {
         onClick={props.onMic}
         aria-label="Speak to Lar"
       >
-        🎤
+        <Icon name="mic" size={18} />
       </button>
       <button className="go" onClick={props.onSubmit} disabled={props.loading}>
         {props.loading ? '…' : 'Ask Lar'}

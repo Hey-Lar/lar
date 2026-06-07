@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Icon } from '@lar/ui';
 import { encryptSecret, decryptSecret, createVaultStore } from '@lar/crypto';
 import type { VaultStore } from '@lar/crypto';
 
@@ -172,9 +173,7 @@ function VaultPanelInner() {
       setUnlockedInfo('');
 
       refreshStoredList(store);
-      setSuccessMsg(
-        '🔒 Encrypted & stored on this device — ciphertext only. Never sent to a server.',
-      );
+      setSuccessMsg('Encrypted & stored on this device — ciphertext only. Never sent to a server.');
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : 'Encryption failed.');
     }
@@ -206,7 +205,7 @@ function VaultPanelInner() {
 
       // Show confirmation only — length of the key, not the key itself
       setUnlockedInfo(
-        `Unlocked ✓ — key is valid (${plainKey.length} chars). Held in memory only. Auto-clears in 120 s.`,
+        `Unlocked — key is valid (${plainKey.length} chars). Held in memory only. Auto-clears in 120 s.`,
       );
       setPassphraseInput('');
     } catch (e) {
@@ -383,7 +382,7 @@ function VaultPanelInner() {
               return (
                 <li key={id} className="vault-stored-item">
                   <span className="vault-stored-lock" aria-hidden>
-                    &#x1F512;
+                    <Icon name="connect" size={16} />
                   </span>
                   <span className="vault-stored-label">{label}</span>
                   <span className="badge demo" style={{ marginLeft: 'auto' }}>
