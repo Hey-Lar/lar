@@ -404,13 +404,19 @@ aurora·warm-mesh`) via `SceneBackground.tsx` + `[data-scene]` CSS + the
     blur) sliders · motion toggle. Live + persisted (`lar-appearance`; theme→
     `lar-theme`); the frost slider scales `--glass-blur` through the elevations.
     Browser-verified: opens, scene-swap/sliders apply live.
-  - _Design polish backlog (next iteration):_ scene-picker thumbnails are samey
-    (make each scene's preview more distinct); the **aurora** scene reads warm-
-    heavy (rebalance teal/indigo ribbons); the hero **weather** icon is muted-gray
-    (consider `--hearth`); tune **ember/light** tile transparency (they read
-    frosted-white on light — fine, but could be glassier); optional `hearth` SVG
-    mantel silhouette; the dev **cold-start tab-click race** (first click after a
-    cold `next dev` start can miss — prod/`next start` unaffected).
+  - **Design polish 1 ✅ MERGED (`c6c4bbc`)** — the `hearth` scene now has a real
+    **"designed room" silhouette** (centered fireplace/mantel with the warm glow
+    in its arched opening + armchair + floor lamp + potted plant + floor line;
+    subtle `--sil-*` layers, legible behind glass — browser-verified cozy on a
+    sparse tab); scene-picker thumbnails are distinct per-scene previews; the
+    **aurora** scene rebalanced cool (teal+indigo dominant, warm a small accent);
+    the hero **weather** icon is hearth-amber with muted forecast icons.
+  - _Design polish backlog (still open, next iteration):_ scene thumbnails could
+    be more vivid still (subtle at thumbnail size); tune **ember/light** tile
+    transparency (frosted-white on light — could be glassier); maybe make the
+    hearth room silhouette a touch more present; the dev **cold-start tab-click
+    race** (first click after a cold `next dev` start can miss — prod/`next
+start` unaffected; a dev-only hydration timing thing).
 
   - **NEXT (suggested), pick one:** 0. **Enrich the global bar:** show richer inline results (cover art / chips,
     not just the primary link), wire its mic, route low-confidence parses to
