@@ -184,6 +184,46 @@ describe('resolveWeather', () => {
     await expect(resolveWeather('Lisbon', fetchImpl)).rejects.toThrow('HTTP 500');
   });
 
+  it('does not crash and yields only safely-buildable entries when daily arrays are truncated', async () => {
+    // Simulate a response where `time` has 5 entries but the temperature arrays
+    // have only 3 — the resolver must skip the mismatched tail rather than
+    // producing NaN / undefined entries.
+    const truncatedForecastPayload = {
+      current: {
+        time: '2026-06-07T12:00',
+        temperature_2m: 22.6,
+        relative_humidity_2m: 65,
+        apparent_temperature: 21.3,
+        weather_code: 2,
+        wind_speed_10m: 14.4,
+      },
+      current_units: {
+        temperature_2m: '°C',
+        apparent_temperature: '°C',
+        wind_speed_10m: 'km/h',
+      },
+      daily: {
+        time: ['2026-06-07', '2026-06-08', '2026-06-09', '2026-06-10', '2026-06-11'],
+        weather_code: [2, 3, 61],
+        temperature_2m_max: [24.5, 22.1, 19.8],
+        temperature_2m_min: [16.2, 15.8, 14.1],
+      },
+    };
+    const fetchImpl = fakeFetch([
+      ['geocoding-api', geoPayload],
+      ['api.open-meteo.com', truncatedForecastPayload],
+    ]);
+    const snap = await resolveWeather('Lisbon', fetchImpl);
+    // Only the 3 fully-populated entries should be included.
+    expect(snap.daily.length).toBe(3);
+    for (const day of snap.daily) {
+      expect(Number.isFinite(day.maxC)).toBe(true);
+      expect(Number.isFinite(day.minC)).toBe(true);
+      expect(day.maxC).not.toBeNaN();
+      expect(day.minC).not.toBeNaN();
+    }
+  });
+
   // Live end-to-end (no key). Run with: LAR_LIVE=1 npx vitest run
   it.skipIf(process.env['LAR_LIVE'] !== '1')(
     'resolves Lisbon live (Open-Meteo, keyless)',

@@ -6,8 +6,7 @@
  * No API key, no signup, no token required (Open-Meteo public API).
  */
 
-import { geocode } from './openmeteo.js';
-import { fetchForecast } from './openmeteo.js';
+import { geocode, fetchForecast } from './openmeteo.js';
 import { weatherFromCode } from './wmo.js';
 
 export interface CurrentWeather {
