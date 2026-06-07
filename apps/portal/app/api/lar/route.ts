@@ -38,8 +38,8 @@ export async function POST(req: Request) {
 
     // Phase 1 handles media-launch intents; transport (pause/next) arrives with
     // the Android MediaController phase, so we surface a note rather than guess.
-    // Domain must also be routable (music/podcast/book) — film actions fall
-    // through to the note branch even when the intent looks launchable.
+    // Launchable = a routable media domain (music/podcast/book/film) paired with
+    // a launch-style intent (play/open/recommend/queue); anything else gets a note.
     const launchable =
       (routed.domain === 'music' ||
         routed.domain === 'podcast' ||

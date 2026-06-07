@@ -48,12 +48,27 @@ describe('buildWatchLinks', () => {
     expect(links['letterboxd']).toBeTruthy();
   });
 
-  it('encodes spaces as %20', () => {
+  it('encodes spaces as %20 in all 7 links', () => {
     const links = buildWatchLinks('dune movie');
     const enc = encodeURIComponent('dune movie');
-    expect(links['justwatch']).toContain(enc);
-    expect(links['netflix']).toContain(enc);
-    expect(links['letterboxd']).toContain(enc);
+    for (const url of Object.values(links)) {
+      expect(url).toContain(enc);
+    }
+  });
+
+  it('encodes &, # and other URL-significant chars so the query cannot break out', () => {
+    const q = 'AT&T #1 movie';
+    const enc = encodeURIComponent(q); // -> AT%26T%20%231%20movie
+    expect(enc).toContain('%26'); // & encoded
+    expect(enc).toContain('%23'); // # encoded
+    const links = buildWatchLinks(q);
+    for (const url of Object.values(links)) {
+      expect(url).toContain(enc);
+    }
+    // The raw ampersand must never leak into justwatch's single-param URL
+    // (it would split q=… and silently change the search), nor the raw hash.
+    expect(links['justwatch']).not.toContain('AT&T');
+    expect(links['justwatch']).not.toContain('#1');
   });
 
   it('justwatch link points to justwatch.com', () => {
