@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { AgendaItem } from '../lib/agenda-demo';
 import { currentItem, nextUpcoming } from '../lib/agenda-demo';
+import { GlobalAsk } from './GlobalAsk';
 
 interface Glance {
   netWorthEur: number;
@@ -114,6 +115,8 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
           <span className="ov-sec">:{ss}</span>
         </div>
       </div>
+
+      <GlobalAsk onNavigate={onNavigate} />
 
       <p className="lead">
         Your home, one surface. Control your media, money, health and home — and Lar routes you to
