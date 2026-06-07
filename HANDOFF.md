@@ -246,16 +246,30 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
   Autonomous work now continues as **post-V2 keyless feature increments** that
   extend the product along the route-outward thesis (each = subagent-driven,
   spec+quality reviewed, merged `--no-ff` green, HANDOFF kept current):
-
   - **Books block ✅ MERGED (`02d8411`)** — see the connector bullet above.
-  - **NEXT: Health dashboard** — promote the inline `HealthBlock` shell (in
-    `Dashboard.tsx`) into a real **keyless demo dashboard** like Wealth:
-    activity rings (move/exercise/stand), steps, sleep, resting HR, a 7-day
-    trend sparkline, all from a pure deterministic `health-demo` generator
-    (mirror `agenda-demo`/`synthetic-ohlc`). Local-first framing: "your data,
-    on-device, never sold." Read-only — Lar never writes health data.
-  - _Then (candidates):_ Film & TV "where to watch" route-outward block
-    (keyless via a demo/title resolver), shared resolution-types DRY refactor.
+  - **Health dashboard ✅ MERGED (`8049b28`)** — promoted the inline shell to a
+    real **keyless local-first** dashboard. `apps/portal/lib/health-demo.ts`
+    `generateHealth(asOfMs)` = pure deterministic generator (per-day
+    xmur3+mulberry32 seed → stable across the day so SSR/CSR agree, differs day
+    to day; mirrors `agenda-demo`/`synthetic-ohlc`): move/exercise/stand rings
+    (pct clamped 0..100), steps, sleepHours, restingHr, 7-day move% trend
+    (`trend[6]` === today's move pct). 19 vitest specs. `HealthBlock.tsx` =
+    rings + steps/sleep/HR tiles + Sparkline trend + local-first note. Read-only
+    — Lar never writes/syncs/sells health data. Build+test+review verified.
+  - **NEXT: Film & TV "where to watch" block** — a fourth media pillar, same
+    route-outward shape as Music/Podcasts/Books, KEYLESS. Resolve a title →
+    outward links: JustWatch search (the neutral "where can I watch this"
+    aggregator — the standout, like WorldCat for books), plus Netflix / Prime
+    Video / Disney+ / Apple TV / YouTube search deep-links. Bright-line: Lar
+    never hosts/streams — links only. (TMDB would enrich but needs a key →
+    keyless title-search/demo resolver instead, no key.)
+  - _Browser spot-check pending:_ Books + Health tabs are build/test/review
+    green; a consolidated Chrome-MCP screenshot pass across the 9 tabs is
+    queued for the next checkpoint.
+  - _Optional follow-ups (non-blocking nits):_ strengthen health-demo
+    "different-day" test to assert a metric value differs (not just
+    `generatedFor`); add a TZ-footgun comment on `HealthBlock`'s SSR anchor;
+    shared resolution-types DRY refactor across the media blocks.
 
   **Everything in V2 that does not need an account is done.** What remains in
   V2 is account-gated:
