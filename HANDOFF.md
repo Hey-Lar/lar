@@ -301,6 +301,15 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     no location stored, no client→third-party fetch.
   - _Tabs now (11):_ Overview · Agenda · **Weather** · Music · Podcasts ·
     **Books** · **Film & TV** · Wealth · Markets · **Health** · Connect.
+  - **Overview surfacing ✅ MERGED (`110b263`)** — the landing quick-launch grid
+    now surfaces Weather/Books/Film alongside Music/Podcasts/Health (was just
+    Music/Podcasts/Health). Browser-verified themed.
+  - **CSP regression guard ✅ MERGED (`3dceeae`)** — `apps/portal/middleware.test.ts`
+    (5 specs). The key spec asserts the **request-side** CSP carries the same
+    nonce as the response CSP (fails closed if the `c38cb71` fix is ever undone),
+    plus the hardening-header set, fresh-nonce-per-request, and kill-switch
+    header. Portal vitest now 47 specs (5 files). **This guards the most
+    important fix of the session** — the one that build/test/review all missed.
   - **NEXT (suggested), pick one:**
     1. **DRY refactor — shared `useAskLar` hook + `<AskBar>`/`<ResolveCard>`
        shell** across the 4 route-outward blocks (Music/Podcasts/Books/Film
