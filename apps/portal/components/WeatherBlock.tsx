@@ -195,7 +195,7 @@ export function WeatherBlock() {
             {snapshot.daily.map((day) => (
               <div key={day.date} className="card" style={{ textAlign: 'center' }}>
                 <div className="eyebrow">{weekday(day.date)}</div>
-                <div style={{ margin: '8px 0 4px', color: 'var(--hearth)' }} aria-hidden>
+                <div style={{ margin: '8px 0 4px', color: 'var(--ink-soft)' }} aria-hidden>
                   <Icon name={day.icon as IconName} size={28} strokeWidth={1.5} />
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{day.maxC}°</div>
