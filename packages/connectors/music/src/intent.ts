@@ -58,6 +58,7 @@ const ENTITY_FOR_DOMAIN: Record<Domain, EntityType> = {
   podcast: 'show',
   film: 'movie',
   book: 'album',
+  place: 'location',
 };
 
 function detectIntent(t: string): Intent {

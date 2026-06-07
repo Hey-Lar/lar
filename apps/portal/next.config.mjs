@@ -10,6 +10,7 @@ const nextConfig = {
     '@lar/connector-books',
     '@lar/connector-filmtv',
     '@lar/connector-music',
+    '@lar/connector-places',
     '@lar/connector-finance',
     '@lar/connector-podcasts',
     '@lar/connector-weather',
