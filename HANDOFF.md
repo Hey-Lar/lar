@@ -315,9 +315,9 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     Apple/Waze chips). **Browser-verified live** (Time Out Market Lisboa →
     address + OSM link + 4 map chips). Bright-line: links only — never embeds a
     map tile service, uses geolocation, or stores location.
-  - _Tabs now (12):_ Overview · Agenda · **Weather** · **Places** · Music ·
-    Podcasts · **Books** · **Film & TV** · Wealth · Markets · **Health** ·
-    Connect.
+  - _Tabs now (13):_ Overview · Agenda · **Weather** · **Places** · Music ·
+    Podcasts · **Books** · **Dictionary** · **Film & TV** · Wealth · Markets ·
+    **Health** · Connect.
   - **Overview surfacing ✅ MERGED (`110b263` + `987cda7`)** — the landing
     quick-launch grid now surfaces all of Weather/Places/Books/Film alongside
     Music/Podcasts/Health (was just Music/Podcasts/Health). Browser-verified
@@ -341,11 +341,20 @@ salt,iv,ct}`, no plaintext key/passphrase. The visible proof of the Phase-0
     A new block now = `useAskLar<XResolution>({kind,forceDomain,initial})` +
     `<AskBar/>` + the card. (Also cleaned up ~10 stale already-merged branches;
     only `master` remains.)
+  - **Dictionary block ✅ MERGED (`bf3c02b`)** — FIRST block built on the new
+    `useAskLar`/`AskBar` shell (proof the refactor pays off). KEYLESS via
+    `dictionaryapi.dev` (Wiktionary open data, server-side). Added a `'define'`
+    domain + `'word'` entity to `@lar/shared`. `@lar/connector-dictionary`:
+    `lookupWord` (404 → fail-loud before any array access) + pure `buildWordLinks`
+    - `resolveWord`. 11 vitest specs + 1 live-gated. `DictionaryBlock.tsx` (word +
+      IPA phonetic + 🔊 audio link + senses [partOfSpeech + definitions] + Wiktionary-
+      led CTA + Merriam-Webster/Google chips). **Browser-verified live** (serendipity
+      → IPA + 2 noun senses + Wiktionary). Bright-line: keyless, read-only, never
+      stores queries.
   - **NEXT (suggested), pick one:**
-    1. **Another keyless block** (additive, lowest-risk): **News/Reading**
-       route-outward (topic → neutral sources, e.g. Wikipedia/Google News
-       search), or a **Sports/Scores** or **Transit** route-outward. Each is now
-       ~1 connector + a thin block thanks to `useAskLar`/`AskBar`.
+    1. **Another keyless block** (additive, lowest-risk, now ~1 connector + a thin
+       block): **News/Reading** route-outward (topic → neutral sources), a
+       **Translate** block (MyMemory API is keyless), or **Sports/Transit**.
     2. **Depth over breadth:** wire a real Lumina API (`LUMINA_API_BASE`) so the
        Wealth block shows live net worth (proves the finance harvest E2E), or
        enrich Markets/Wealth analytics.
