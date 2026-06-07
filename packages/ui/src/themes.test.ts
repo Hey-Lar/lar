@@ -15,8 +15,8 @@ describe('themes', () => {
     expect(THEMES).toEqual(['dark', 'ember', 'light']);
   });
 
-  it('defaults to ember (the brand-warm Atrium)', () => {
-    expect(DEFAULT_THEME).toBe('ember');
+  it('defaults to dark (the glassy showcase where the hearth scene shines)', () => {
+    expect(DEFAULT_THEME).toBe('dark');
     expect(THEME_STORAGE_KEY).toBe('lar-theme');
   });
 
@@ -93,6 +93,23 @@ describe('themes', () => {
     for (const name of ['ember', 'light'] as const) {
       expect(THEME_PALETTES[name].glass).toBe('rgba(255,255,255,0.55)');
       expect(THEME_PALETTES[name].glassStrong).toBe('rgba(255,255,255,0.70)');
+    }
+  });
+
+  it('every theme defines the ambient-scene tokens (silhouettes + scrim)', () => {
+    for (const name of THEMES) {
+      const p = THEME_PALETTES[name];
+      for (const key of ['silFar', 'silNear', 'sceneScrim'] as const) {
+        expect(p[key], `${name}.${key}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('themeCss() emits the scene tokens once per theme', () => {
+    const css = themeCss();
+    for (const v of ['--sil-far', '--sil-near', '--scene-scrim']) {
+      const occurrences = css.split(`${v}:`).length - 1;
+      expect(occurrences, `${v} appears once per theme`).toBe(THEMES.length);
     }
   });
 
