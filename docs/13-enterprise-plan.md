@@ -26,14 +26,11 @@ thing. Your data stays yours. We never monetize user data (see §7).
 
 ### 1.1 GitHub
 
-- **Slug:** `lar` is TAKEN (Lincoln Agri-Robotics org) and `heylar` is taken
-  (dormant user). **Available: `heylar-ai` and `lar-os`** (verified 2026-06-10).
-  → Create org **`heylar-ai`**; also register `lar-os` to protect the name.
-- **Tier:** Skip Enterprise for now. Free org $0 → **Team $4/user/mo** the moment
-  we need private-repo branch protection (which is immediately, so: Team).
-  Enterprise ($21) adds SAML/SSO, EMU, audit-log API, IP allow-lists — identity
-  machinery for orgs of many humans; zero day-1 benefit for a solo founder.
-  Revisit at first hires / SOC2 conversations. (Pricing verified 2026-06.)
+- **DECIDED 2026-06-10:** org is **`Hey-Lar`** (github.com/Hey-Lar) on
+  **Enterprise** — Alberto created + purchased it. (Context: `lar` and `heylar`
+  slugs were taken; Enterprise's SSO/EMU/audit machinery is unused for now but
+  gives compliance headroom — enable the audit log + require 2FA org-wide
+  immediately; the rest activates at first hires.)
 - **Repo topology (keep the monorepo — it is the superpower):**
   - **`lar`** — THE product monorepo (this repo, pushed up): `apps/*` (portal,
     marketing, mobile later), `packages/*`, `services/*`, `docs/*`. Turborepo +
@@ -50,11 +47,10 @@ thing. Your data stays yours. We never monetize user data (see §7).
 
 - **Domain:** `heylar.ai` stays at GoDaddy (locked there anyway; registrar is
   fine — we only edit DNS records).
-- **Email (recommendation): Proton Mail Essentials** ($6.99/user/mo) — E2EE,
-  custom-domain, walks the brand's talk ("think Proton"). Setup = MX + SPF +
-  DKIM records in GoDaddy DNS. Gotcha: desktop IMAP needs Proton Bridge; the
-  Proton apps/web are the smooth path. Pragmatic alternative: Google Workspace
-  Starter ($7) if Docs/Drive tooling matters more than E2EE optics.
+- **DECIDED 2026-06-10: Google Workspace** — `alberto@heylar.ai` is live.
+  (Pragmatic tooling pick; the product itself stays E2EE — the brand promise is
+  about USER data, not our mailbox. Revisit Proton if E2EE optics ever matter
+  for company mail.) Add aliases: `hello@`, `security@`, `legal@`.
 - **Play Console does NOT need Workspace:** a plain free Google account + $25
   one-time fee suffices (note: personal dev accounts must run a 12-tester /
   14-day closed test before production; an org account w/ D-U-N-S skips it —
@@ -78,9 +74,9 @@ thing. Your data stays yours. We never monetize user data (see §7).
 
 ### 1.4 Monthly tooling budget (initial)
 
-Vercel Pro $20 · v0 $20 · GitHub Team $4 · Proton $7 · Doppler $0 · GoDaddy
-(domain renewal only). **≈ $51/mo** + one-time Play $25. Add Supabase Pro ($25)
-and Sentry/PostHog free tiers when wired. Lean by design.
+Vercel Pro $20 · v0 $20 · GitHub Enterprise $21 · Google Workspace ~$7 ·
+Doppler $0 · GoDaddy (domain renewal only). **≈ $68/mo** + one-time Play $25.
+Add Supabase Pro ($25) and Sentry/PostHog free tiers when wired. Lean by design.
 
 ---
 
@@ -267,11 +263,11 @@ bright-line-adjacent move, any user-visible naming.
 
 ## 10. Decision log (Alberto)
 
-| #   | decision                | options                                                                        | status         |
-| --- | ----------------------- | ------------------------------------------------------------------------------ | -------------- |
-| D1  | GitHub org slug + tier  | `heylar-ai` (rec) vs `lar-os`; Team (rec) vs Enterprise                        | OPEN           |
-| D2  | Email provider          | Proton (rec, brand) vs Google Workspace (tooling)                              | OPEN           |
-| D3  | Architecture naming     | House/Rooms/Doors/Foundations/Guardians/Hearth (rec) vs keep "blocks" vs other | OPEN           |
-| D4  | Mobile start timing     | Phase C as planned (rec) vs pull earlier                                       | OPEN           |
-| D5  | Auth provider (Phase B) | Supabase vs Lar-owned — needs ADR                                              | OPEN (Phase B) |
-| D6  | Sync engine (Phase B)   | Jazz vs Evolu — prototype both                                                 | OPEN (Phase B) |
+| #   | decision                | options                           | status                                                                            |
+| --- | ----------------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| D1  | GitHub org slug + tier  | —                                 | **DECIDED 2026-06-10: org `Hey-Lar`, Enterprise**                                 |
+| D2  | Email provider          | —                                 | **DECIDED 2026-06-10: Google Workspace** (`alberto@heylar.ai`)                    |
+| D3  | Architecture naming     | —                                 | **DECIDED 2026-06-10: House language** (Rooms/Doors/Foundations/Guardians/Hearth) |
+| D4  | Mobile start timing     | —                                 | **DECIDED 2026-06-10: Phase C as planned**                                        |
+| D5  | Auth provider (Phase B) | Supabase vs Lar-owned — needs ADR | OPEN (Phase B)                                                                    |
+| D6  | Sync engine (Phase B)   | Jazz vs Evolu — prototype both    | OPEN (Phase B)                                                                    |
