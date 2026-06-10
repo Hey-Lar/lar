@@ -17,8 +17,13 @@ and resumes with zero loss. Kept current as work proceeds.
 
 ## Current state (update every increment)
 
-**Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — git initialized (local only;
-no GitHub remote yet — creating one is a one-time account step, see below).
+**Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — pushed to
+**github.com/Hey-Lar/lar** (private; org `Hey-Lar` on GitHub Enterprise;
+CI + gitleaks run on every push; Dependabot active). Sibling org repos:
+`governance` (charter, irrevocable principles, plan mirror, ADR scaffold) and
+`.github` (public org profile). **The enterprise operating plan lives at
+`docs/13-enterprise-plan.md`** (roadmap to 2027-01-01, House taxonomy, privacy
+architecture, decision log).
 Node 24 + npm. **pnpm is the canonical package manager** per the spec, but this
 machine blocked a global pnpm install (no admin write to `Program Files`), so we
 use **npm workspaces + Turborepo** for now — identical topology; switching to
