@@ -103,15 +103,15 @@ everything they control. Its seven capabilities:
 Proposal: name the architecture after the house (it matches the brand, the Lar
 mythology, and the living-room design language we just shipped):
 
-| term            | what it names                                                                                          | today's word          |
-| --------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
-| **The House**   | the whole OS (heylarOS)                                                                                | the app               |
-| **Rooms**       | user-facing capability modules (Music, Wealth, Health, Library…) — the VERTICAL axis                   | blocks/tabs           |
-| **Doors**       | outward integrations — every connector is a door out of the house (route-outward made literal)         | connectors            |
-| **Foundations** | shared horizontal packages: design system, intent parser, crypto, safety, settings                     | `packages/*`          |
-| **Guardians**   | the policy/safety layer (fail-closed gates, kill-switch, read-only finance) — Lar the guardian, plural | `@lar/safety` + authz |
-| **The Hearth**  | the global "Hey Lar" ask — the center of the house                                                     | GlobalAsk             |
-| **Surfaces**    | clients: web portal, mobile, voice, marketing                                                          | `apps/*`              |
+| term            | what it names                                                                                                                                                                                              | today's word          |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| **The House**   | the whole OS (heylarOS)                                                                                                                                                                                    | the app               |
+| **Rooms**       | user-facing capability modules (Music, Wealth, Health, Library…) — the VERTICAL axis                                                                                                                       | blocks/tabs           |
+| **Doors**       | outward integrations — every connector is a door out of the house (route-outward made literal)                                                                                                             | connectors            |
+| **Foundations** | shared horizontal packages: design system, intent parser, crypto, safety, settings                                                                                                                         | `packages/*`          |
+| **Guardians**   | the policy/safety layer (fail-closed gates, kill-switch, read-only finance) — Lar the guardian, plural                                                                                                     | `@lar/safety` + authz |
+| **Lar**         | the companion AI at the center — the global ask + the intelligence layer. The app AND the assistant share the one name: users say "ask Lar". (Replaces the earlier "Hearth" name, per Alberto 2026-06-10.) | GlobalAsk             |
+| **Surfaces**    | clients: web portal, mobile, voice, marketing                                                                                                                                                              | `apps/*`              |
 
 Alternatives considered: single-word schemes ("Blocks", "Spaces", "Tiles",
 "Wings", "Chambers") are flatter but less ownable; "Lares" (the plural spirits)
@@ -208,7 +208,7 @@ Snowflake/BigQuery/ClickHouse then — fed by D2/D3 only.
 
 1. **Lar Plus subscription** — E2EE sync across devices, cloud intent escalation
    (better voice understanding), premium Rooms, family house. Stripe.
-2. **Hardware (2027+)** — a Lar home device ("the Hearth"): mic + screen, our
+2. **Hardware (2027+)** — a Lar home device ("the Lar"): mic + screen, our
    software, locally-run wake word. Sell the object, not the person.
 3. **B2B licensing (opportunistic)** — the House shell / Guardian stack for
    OEMs. Never: ads, data sales, sponsored ranking inside Rooms.
@@ -230,11 +230,11 @@ heylar.ai` (portal) LIVE; governance repo seeded (PRIVACY/SECURITY/decisions);
   (Lumina API / T212 read-only) behind the Guardian; Stripe test-mode skeleton.
   Exit: log in on two devices, prefs sync E2EE, real net worth visible.
 - **C — Mobile + voice (Aug–Oct):** Expo app `apps/mobile` reusing every
-  Foundation; the Hearth + 4 Rooms on mobile; Android Keystore vault; PWA
+  Foundation; Lar + 4 Rooms on mobile; Android Keystore vault; PWA
   polish (installable, offline shell); wake-word research (on-device).
   Exit: closed test on Play (12 testers).
 - **D — Ecosystem (Oct–Nov):** `@lar/room-sdk` + manifest v1 + `rooms-registry`;
-  MCP host mode in the Hearth (consume external MCP servers, Guardian-gated);
+  MCP host mode in Lar (the companion) (consume external MCP servers, Guardian-gated);
   self-hosted Nango for 2-3 long-tail Doors; routines v0; developer doc site.
   Exit: one EXTERNAL developer ships a Room.
 - **E — Hardening + beta (Nov–Dec):** external security review of key design;
@@ -263,11 +263,11 @@ bright-line-adjacent move, any user-visible naming.
 
 ## 10. Decision log (Alberto)
 
-| #   | decision                | options                           | status                                                                            |
-| --- | ----------------------- | --------------------------------- | --------------------------------------------------------------------------------- |
-| D1  | GitHub org slug + tier  | —                                 | **DECIDED 2026-06-10: org `Hey-Lar`, Enterprise**                                 |
-| D2  | Email provider          | —                                 | **DECIDED 2026-06-10: Google Workspace** (`alberto@heylar.ai`)                    |
-| D3  | Architecture naming     | —                                 | **DECIDED 2026-06-10: House language** (Rooms/Doors/Foundations/Guardians/Hearth) |
-| D4  | Mobile start timing     | —                                 | **DECIDED 2026-06-10: Phase C as planned**                                        |
-| D5  | Auth provider (Phase B) | Supabase vs Lar-owned — needs ADR | OPEN (Phase B)                                                                    |
-| D6  | Sync engine (Phase B)   | Jazz vs Evolu — prototype both    | OPEN (Phase B)                                                                    |
+| #   | decision                | options                           | status                                                                         |
+| --- | ----------------------- | --------------------------------- | ------------------------------------------------------------------------------ |
+| D1  | GitHub org slug + tier  | —                                 | **DECIDED 2026-06-10: org `Hey-Lar`, Enterprise**                              |
+| D2  | Email provider          | —                                 | **DECIDED 2026-06-10: Google Workspace** (`alberto@heylar.ai`)                 |
+| D3  | Architecture naming     | —                                 | **DECIDED 2026-06-10: House language** (Rooms/Doors/Foundations/Guardians/Lar) |
+| D4  | Mobile start timing     | —                                 | **DECIDED 2026-06-10: Phase C as planned**                                     |
+| D5  | Auth provider (Phase B) | Supabase vs Lar-owned — needs ADR | OPEN (Phase B)                                                                 |
+| D6  | Sync engine (Phase B)   | Jazz vs Evolu — prototype both    | OPEN (Phase B)                                                                 |
