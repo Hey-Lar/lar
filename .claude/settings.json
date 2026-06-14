@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck)",
+      "Bash(npm test)",
+      "Bash(npm run lint)",
+      "Bash(npm run format)",
+      "Bash(npm run build)",
+      "Bash(npm install)",
+      "Bash(npm ci)",
+      "Bash(npx vitest run)",
+      "Bash(npx prettier --check:*)",
+      "Bash(npx prettier --write:*)",
+      "Bash(gitleaks protect:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git branch:*)",
+      "Bash(git merge --no-ff:*)",
+      "Bash(git stash:*)",
+      "Bash(git show:*)",
+      "Bash(bash .claude/hooks/pre-commit-gate.sh)",
+      "Bash(bash .claude/hooks/commit-gate-hook.sh)",
+      "Edit",
+      "Write",
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(*--no-verify*)",
+      "Bash(git push:*)",
+      "Bash(git push)",
+      "Bash(rm -rf *)",
+      "Bash(git commit --amend*)",
+      "Read(./**/*.local.yaml)",
+      "Read(./apps/portal/public/local/**)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/commit-gate-hook.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
