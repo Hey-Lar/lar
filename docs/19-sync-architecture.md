@@ -58,26 +58,24 @@ monetize your data — by architecture."
   same-ms ties resolve deterministically (remote keeps existing). A **hybrid logical
   clock** is the correctness upgrade under real skew — deferred.
 
-## 🔴 One-way-door decisions — need Alberto's sign-off
+## ✅ One-way-door decisions — DECIDED 2026-06-14
 
-These are hard to reverse later, so they're flagged, not assumed:
+1. **Backend → Supabase ciphertext store.** A Postgres table of ciphertext rows with
+   per-user row-level security (EU project we already have); it only ever holds blobs
+   it cannot read. _(Comes after auth/identity.)_
+2. **Device key-transfer → BOTH (pairing code + recovery-phrase backup)** — the robust
+   Ente/1Password model. **Pairing code** (existing device shows a one-time code/QR →
+   entered on the new device) hands the key over device-to-device for normal
+   multi-device use; a **recovery phrase** is the "lost all devices" backup. The server
+   never sees the key in either path. **Security-critical + brand-fatal-if-wrong** — so
+   it's built human-gated and is worth an external review before real users.
+3. **Conflict policy → last-write-wins for v1.** CRDT/per-field merge only later, where
+   both edits must survive.
 
-1. **The real backend.** The `SyncRemote` interface is backend-agnostic. The pragmatic
-   choice is **Supabase** (we have it, EU) — a Postgres table of ciphertext rows with
-   row-level security per user; it only ever holds blobs. Alternative: a dedicated
-   E2EE sync engine. _Decision: confirm Supabase-as-ciphertext-store for v1?_
-2. **Key transfer between devices.** Today the test copies the keyring (wrapped master
-   key) to device 2 out-of-band. Real options: show a one-time QR/code to pair devices,
-   or a passphrase-derived recovery that re-creates the same key. **This is the
-   security-critical, irreversible piece** — it decides how a 2nd device gets the key
-   without the server ever seeing it. _Decision: pairing-code vs recovery-phrase model?_
-   (This is exactly the kind of thing that, done wrong, is brand-fatal — so it's
-   human-gated and, when built, worth an external review before real users.)
-3. **Conflict policy.** LWW now; CRDT later only where needed. _Decision: LWW for v1 is
-   fine?_
+## What's next (gated on auth/identity, which is itself human-gated)
 
-## What's next (after sign-off)
-
-Wire `SyncRemote` to Supabase (ciphertext rows + RLS) behind auth/identity, then build
-the device-pairing flow (decision #2). Until then the engine runs fully against the
-in-memory remote — real, tested, backend-ready.
+1. **Auth/identity** (Supabase Auth) — needed before per-user RLS rows exist.
+2. **Wire `SyncRemote` → Supabase** (ciphertext rows + RLS).
+3. **Device-pairing flow** (code/QR) + **recovery-phrase** generation/restore — the
+   key-transfer crypto. Until all three land, the engine runs fully against the
+   in-memory remote — real, tested, backend-ready.
