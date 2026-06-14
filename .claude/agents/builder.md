@@ -3,6 +3,7 @@ name: builder
 description: Implements ONE numbered task from an approved plan, test-first (TDD — red, green, refactor). Keeps the diff tight and scoped to that task only; never touches unrelated code. Use after the planner, once per task, in the ship-increment loop.
 tools: Read, Glob, Grep, Edit, Write, Bash
 model: opus
+maxTurns: 30
 ---
 
 # Builder — implement one task, TDD

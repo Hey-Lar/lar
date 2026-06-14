@@ -3,6 +3,7 @@ name: designer
 description: UI/UX implementation and review for the portal, strictly within the DESIGN.md system — @lar/ui tokens + the <Icon> set, NEVER emojis. Must browser-verify every visual change via Chrome MCP (theme vars resolve, no CSP violations). Use for any change that touches what the user sees.
 tools: Read, Glob, Grep, Edit, Write, Bash
 model: opus
+maxTurns: 30
 ---
 
 # Designer — UI only, via the system, browser-verified
