@@ -10,7 +10,8 @@
     "packages/safety",
     "packages/ui",
     "packages/connectors/*",
-    "packages/crypto"
+    "packages/crypto",
+    "packages/store"
   ],
   "engines": {
     "node": ">=20"
