@@ -15,6 +15,32 @@ and resumes with zero loss. Kept current as work proceeds.
 
 ---
 
+## ► STRATEGY & GOVERNANCE LAYER (read after this intro)
+
+The plan to ship **production-ready staging by 2027-01-01** and the build-system
+governance now live in five docs. A new session should skim these before building:
+
+- **`docs/13-enterprise-plan.md`** — the enterprise operating plan (House taxonomy,
+  privacy architecture, decision log D1–D4).
+- **`docs/15-status-audit.md`** — the honest real-vs-conceptual audit (~25% real).
+- **`docs/16-roadmap-205-days.md`** — the 29-week schedule + the six-pod org +
+  definition of done. Critical path = **E2EE store + multi-device sync (wks 7–13)**.
+- **`docs/17-autonomy-and-governance.md`** — the **Fleet Steward** meta-orchestrator
+  - the **tiered autonomy model** (full-auto on reversible work; the irreversible
+    five — auth/crypto/money/prod/delete — are hook-blocked, human-only).
+- **`docs/18-company-0-to-100.md`** — incorporation (Irish Ltd + vesting + IP),
+  GDPR, E2EE audit, Merchant-of-Record payments, irreversible-mistakes shortlist.
+- **`docs/PENDING-ALBERTO.md`** — the single "ball's in your court" tracker; the
+  fleet **re-surfaces the 🔴 Open list every turn** until each item is confirmed.
+- **`.claude/agents/fleet-steward.md`** — the meta-orchestrator spec (creates,
+  scores, retires agents; never judges its own output).
+
+**Awaiting Alberto's approval** (both research-backed and ready): the **tiered
+autonomy model** (doc 17) and the **205-day schedule + pod structure** (doc 16).
+Once approved, wire the between-session GitHub Action + spend-cap/kill-switch.
+
+---
+
 ## Current state (update every increment)
 
 **Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — pushed to
