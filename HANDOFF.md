@@ -15,29 +15,38 @@ and resumes with zero loss. Kept current as work proceeds.
 
 ---
 
-## ► STRATEGY & GOVERNANCE LAYER (read after this intro)
+## ► THREE-REPO MODEL + STRATEGY LAYER (read after this intro)
 
-The plan to ship **production-ready staging by 2027-01-01** and the build-system
-governance now live in five docs. A new session should skim these before building:
+As of 2026-06-14 the **operational/strategy layer was moved OUT of this product repo**
+into a private ops repo, so `lar` stays product-only. Three repos:
 
-- **`docs/13-enterprise-plan.md`** — the enterprise operating plan (House taxonomy,
-  privacy architecture, decision log D1–D4).
-- **`docs/15-status-audit.md`** — the honest real-vs-conceptual audit (~25% real).
-- **`docs/16-roadmap-205-days.md`** — the 29-week schedule + the six-pod org +
-  definition of done. Critical path = **E2EE store + multi-device sync (wks 7–13)**.
-- **`docs/17-autonomy-and-governance.md`** — the **Fleet Steward** meta-orchestrator
-  - the **tiered autonomy model** (full-auto on reversible work; the irreversible
-    five — auth/crypto/money/prod/delete — are hook-blocked, human-only).
-- **`docs/18-company-0-to-100.md`** — incorporation (Irish Ltd + vesting + IP),
-  GDPR, E2EE audit, Merchant-of-Record payments, irreversible-mistakes shortlist.
-- **`docs/PENDING-ALBERTO.md`** — the single "ball's in your court" tracker; the
-  fleet **re-surfaces the 🔴 Open list every turn** until each item is confirmed.
-- **`.claude/agents/fleet-steward.md`** — the meta-orchestrator spec (creates,
-  scores, retires agents; never judges its own output).
+- **`Hey-Lar/lar`** (this) — the **product**: all code + durable product/architecture
+  docs (`docs/01`,`02`,`03`,`09`,`10`,`11`,`12`,`DESIGN.md`,`ARCHITECTURE`,`STACK`).
+  Plus the **agent fleet** under `.claude/agents/` (they run here, in the product dir).
+- **`Hey-Lar/mission-control`** (private ops HQ) — roadmap, status audits, founder
+  tasks, agent reports, launch playbook, enterprise plan. The **pm-auditor** agent
+  maintains it. _Do not recreate strategy/audit/roadmap docs in the product repo._
+- **`Hey-Lar/governance`** — the stable constitution (charter, irrevocable principles).
 
-**Awaiting Alberto's approval** (both research-backed and ready): the **tiered
-autonomy model** (doc 17) and the **205-day schedule + pod structure** (doc 16).
-Once approved, wire the between-session GitHub Action + spend-cap/kill-switch.
+Key ops docs (mission-control, on GitHub):
+[roadmap](https://github.com/Hey-Lar/mission-control/blob/main/roadmap/roadmap.md) ·
+[latest audit](https://github.com/Hey-Lar/mission-control/blob/main/audits/2026-06-14-status-audit.md) ·
+[autonomy & governance](https://github.com/Hey-Lar/mission-control/blob/main/governance/autonomy-and-governance.md) ·
+[Alberto's tasks](https://github.com/Hey-Lar/mission-control/blob/main/people/alberto/tasks.md) ·
+[enterprise plan](https://github.com/Hey-Lar/mission-control/blob/main/strategy/enterprise-plan.md).
+
+**The fleet** (`.claude/agents/`): `planner · builder · reviewer · security · designer
+· docs-scribe` + governance layer `fleet-steward` (meta-orchestrator), `pm-auditor`
+(status/roadmap/tasks → mission-control), `scout` (competition + research).
+
+**Finish-line bar (Alberto's):** a **working alpha on a device, robust, for one real
+external alpha user** — NOT PMF, not a formal audit gauntlet, not a 50-user cohort.
+Quality over paperwork. **Next product step:** the on-device **local-first encrypted
+store** (no backend, no account, no spend needed to start).
+
+**Open with Alberto:** he wants the orchestration/autonomy system built _deeper_ (not
+a quick-approved draft) before we wire the between-session Action. Legal/company
+formation + paid tools are explicitly **deferred** (see launch playbook).
 
 ---
 
@@ -46,10 +55,10 @@ Once approved, wire the between-session GitHub Action + spend-cap/kill-switch.
 **Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — pushed to
 **github.com/Hey-Lar/lar** (private; org `Hey-Lar` on GitHub Enterprise;
 CI + gitleaks run on every push; Dependabot active). Sibling org repos:
-`governance` (charter, irrevocable principles, plan mirror, ADR scaffold) and
-`.github` (public org profile). **The enterprise operating plan lives at
-`docs/13-enterprise-plan.md`** (roadmap to 2027-01-01, House taxonomy, privacy
-architecture, decision log).
+`governance` (charter, irrevocable principles, ADR scaffold), `mission-control`
+(ops HQ — roadmap/audits/tasks/strategy), and `.github` (public org profile). **The
+enterprise operating plan now lives in `mission-control/strategy/enterprise-plan.md`**
+(roadmap, House taxonomy, privacy architecture, decision log).
 Node 24 + npm. **pnpm is the canonical package manager** per the spec, but this
 machine blocked a global pnpm install (no admin write to `Program Files`), so we
 use **npm workspaces + Turborepo** for now — identical topology; switching to

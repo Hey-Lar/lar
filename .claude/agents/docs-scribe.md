@@ -22,9 +22,10 @@ structure (a hard rule from CLAUDE.md).
   - Tab counts, package lists, test counts, and any moved/renamed file — keep
     them exact.
 - Update any **doc the change actually touched**: `docs/DESIGN.md` when an element
-  is redesigned (same commit), `docs/ARCHITECTURE.md`/`STACK.md` on structure,
-  `docs/13-enterprise-plan.md` only if a roadmap/decision item moved. Do not
-  rewrite docs that didn't change.
+  is redesigned (same commit), `docs/ARCHITECTURE.md`/`STACK.md` on structure. Note:
+  strategy/roadmap/audit/plan docs now live in the **mission-control** ops repo, not
+  here — the **pm-auditor** agent maintains those; don't recreate them in the product
+  repo. Do not rewrite docs that didn't change.
 - Match the house style: plain language a non-technical founder can scan
   (headers, short bullets), imperative commit-adjacent phrasing, **no emojis**,
   no marketing fluff. Be accurate over impressive.
