@@ -5,9 +5,14 @@ production deploy. Phase 3 ships the platform's deploy hardening:
 **per-handler authz seam**, **per-request nonce CSP middleware**, and **a
 documented release/rollback flow**. The deploy targets in priority order:
 
-1. **Vercel** (Web portal — `apps/portal`)
-2. **Vercel** (Marketing — `apps/marketing`, once it lands)
+1. **Vercel** (Web portal — `apps/portal`) → `staging.heylar.ai`
+2. **Vercel** (Marketing — `apps/marketing`, once it lands) → `heylar.ai`
 3. **Android** (later phase — Tink + Keystore on top of `@lar/crypto`)
+
+**Vercel account (set up 2026-06-14):** team `hey-lar` (Pro), GitHub `Hey-Lar` org
+connected (all repos). Team ID `team_q7h5xMbLikP7RQeeVXl172WW` (an identifier used by
+the Vercel CLI/`vercel.json` — _not_ a secret). Import `apps/portal` and
+`apps/marketing` as two projects when we deploy.
 
 Read this end-to-end before running anything.
 
