@@ -64,6 +64,19 @@ const QUICK: Array<{ tab: string; label: string; desc: string; ico: IconName }> 
     ico: 'film',
   },
   { tab: 'health', label: 'Health', desc: 'Steps & sleep — local-first, private', ico: 'health' },
+  {
+    tab: 'remember',
+    label: 'Remember',
+    desc: 'Private memory — encrypted on this device',
+    ico: 'lock',
+  },
+  {
+    tab: 'translate',
+    label: 'Translate',
+    desc: 'Quick translate, then route outward',
+    ico: 'languages',
+  },
+  { tab: 'news', label: 'News', desc: 'Neutral sources for any topic — no lock-in', ico: 'news' },
 ];
 
 export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => void }) {
