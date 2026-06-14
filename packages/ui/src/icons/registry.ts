@@ -98,6 +98,13 @@ export const ICONS = {
     { tag: 'rect', x: 3, y: 11, width: 18, height: 11, rx: 2, ry: 2 },
     p('M7 11V7a5 5 0 0 1 10 0v4'),
   ],
+  // Locked private store (keyhole) — distinct from `connect`'s plain padlock.
+  lock: [
+    { tag: 'rect', x: 3, y: 11, width: 18, height: 11, rx: 2, ry: 2 },
+    p('M7 11V7a5 5 0 0 1 10 0v4'),
+    c(12, 16, 1),
+    p('M12 17v2'),
+  ],
   mic: [
     p('M12 19v3'),
     p('M19 10v2a7 7 0 0 1-14 0v-2'),

@@ -21,6 +21,7 @@
     "@lar/connector-weather": "*",
     "@lar/crypto": "*",
     "@lar/shared": "*",
+    "@lar/store": "*",
     "@lar/ui": "*",
     "lightweight-charts": "^4.2.3",
     "next": "^15.1.6",
