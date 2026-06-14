@@ -18,6 +18,7 @@
     "@lar/connector-finance": "*",
     "@lar/connector-music": "*",
     "@lar/connector-podcasts": "*",
+    "@lar/connector-translate": "*",
     "@lar/connector-weather": "*",
     "@lar/crypto": "*",
     "@lar/shared": "*",

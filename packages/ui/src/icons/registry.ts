@@ -105,6 +105,15 @@ export const ICONS = {
     c(12, 16, 1),
     p('M12 17v2'),
   ],
+  // Translate / languages (Lucide-adapted).
+  languages: [
+    p('m5 8 6 6'),
+    p('m4 14 6-6 2-3'),
+    p('M2 5h12'),
+    p('M7 2h1'),
+    p('m22 22-5-10-5 10'),
+    p('M14 18h6'),
+  ],
   mic: [
     p('M12 19v3'),
     p('M19 10v2a7 7 0 0 1-14 0v-2'),
