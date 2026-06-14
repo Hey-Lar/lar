@@ -19,6 +19,7 @@ import { WeatherBlock } from './WeatherBlock';
 import { PlacesBlock } from './PlacesBlock';
 import { DictionaryBlock } from './DictionaryBlock';
 import { TranslateBlock } from './TranslateBlock';
+import { NewsBlock } from './NewsBlock';
 
 const TABS: ReadonlyArray<{ key: string; label: string; ico: IconName }> = [
   { key: 'home', label: 'Overview', ico: 'home' },
@@ -30,6 +31,7 @@ const TABS: ReadonlyArray<{ key: string; label: string; ico: IconName }> = [
   { key: 'books', label: 'Books', ico: 'books' },
   { key: 'define', label: 'Dictionary', ico: 'dictionary' },
   { key: 'translate', label: 'Translate', ico: 'languages' },
+  { key: 'news', label: 'News', ico: 'news' },
   { key: 'film', label: 'Film & TV', ico: 'film' },
   { key: 'wealth', label: 'Wealth', ico: 'wealth' },
   { key: 'markets', label: 'Markets', ico: 'markets' },
@@ -48,6 +50,7 @@ type TabKey =
   | 'books'
   | 'define'
   | 'translate'
+  | 'news'
   | 'film'
   | 'wealth'
   | 'markets'
@@ -110,6 +113,7 @@ export function Dashboard() {
           {tab === 'books' && <BooksBlock />}
           {tab === 'define' && <DictionaryBlock />}
           {tab === 'translate' && <TranslateBlock />}
+          {tab === 'news' && <NewsBlock />}
           {tab === 'film' && <FilmBlock />}
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'markets' && <MarketsBlock />}

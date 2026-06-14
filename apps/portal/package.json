@@ -17,6 +17,7 @@
     "@lar/connector-places": "*",
     "@lar/connector-finance": "*",
     "@lar/connector-music": "*",
+    "@lar/connector-news": "*",
     "@lar/connector-podcasts": "*",
     "@lar/connector-translate": "*",
     "@lar/connector-weather": "*",

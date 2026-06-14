@@ -114,6 +114,15 @@ export const ICONS = {
     p('m22 22-5-10-5 10'),
     p('M14 18h6'),
   ],
+  // News / newspaper (Lucide-adapted).
+  news: [
+    p(
+      'M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2',
+    ),
+    p('M18 14h-8'),
+    p('M15 18h-5'),
+    p('M10 6h8v4h-8V6Z'),
+  ],
   mic: [
     p('M12 19v3'),
     p('M19 10v2a7 7 0 0 1-14 0v-2'),
