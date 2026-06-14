@@ -1,11 +1,31 @@
+# Dependabot — keep the noise LOW.
+# - Weekly, grouped into ONE PR per ecosystem (not a PR per package).
+# - MAJOR upgrades are IGNORED here: they need a deliberate migration, not a
+#   surprise bot PR. (Security vulnerability alerts still fire regardless.)
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 3
+    groups:
+      npm-minor-patch:
+        update-types: ['minor', 'patch']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 2
+    groups:
+      github-actions:
+        patterns: ['*']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
