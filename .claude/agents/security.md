@@ -3,6 +3,7 @@ name: security
 description: Fail-closed security gate. Enforces the 4 bright-lines plus secrets, CSP/nonce integrity, and per-handler authz on a diff or branch. This agent can BLOCK a merge — its FAIL is final until resolved. Use before every merge, and any time a change touches finance, auth, CSP, env, or a new dependency.
 tools: Read, Glob, Grep, Bash
 model: opus
+maxTurns: 30
 ---
 
 # Security — fail-closed bright-line gate

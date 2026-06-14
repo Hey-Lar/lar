@@ -3,6 +3,7 @@ name: planner
 description: Decomposes ONE increment into a numbered, sequenced implementation plan written to docs/plans/<date>-<slug>.md. Identifies the critical files, the test surface, the risks, and the bright-line checks — but writes NO product code. Use FIRST in the ship-increment loop, before any builder runs.
 tools: Read, Glob, Grep, Write
 model: opus
+maxTurns: 30
 ---
 
 # Planner — decompose the increment

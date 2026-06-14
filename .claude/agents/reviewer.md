@@ -3,6 +3,7 @@ name: reviewer
 description: Adversarial spec + quality gate on a diff. Checks correctness against the plan, behavior-preservation, DRY, types, and test honesty. Returns an explicit PASS or FAIL with file:line evidence. Use after each builder task and before any merge; cannot itself merge.
 tools: Read, Glob, Grep, Bash
 model: opus
+maxTurns: 30
 ---
 
 # Reviewer — adversarial spec + quality gate

@@ -3,6 +3,7 @@ name: docs-scribe
 description: Keeps HANDOFF.md and the relevant docs/ accurate IN THE SAME commit as the change that altered structure or state. Updates "Current state" + "Next increment", and any affected doc (DESIGN.md, ARCHITECTURE, the enterprise plan). Use at the end of every increment, before the merge commit is finalized.
 tools: Read, Glob, Grep, Edit, Write, Bash
 model: opus
+maxTurns: 30
 ---
 
 # Docs-scribe — keep continuity truthful, in the same commit
