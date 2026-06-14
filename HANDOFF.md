@@ -79,6 +79,11 @@ LWW v1.
   `lock`, `languages`, `news`. **Rail tabs now 16.**
 - Orchestration batch (earlier): `.claude/skills/verify-increment` + `maxTurns` on all
   agents. Gate hook inspected — already correct.
+- **Encrypted backup** (`@lar/store` `backup.ts`): `exportBackup`/`backupToBlob`/
+  `importBackup` — bundles the wrapped keyring + sealed records into one portable
+  ciphertext-only blob (download / carry to a new device; restore + passphrase
+  reconstitutes the store). The data-portability half of the "recovery" decision; no
+  new crypto. 7 tests (`@lar/store` now 33: 17 store + 9 sync + 7 backup).
 - Each increment: typecheck + full test (now 33 task-suites) + lint + `next build`
   10/10 + prod-boot smoke (tab + `--hearth` theming), green, committed, pushed.
 
