@@ -12,8 +12,10 @@
  *   • Fresh salt + IV per encryption call.
  */
 import type { VaultRecord } from './types.js';
+import { assertCrypto, b64ToBuf, bufToB64, deriveKey, enc, dec, randomBytes } from './internal.js';
 
 export { type VaultRecord } from './types.js';
+export { assertCrypto } from './internal.js';
 
 export const PBKDF2_ITERATIONS = 600_000;
 
@@ -33,53 +35,6 @@ export const PBKDF2_ITERATIONS = 600_000;
  */
 export const PBKDF2_ITERATIONS_MAX = 5_000_000;
 
-const enc = new TextEncoder();
-const dec = new TextDecoder();
-
-export function assertCrypto(): void {
-  if (!globalThis.crypto?.subtle) {
-    throw new Error(
-      'WebCrypto unavailable — open this page over https, localhost, or file://, or use Node ≥20',
-    );
-  }
-}
-
-// --- base64 helpers (ArrayBuffer <-> string, global btoa/atob work in Node 20+ and browsers) ---
-function bufToB64(buf: ArrayBuffer | Uint8Array): string {
-  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]!);
-  return btoa(bin);
-}
-
-function b64ToBuf(b64: string): Uint8Array<ArrayBuffer> {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length) as Uint8Array<ArrayBuffer>;
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
-}
-
-async function deriveKey(
-  passphrase: string,
-  salt: Uint8Array<ArrayBuffer>,
-  iterations: number,
-): Promise<CryptoKey> {
-  const baseKey = await globalThis.crypto.subtle.importKey(
-    'raw',
-    enc.encode(passphrase),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveKey'],
-  );
-  return globalThis.crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
-    baseKey,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt'],
-  );
-}
-
 /**
  * Encrypt `secret` under `passphrase`. Returns a portable, self-describing
  * record { v, kdf, iter, salt, iv, ct } — all base64. Safe to JSON.stringify.
@@ -94,8 +49,8 @@ export async function encryptSecret(secret: string, passphrase: string): Promise
   if (!passphrase || passphrase.length < 8)
     throw new Error('passphrase must be at least 8 characters');
 
-  const salt = globalThis.crypto.getRandomValues(new Uint8Array(16) as Uint8Array<ArrayBuffer>);
-  const iv = globalThis.crypto.getRandomValues(new Uint8Array(12) as Uint8Array<ArrayBuffer>);
+  const salt = randomBytes(16);
+  const iv = randomBytes(12);
   const key = await deriveKey(passphrase, salt, PBKDF2_ITERATIONS);
   const ct = await globalThis.crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },

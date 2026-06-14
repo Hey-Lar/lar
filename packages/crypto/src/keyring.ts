@@ -1,0 +1,112 @@
+/**
+ * @lar/crypto — keyring: the key hierarchy that powers a local-first encrypted store.
+ *
+ * Why a hierarchy (the Ente / Signal / 1Password pattern):
+ *   • A random 256-bit MASTER KEY actually encrypts your data.
+ *   • The master key is itself encrypted ("wrapped") by a key DERIVED from your
+ *     passphrase (PBKDF2, 600k iterations).
+ *
+ * This buys three things a naive "PBKDF2 the passphrase per record" design can't:
+ *   1. SPEED — the slow 600k-iteration derivation runs ONCE at unlock, not on
+ *      every read/write. Records seal/open with the master key directly (fast).
+ *   2. PASSPHRASE CHANGE without re-encrypting all data — just re-wrap the one
+ *      master key under the new passphrase (rewrap()).
+ *   3. RECOVERY (future) — the same master key can be wrapped a second way
+ *      (recovery phrase / passkey), so a forgotten passphrase isn't total loss.
+ *
+ * The master key bytes live in memory only, inside this object's private field.
+ * At rest, storage holds ONLY ciphertext — never the passphrase, never the
+ * master key, never plaintext.
+ */
+import type { KeyringRecord, SealedRecord } from './types.js';
+import {
+  aesDecrypt,
+  aesEncrypt,
+  assertCrypto,
+  b64ToBuf,
+  bufToB64,
+  deriveKey,
+  importAesKey,
+  randomBytes,
+} from './internal.js';
+import { PBKDF2_ITERATIONS, PBKDF2_ITERATIONS_MAX } from './vault.js';
+
+export type { KeyringRecord, SealedRecord } from './types.js';
+
+const MASTER_KEY_BYTES = 32; // AES-256
+const MIN_PASSPHRASE = 8;
+
+function assertPassphrase(passphrase: string): void {
+  if (!passphrase || passphrase.length < MIN_PASSPHRASE)
+    throw new Error('passphrase must be at least 8 characters');
+}
+
+/** Wrap raw master-key bytes under a passphrase-derived key → a portable record. */
+async function wrap(master: Uint8Array<ArrayBuffer>, passphrase: string): Promise<KeyringRecord> {
+  const salt = randomBytes(16);
+  const wrappingKey = await deriveKey(passphrase, salt, PBKDF2_ITERATIONS);
+  const { iv, ct } = await aesEncrypt(wrappingKey, master);
+  return { v: 1, kdf: 'PBKDF2-SHA256', iter: PBKDF2_ITERATIONS, salt: bufToB64(salt), iv, ct };
+}
+
+/**
+ * A live, unlocked keyring. Holds the master key in memory and seals/opens
+ * records with it. Construct via `Keyring.create` (new store) or
+ * `Keyring.unlock` (existing store). The raw master key never leaves this object.
+ */
+export class Keyring {
+  readonly #master: Uint8Array<ArrayBuffer>;
+  readonly #key: CryptoKey;
+
+  private constructor(master: Uint8Array<ArrayBuffer>, key: CryptoKey) {
+    this.#master = master;
+    this.#key = key;
+  }
+
+  /** Create a brand-new keyring: fresh random master key, wrapped under `passphrase`. */
+  static async create(passphrase: string): Promise<{ keyring: Keyring; record: KeyringRecord }> {
+    assertCrypto();
+    assertPassphrase(passphrase);
+    const master = randomBytes(MASTER_KEY_BYTES);
+    const record = await wrap(master, passphrase);
+    const key = await importAesKey(master);
+    return { keyring: new Keyring(master, key), record };
+  }
+
+  /** Unlock an existing keyring from its stored record. Throws on a wrong passphrase. */
+  static async unlock(record: KeyringRecord, passphrase: string): Promise<Keyring> {
+    assertCrypto();
+    assertPassphrase(passphrase);
+    if (!record?.salt || !record.iv || !record.ct) throw new Error('malformed keyring record');
+    const claimed = record.iter ?? PBKDF2_ITERATIONS;
+    if (!Number.isFinite(claimed) || claimed < 1 || claimed > PBKDF2_ITERATIONS_MAX)
+      throw new Error('malformed keyring record');
+
+    const wrappingKey = await deriveKey(passphrase, b64ToBuf(record.salt), claimed);
+    let master: Uint8Array<ArrayBuffer>;
+    try {
+      master = await aesDecrypt(wrappingKey, record.iv, record.ct);
+    } catch {
+      throw new Error('wrong passphrase or corrupted keyring');
+    }
+    const key = await importAesKey(master);
+    return new Keyring(master, key);
+  }
+
+  /** Re-wrap the SAME master key under a new passphrase — no data re-encryption. */
+  async rewrap(newPassphrase: string): Promise<KeyringRecord> {
+    assertPassphrase(newPassphrase);
+    return wrap(this.#master, newPassphrase);
+  }
+
+  /** Encrypt bytes with the master key (fresh IV each call). */
+  async seal(plaintext: Uint8Array<ArrayBuffer>): Promise<SealedRecord> {
+    return aesEncrypt(this.#key, plaintext);
+  }
+
+  /** Decrypt a sealed record. Throws on auth failure (tampered ciphertext / wrong key). */
+  async open(sealed: SealedRecord): Promise<Uint8Array<ArrayBuffer>> {
+    if (!sealed?.iv || !sealed.ct) throw new Error('malformed sealed record');
+    return aesDecrypt(this.#key, sealed.iv, sealed.ct);
+  }
+}
