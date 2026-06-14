@@ -45,9 +45,10 @@ Quality over paperwork.
 
 **Phase B started (2026-06-14):** the **on-device local-first encrypted store** is
 built — `@lar/crypto` gained a `Keyring` (key hierarchy: random master key wrapped by
-a PBKDF2 passphrase key) and a new package **`@lar/store`** (collection/id/JSON
-document store, AES-256-GCM sealed, ciphertext-only at rest, pluggable adapter,
-offline, no backend; 27 tests). Surfaced in the portal as the **Remember** tab
+a PBKDF2 passphrase key; 10 keyring tests) and a new package **`@lar/store`**
+(collection/id/JSON document store, AES-256-GCM sealed, ciphertext-only at rest,
+pluggable adapter, offline, no backend; 17 store tests — 27 new this session).
+Surfaced in the portal as the **Remember** tab
 (`RememberBlock.tsx`). **Next:** multi-device **sync** (then a backend decision —
 Supabase free tier as ciphertext store, or an E2EE sync engine) + **auth/identity**.
 
