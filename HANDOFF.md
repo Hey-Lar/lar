@@ -41,8 +41,20 @@ Key ops docs (mission-control, on GitHub):
 
 **Finish-line bar (Alberto's):** a **working alpha on a device, robust, for one real
 external alpha user** — NOT PMF, not a formal audit gauntlet, not a 50-user cohort.
-Quality over paperwork. **Next product step:** the on-device **local-first encrypted
-store** (no backend, no account, no spend needed to start).
+Quality over paperwork.
+
+**Phase B started (2026-06-14):** the **on-device local-first encrypted store** is
+built — `@lar/crypto` gained a `Keyring` (key hierarchy: random master key wrapped by
+a PBKDF2 passphrase key) and a new package **`@lar/store`** (collection/id/JSON
+document store, AES-256-GCM sealed, ciphertext-only at rest, pluggable adapter,
+offline, no backend; 27 tests). Surfaced in the portal as the **Remember** tab
+(`RememberBlock.tsx`). **Next:** multi-device **sync** (then a backend decision —
+Supabase free tier as ciphertext store, or an E2EE sync engine) + **auth/identity**.
+
+**Accounts configured (2026-06-14):** Vercel Pro (team `hey-lar`, GitHub connected),
+Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), GitHub
+(org 2FA, `master` ruleset: no force-push/deletion). Deferred to free/at-deploy:
+PostHog, Sentry, Plausible, Linear.
 
 **Open with Alberto:** he wants the orchestration/autonomy system built _deeper_ (not
 a quick-approved draft) before we wire the between-session Action. Legal/company
