@@ -48,9 +48,18 @@ built — `@lar/crypto` gained a `Keyring` (key hierarchy: random master key wra
 a PBKDF2 passphrase key; 10 keyring tests) and a new package **`@lar/store`**
 (collection/id/JSON document store, AES-256-GCM sealed, ciphertext-only at rest,
 pluggable adapter, offline, no backend; 17 store tests — 27 new this session).
-Surfaced in the portal as the **Remember** tab
-(`RememberBlock.tsx`). **Next:** multi-device **sync** (then a backend decision —
-Supabase free tier as ciphertext store, or an E2EE sync engine) + **auth/identity**.
+Surfaced in the portal as the **Remember** tab (`RememberBlock.tsx`).
+
+**Sync foundation built (2026-06-14):** `@lar/store` is now sync-aware — records carry
+`{u: updatedAt, d: deleted-tombstone}` metadata, deletes are soft, and `sync.ts` adds a
+**`SyncEngine` + `SyncRemote`** (ciphertext-only on the wire, last-write-wins,
+convergent; `memoryRemote()` reference impl). 9 sync specs prove A→B propagation,
+convergence, LWW, delete-propagation, ciphertext-only, offline-burst, idempotency,
+late-joiner catch-up. Design + the **one-way-door decisions awaiting Alberto's sign-off**
+(real backend = Supabase ciphertext rows? device key-transfer = pairing-code vs
+recovery-phrase? LWW for v1?) are in [`docs/19-sync-architecture.md`](docs/19-sync-architecture.md).
+**Next (after sign-off):** wire `SyncRemote`→Supabase (RLS) behind **auth/identity** +
+build the device-pairing flow.
 
 **Accounts configured (2026-06-14):** Vercel Pro (team `hey-lar`, GitHub connected),
 Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), GitHub
