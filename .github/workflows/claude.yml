@@ -1,0 +1,110 @@
+name: Fleet
+
+# The between-session build fleet. Runs the Fleet Steward orchestrator in CI.
+#
+# SAFETY MODEL (see mission-control/governance/fleet-runbook.md):
+#   • KILL-SWITCH  — the whole job is gated on the repo variable FLEET_ENABLED=='true'.
+#                    Unset/false ⇒ every trigger is a no-op. Flip it off to halt the
+#                    fleet instantly with no file edit.
+#   • DISARMED until a secret exists — needs secrets.ANTHROPIC_API_KEY. No key ⇒ no run.
+#   • CAPS         — timeout-minutes (hard wall) + --max-turns (loop cap) + concurrency
+#                    (one run at a time) + a cheaper model on the unattended path.
+#   • PR-ONLY      — the fleet works on a claude/* branch and opens a PR. master is
+#                    branch-protected; nothing merges to master without review (tier-2)
+#                    or an all-green auto-merge (tier-1, see auto-merge.yml).
+#   • IRREVERSIBLE FIVE — auth / crypto / TLS keys / money / prod-deploy / data-deletion
+#                    are never touched by the fleet (enforced in the prompt + .claude
+#                    settings + hooks).
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Increment for the fleet (blank ⇒ the top HANDOFF "Next increment")'
+        required: false
+        type: string
+      model:
+        description: 'Model'
+        required: false
+        default: claude-opus-4-latest
+        type: choice
+        options:
+          - claude-opus-4-latest
+          - claude-sonnet-4-6
+          - claude-haiku-4-5-20251001
+      max_turns:
+        description: 'Max turns (loop/cost cap)'
+        required: false
+        default: '20'
+        type: string
+  schedule:
+    # Nightly 02:00 UTC — TIER-1 MAINTENANCE ONLY (docs/format/lint/test/dep-hygiene).
+    - cron: '0 2 * * *'
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: fleet
+  cancel-in-progress: false # never kill an in-flight build mid-commit; queue instead
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  fleet:
+    # KILL-SWITCH + trigger guard. The fleet only runs when explicitly enabled, and
+    # comment-triggered runs must actually @-mention the fleet.
+    if: >-
+      vars.FLEET_ENABLED == 'true' &&
+      (github.event_name != 'issue_comment' || contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+
+      - name: Run the Fleet Steward
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The unattended (schedule/comment) path defaults to the cheaper model + a
+          # tight turn cap. A human-initiated dispatch may pick Opus + more turns.
+          claude_args: >-
+            --model ${{ github.event.inputs.model || 'claude-sonnet-4-6' }}
+            --max-turns ${{ github.event.inputs.max_turns || '8' }}
+          prompt: |
+            You are the HeyLar **Fleet Steward** running unattended in CI.
+            Trigger: ${{ github.event_name }}.
+
+            FIRST: read `.claude/agents/fleet-steward.md` and follow it exactly, then
+            read `HANDOFF.md` for current state and the "Next increment".
+
+            HARD RULES for this CI run (non-negotiable):
+            - Work on a NEW branch named `claude/<short-slug>`. NEVER push to `master`.
+              When done, open a pull request with `gh pr create` and a clear body.
+            - The objective gate MUST pass before you open the PR:
+              `npm run typecheck && npm test && npm run lint && npm run build`.
+              If it can't pass, open the PR as a DRAFT explaining what's blocked — do
+              not force it green.
+            - If trigger is **schedule**: do TIER-1 MAINTENANCE ONLY — docs, formatting,
+              lint/CI fixes, test-only additions, lockfile-verified dependency hygiene.
+              Add the label `fleet:tier-1`. Do NOT touch product features, schema,
+              config, or anything in the irreversible five below.
+            - If trigger is **workflow_dispatch**: do exactly this task —
+              "${{ github.event.inputs.task }}" (if blank, the single top item under
+              HANDOFF "Next increment"). Label the PR `fleet:tier-2` for human review.
+              Do NOT self-merge.
+            - NEVER touch auth, cryptography, TLS keys, money/payments, production
+              deploy, data deletion, or real financial data. NEVER stage or commit a
+              secret. If the task would require any of these, STOP and open an issue
+              describing what a human needs to do instead.
+            - Keep `HANDOFF.md` accurate in the same PR if structure changed.
+            - Append a one-line run report to the PR body (what changed, gate result).

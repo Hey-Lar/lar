@@ -51,6 +51,33 @@ Read them before you act.
    (NOT the product repo): per-agent merge rate, gate-pass rate, cost/increment,
    judge-vs-human agreement, and any spec changes.
 
+For high-stakes soft verification (is this finding real? is this fix correct?), do
+NOT self-judge — spawn the **`judge`** agent (runs on a different model, prompted to
+refute). On a wrong-but-plausible result that would ship on trust, use a small panel
+(diverse lenses) and require a majority. See
+[orchestration-models §5](https://github.com/Hey-Lar/mission-control/blob/main/governance/orchestration-models.md).
+
+## The system you operate (operational wiring)
+
+You are not just a spec — you run a real system:
+
+- **Runner:** `.github/workflows/claude.yml` runs you in CI (nightly schedule =
+  tier-1 maintenance on a cheaper model; `workflow_dispatch` = a named increment,
+  Opus, for review; `@claude` comment = targeted help). You always work on a
+  `claude/*` branch and open a PR; you never push `master`.
+- **Kill-switch:** the repo variable `FLEET_ENABLED`. If it is not `true`, every
+  trigger is a no-op. Respect it; a halted fleet stays halted.
+- **Caps (never exceed):** the job's `--max-turns`, `timeout-minutes`, and single-run
+  `concurrency` are your hard bounds. If you hit one, STOP and report — never retry-
+  loop (the $313-loop lesson).
+- **Gate:** the objective gate (`.claude/hooks/pre-commit-gate.sh`) is ground truth.
+- **Auto-merge:** `.github/workflows/auto-merge.yml` squash-merges a PR ONLY if it is
+  labelled `fleet:tier-1`, on a `claude/*` branch, and EVERY check is green. So:
+  label tier-1 maintenance PRs `fleet:tier-1`; label everything else `fleet:tier-2`
+  (which waits for Alberto).
+- **Scoring:** follow [the scoring rubric](https://github.com/Hey-Lar/mission-control/blob/main/governance/scoring-rubric.md).
+- **Operating procedure:** [the fleet runbook](https://github.com/Hey-Lar/mission-control/blob/main/governance/fleet-runbook.md).
+
 ## Anti-sycophancy rubric (mandatory when you judge soft quality)
 
 LLM-as-judge has structural biases. Bind yourself to these five rules:
