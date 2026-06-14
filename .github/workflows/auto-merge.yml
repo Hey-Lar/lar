@@ -1,0 +1,75 @@
+name: Fleet auto-merge (tier-1)
+
+# Auto-merges ONLY tier-1 fleet PRs, and ONLY when EVERY check for the head commit
+# is green. This is the executable half of the tiered-autonomy model: tier-1
+# maintenance (docs/format/lint/test/dep-hygiene) merges itself on green; everything
+# with intent in it (tier-2+) stays for a human.
+#
+# It is self-gating — it re-derives "all checks green" from the check-runs API rather
+# than trusting branch-protection config, so it is safe even before required-status-
+# checks are configured on the ruleset. Eligibility (ALL must hold):
+#   • PR head branch starts with `claude/`  (the fleet's branch convention)
+#   • PR carries the label `fleet:tier-1`
+#   • PR is open and mergeable
+#   • EVERY check-run on the head SHA is completed AND success/neutral/skipped
+
+on:
+  workflow_run:
+    workflows: ['CI', 'Security']
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: automerge-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  automerge:
+    # CI on this repo runs via the push event (branches: '**'), so we don't filter on
+    # workflow_run.event — the step self-gates by requiring an OPEN PR for the SHA.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge eligible tier-1 fleet PRs when fully green
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          # 1) Find an open PR whose head commit is this SHA.
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+                --jq '[.[] | select(.state=="open")][0] | .number // empty')
+          if [ -z "$pr" ]; then echo "No open PR for $SHA — nothing to do."; exit 0; fi
+
+          # 2) Eligibility: branch convention + label.
+          head_ref=$(gh pr view "$pr" --repo "$REPO" --json headRefName --jq '.headRefName')
+          labels=$(gh pr view "$pr" --repo "$REPO" --json labels --jq '[.labels[].name] | join(",")')
+          case "$head_ref" in
+            claude/*) ;;
+            *) echo "PR #$pr head '$head_ref' is not a fleet branch — skipping."; exit 0;;
+          esac
+          if ! echo ",$labels," | grep -q ",fleet:tier-1,"; then
+            echo "PR #$pr is not labelled fleet:tier-1 (labels: $labels) — skipping."; exit 0
+          fi
+
+          # 3) Green gate: EVERY check-run on the SHA must be completed + clean.
+          incomplete=$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+            --jq '[.check_runs[] | select(.status != "completed")] | length')
+          if [ "$incomplete" -gt 0 ]; then
+            echo "$incomplete check(s) still running — will re-evaluate when they finish."; exit 0
+          fi
+          bad=$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+            --jq '[.check_runs[] | select(.conclusion != null and (["success","neutral","skipped"] | index(.conclusion) | not))] | length')
+          if [ "$bad" -gt 0 ]; then
+            echo "$bad check(s) did not pass — NOT merging PR #$pr."; exit 0
+          fi
+
+          # 4) All green + eligible → squash-merge.
+          echo "PR #$pr (tier-1, $head_ref) is fully green — auto-merging."
+          gh pr merge "$pr" --repo "$REPO" --squash --delete-branch
