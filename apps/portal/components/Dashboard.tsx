@@ -13,6 +13,7 @@ import { OverviewBlock } from './OverviewBlock';
 import { ThemeToggle } from './ThemeToggle';
 import { SettingsDrawer } from './SettingsDrawer';
 import { VaultPanel } from './VaultPanel';
+import { RememberBlock } from './RememberBlock';
 import { HealthBlock } from './HealthBlock';
 import { WeatherBlock } from './WeatherBlock';
 import { PlacesBlock } from './PlacesBlock';
@@ -31,6 +32,7 @@ const TABS: ReadonlyArray<{ key: string; label: string; ico: IconName }> = [
   { key: 'wealth', label: 'Wealth', ico: 'wealth' },
   { key: 'markets', label: 'Markets', ico: 'markets' },
   { key: 'health', label: 'Health', ico: 'health' },
+  { key: 'remember', label: 'Remember', ico: 'lock' },
   { key: 'connect', label: 'Connect', ico: 'connect' },
 ] as const;
 
@@ -47,6 +49,7 @@ type TabKey =
   | 'wealth'
   | 'markets'
   | 'health'
+  | 'remember'
   | 'connect';
 
 export function Dashboard() {
@@ -107,6 +110,7 @@ export function Dashboard() {
           {tab === 'wealth' && <WealthBlock />}
           {tab === 'markets' && <MarketsBlock />}
           {tab === 'health' && <HealthBlock />}
+          {tab === 'remember' && <RememberBlock />}
           {tab === 'connect' && <VaultPanel />}
         </div>
       </main>
