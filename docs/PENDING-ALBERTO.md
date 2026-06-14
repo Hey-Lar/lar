@@ -14,13 +14,24 @@
 - [ ] **(optional)** drop an AI living-room photo at
       `apps/portal/public/local/living-room.jpg` for a photoreal background.
 
-### Decisions (I'll act the moment you answer)
+### Decisions (I'll act the moment you answer) — research is now DONE
 
-- [ ] **Autonomy model** — you said "propose-only / tiny-hygiene" is too timid.
-      I'm researching a much more autonomous (day+night, governed) model and will
-      bring you a **tiered proposal** to approve. _(Waiting on me, then you.)_
-- [ ] **Approve the 205-day schedule** + the startup-pod org structure
-      (coming after the research lands).
+- [ ] **Approve the tiered autonomy model** → [`docs/17`](17-autonomy-and-governance.md).
+      Far more autonomous than propose-only (day+night), still safe. The moment you
+      say yes, I wire the between-session Action and the fleet starts running within
+      the guardrails. _(The irreversible five — auth/crypto/money/prod/delete — stay
+      human-only no matter what.)_
+- [ ] **Approve the 205-day schedule + startup-pod org** → [`docs/16`](16-roadmap-205-days.md).
+      29 weeks, critical-path = E2EE sync. Tell me if the phase order works for you.
+
+### Company formation (needs a human professional — I can only draft)
+
+- [ ] **Talk to an Irish solicitor + accountant** to: form an **Irish Ltd**, set
+      **founder vesting (4yr/1yr cliff) + full IP assignment** at formation. _(One-way
+      doors — see [`docs/18`](18-company-0-to-100.md).)_ I'll draft everything; you sign.
+- [ ] **Pick a payments model** — I recommend a **Merchant-of-Record (Paddle / Lemon
+      Squeezy)**, not raw Stripe, to avoid EU VAT hell as a solo founder. Just confirm
+      and I'll wire it when we reach payments.
 
 ## ✅ Completed
 
