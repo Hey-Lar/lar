@@ -59,7 +59,28 @@ late-joiner catch-up. Design + the **one-way-door decisions awaiting Alberto's s
 (real backend = Supabase ciphertext rows? device key-transfer = pairing-code vs
 recovery-phrase? LWW for v1?) are in [`docs/19-sync-architecture.md`](docs/19-sync-architecture.md).
 **Next (after sign-off):** wire `SyncRemote`→Supabase (RLS) behind **auth/identity** +
-build the device-pairing flow.
+build the device-pairing flow. **Sync decisions LOCKED (2026-06-14):** backend =
+Supabase ciphertext store · key-transfer = **both** (pairing code + recovery phrase) ·
+LWW v1.
+
+**Autonomous night build (2026-06-14→15) — reversible-only, all green, pushed:**
+
+- **Remember depth** (`apps/portal/lib/remember-digest.ts` + `RememberBlock`): the
+  Room is now a "personal-context layer" — notes **+ a decisions journal** (rationale,
+  open/resolved) **+ an on-device digest** (counts, open, 7-day sparkline), all E2EE
+  via `@lar/store`. 8 digest unit tests.
+- **Translate Room** (`@lar/connector-translate` + `/api/translate` + `TranslateBlock`):
+  keyless MyMemory translation (server-side) + outward links to DeepL/Google/
+  WordReference. 9 tests + 1 live-gated.
+- **News Room** (`@lar/connector-news` + `NewsBlock`): pure route-outward to a NEUTRAL
+  set (Google News, Ground News [bias-aware], AP, Reuters, Wikipedia, Internet
+  Archive). No API/key/fetch. 4 tests.
+- Overview quick-launch now surfaces Remember / Translate / News. New icons:
+  `lock`, `languages`, `news`. **Rail tabs now 16.**
+- Orchestration batch (earlier): `.claude/skills/verify-increment` + `maxTurns` on all
+  agents. Gate hook inspected — already correct.
+- Each increment: typecheck + full test (now 33 task-suites) + lint + `next build`
+  10/10 + prod-boot smoke (tab + `--hearth` theming), green, committed, pushed.
 
 **Accounts configured (2026-06-14):** Vercel Pro (team `hey-lar`, GitHub connected),
 Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), GitHub
