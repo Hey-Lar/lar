@@ -97,8 +97,9 @@ build" as a working capability until the fleet is armed + has shipped a green PR
   read-only/no-advice bright-lines. 4 tests.
 - **Marketing fixes:** killed stale localhost + wrong-repo links + the dead staging
   CTA; led with the privacy moat.
-- Each increment: typecheck + full test (**now 35 turbo suites / 446 tests**) + lint +
-  `next build` 10/10 + prod-boot smoke, green, pushed. Independently re-verified by a
+- Each increment: typecheck + full test (**202 tests across 19 files; `npm test` = 35 turbo
+  tasks green** — "tasks" are pipeline nodes, not suites) + lint +
+  `next build` 14/14 + prod-boot smoke, green, pushed. Independently re-verified by a
   fresh **pm-auditor** audit (2026-06-15) that caught + fixed several stale over-claims.
 
 **Accounts configured (2026-06-14):** Vercel Pro (team `hey-lar`, GitHub connected),
@@ -106,18 +107,27 @@ Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), G
 (org 2FA, `master` ruleset: no force-push/deletion). Deferred to free/at-deploy:
 PostHog, Sentry, Plausible, Linear.
 
-**▶▶ NEXT INCREMENT (start here in a fresh chat):** the orchestration system is BUILT
+**▶▶ NEXT INCREMENT (start here in a fresh chat):** the **auth/identity foundation is now
+BUILT as an inert draft** (Supabase Auth) — see `docs/20-auth.md`. It does NOTHING until
+armed: `isSupabaseConfigured()` is the single switch, the keyless app is untouched, build
+14/14 + suite 35/35 + lint green, and a boot smoke proved the async middleware didn't break
+the nonce-CSP→theme chain. What's drafted: `lib/supabase/{config,client,server,middleware,auth}.ts`
+(`requireUser()` via `getClaims()`, fail-closed 401), the session refresh wired into the
+existing CSP middleware (no-op until armed; `connect-src` auto-gains the Supabase origin
+only when configured), the passwordless magic-link `/login` + `/auth/{confirm,signout}`
+routes, `app/api/whoami`, and `supabase/migrations/0001_lar_sync.sql` (ciphertext-only
+`lar_documents` + RLS + `lar_push`/`lar_pull` RPCs matching `SyncRemote`).
 
-- disarmed; the privacy spine (`@lar/crypto` keyring + `@lar/store` + sync + backup +
-  the privacy guard) is deep, tested (446 tests / 35 suites), green. **The product's
-  next LEAP is `auth/identity` (Supabase Auth)** → then wire `SyncRemote`→Supabase
-  (ciphertext rows + RLS) → device-pairing crypto → the AI brain. These are all
-  **human-gated** (auth/crypto = the irreversible five). **The single unblock: Alberto
-  runs `doppler login` once** (so the Supabase keys in Doppler pull locally), then
-  scaffold Supabase Auth. Until that's done, do **reversible polish only**: an a11y pass
-  on the new Rooms (Translate/News/Markets-panel/Remember-decisions), parser depth, or
-  marketing. **Do NOT add a 17th rail tab** (16 is the agreed ceiling — route new things
-  behind the global "Hey Lar" bar). Latest honest status:
+- **The gated unblock is now Alberto's arming pass** (auth = the irreversible five, human-only):
+  follow `docs/20-auth.md → Arming checklist` (set `NEXT_PUBLIC_SUPABASE_*` via Doppler →
+  apply the migration → configure Email/URLs/template → rebuild → first-armed-run smoke).
+  **Once armed**, the next agent increment is the client adapter `supabaseRemote()` that
+  implements `SyncRemote` over the `lar_push`/`lar_pull` RPCs (wires the encrypted store to
+  the cloud) → then device-pairing crypto → the AI brain.
+- **Until armed**, do **reversible polish only**: an a11y pass on the newer Rooms
+  (Translate/News/Markets-panel/Remember-decisions), parser depth, or marketing. **Do NOT add a
+  17th rail tab** (16 is the ceiling — route new things behind the global "Hey Lar" bar, like
+  `/login`). Latest honest status:
   [2026-06-15 audit](https://github.com/Hey-Lar/mission-control/blob/main/audits/2026-06-15-status-audit.md)
   (~30–33% real).
 
@@ -189,8 +199,8 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **71 unit tests green *at this Phase-1 milestone* (current total is **446**
-  across 35 turbo suites — see the night-build + privacy-spine sections below);
+- **71 unit tests green *at this Phase-1 milestone* (current verified total is **202**
+  across 19 test files — see the night-build + privacy-spine sections below);
   typecheck + prettier clean
   (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
   for both apps.** Coverage gained this session: `@lar/ui` 8 themes
