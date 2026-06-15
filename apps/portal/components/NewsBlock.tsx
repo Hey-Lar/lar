@@ -64,7 +64,7 @@ export function NewsBlock() {
       </form>
 
       {submitted && (
-        <>
+        <div aria-live="polite" aria-label="Sources for your topic">
           {GROUPS.map((g) => {
             const inGroup = links.filter((l) => l.kind === g.kind);
             if (inGroup.length === 0) return null;
@@ -93,7 +93,7 @@ export function NewsBlock() {
               </div>
             );
           })}
-        </>
+        </div>
       )}
 
       <div className="note" style={{ marginTop: 18, maxWidth: 680 }}>

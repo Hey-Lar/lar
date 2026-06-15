@@ -150,7 +150,12 @@ export function TranslateBlock() {
       )}
 
       {result && (
-        <div className="card" style={{ maxWidth: 620, marginBottom: 14 }}>
+        <div
+          className="card"
+          style={{ maxWidth: 620, marginBottom: 14 }}
+          role="status"
+          aria-live="polite"
+        >
           <div className="eyebrow" style={{ marginBottom: 6 }}>
             {result.from} → {result.to}
             {typeof result.match === 'number' && ` · ${Math.round(result.match * 100)}% match`}
