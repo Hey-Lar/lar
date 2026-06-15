@@ -36,6 +36,7 @@
 | `app/auth/signout/route.ts`             | `POST` → `signOut()` (cookies are httpOnly).                                                                                                                         |
 | `app/api/whoami/route.ts`               | Demo of the auth seam (401 while draft).                                                                                                                             |
 | `supabase/migrations/0001_lar_sync.sql` | Ciphertext-only sync table + RLS + `lar_push`/`lar_pull` RPCs matching `SyncRemote`.                                                                                 |
+| `lib/supabase/remote.ts`                | `supabaseRemote()` — client adapter implementing `SyncRemote` over those RPCs (ciphertext only). 6 tests vs a fake client. Inert until wired post-arming.            |
 
 ### The data model (RLS)
 

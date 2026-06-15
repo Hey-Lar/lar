@@ -66,7 +66,7 @@ live sync backend, no deploy). The honest map is [`HANDOFF.md`](HANDOFF.md) + th
 [latest status audit](https://github.com/Hey-Lar/mission-control/blob/main/audits/2026-06-15-status-audit.md)
 (~30–33% real).
 
-**🟢 Real + tested (202 tests across 19 files; `npm test` = 35 turbo tasks green):**
+**🟢 Real + tested (208 tests across 20 files; `npm test` = 35 turbo tasks green):**
 
 - **Privacy spine** — `@lar/crypto` (AES-256-GCM key-hierarchy) + `@lar/store`: a
   local-first, **end-to-end-encrypted** document store with a **multi-device sync
