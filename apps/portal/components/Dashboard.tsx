@@ -20,6 +20,7 @@ import { PlacesBlock } from './PlacesBlock';
 import { DictionaryBlock } from './DictionaryBlock';
 import { TranslateBlock } from './TranslateBlock';
 import { NewsBlock } from './NewsBlock';
+import { RoomErrorBoundary } from './RoomErrorBoundary';
 
 const TABS: ReadonlyArray<{ key: string; label: string; ico: IconName }> = [
   { key: 'home', label: 'Overview', ico: 'home' },
@@ -61,6 +62,7 @@ type TabKey =
 export function Dashboard() {
   const [tab, setTab] = useState<TabKey>('home');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const activeLabel = TABS.find((t) => t.key === tab)?.label;
 
   return (
     <div className="app">
@@ -104,22 +106,24 @@ export function Dashboard() {
 
       <main className="stage glass">
         <div key={tab} className="stage-anim">
-          {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
-          {tab === 'agenda' && <AgendaBlock />}
-          {tab === 'weather' && <WeatherBlock />}
-          {tab === 'place' && <PlacesBlock />}
-          {tab === 'music' && <MusicBlock />}
-          {tab === 'podcasts' && <PodcastsBlock />}
-          {tab === 'books' && <BooksBlock />}
-          {tab === 'define' && <DictionaryBlock />}
-          {tab === 'translate' && <TranslateBlock />}
-          {tab === 'news' && <NewsBlock />}
-          {tab === 'film' && <FilmBlock />}
-          {tab === 'wealth' && <WealthBlock />}
-          {tab === 'markets' && <MarketsBlock />}
-          {tab === 'health' && <HealthBlock />}
-          {tab === 'remember' && <RememberBlock />}
-          {tab === 'connect' && <VaultPanel />}
+          <RoomErrorBoundary roomLabel={activeLabel}>
+            {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
+            {tab === 'agenda' && <AgendaBlock />}
+            {tab === 'weather' && <WeatherBlock />}
+            {tab === 'place' && <PlacesBlock />}
+            {tab === 'music' && <MusicBlock />}
+            {tab === 'podcasts' && <PodcastsBlock />}
+            {tab === 'books' && <BooksBlock />}
+            {tab === 'define' && <DictionaryBlock />}
+            {tab === 'translate' && <TranslateBlock />}
+            {tab === 'news' && <NewsBlock />}
+            {tab === 'film' && <FilmBlock />}
+            {tab === 'wealth' && <WealthBlock />}
+            {tab === 'markets' && <MarketsBlock />}
+            {tab === 'health' && <HealthBlock />}
+            {tab === 'remember' && <RememberBlock />}
+            {tab === 'connect' && <VaultPanel />}
+          </RoomErrorBoundary>
         </div>
       </main>
     </div>
