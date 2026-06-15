@@ -4,9 +4,9 @@ import { Nav } from '../components/Nav';
 import { PitchGrid } from '../components/PitchGrid';
 
 export default function HomePage() {
-  // Planned staging portal; override at build via NEXT_PUBLIC_PORTAL_URL. Never a
-  // localhost dev artifact in committed code.
-  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'https://staging.heylar.ai';
+  // Until a portal is actually deployed, the CTA scrolls to the on-page explainer
+  // (no dead link). Set NEXT_PUBLIC_PORTAL_URL at build to link out to the real portal.
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? '#how';
   return (
     <>
       <div className="bg-mesh">
