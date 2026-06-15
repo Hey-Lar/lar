@@ -4,6 +4,9 @@ import { Nav } from '../components/Nav';
 import { PitchGrid } from '../components/PitchGrid';
 
 export default function HomePage() {
+  // Planned staging portal; override at build via NEXT_PUBLIC_PORTAL_URL. Never a
+  // localhost dev artifact in committed code.
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'https://staging.heylar.ai';
   return (
     <>
       <div className="bg-mesh">
@@ -28,15 +31,17 @@ export default function HomePage() {
           </h1>
           <p className="lead">
             Lar is a neutral, voice-driven control surface for your media, money, schedule, and
-            home. Type or say what you want — Lar finds it on every platform you use and routes you
-            out to play, watch, or open it. You own the algorithm; the platforms don&apos;t.
+            home. Say what you want — Lar routes you out to the best place to play, watch, or open
+            it, instead of locking you in. And your data stays yours:{' '}
+            <strong>local-first, end-to-end encrypted, never sold.</strong> You own the algorithm;
+            the platforms don&apos;t.
           </p>
           <div className="hero-actions">
-            <a className="btn primary" href="http://localhost:4200/">
+            <a className="btn primary" href={portalUrl}>
               See the portal <Icon name="route" size={16} className="chip-arrow" />
             </a>
-            <a className="btn ghost" href="https://github.com/amari/lar" rel="noreferrer">
-              Read the build
+            <a className="btn ghost" href="#how">
+              How it works
             </a>
           </div>
         </section>
@@ -57,8 +62,8 @@ export default function HomePage() {
         </section>
 
         {/* Anti-lock-in pitch */}
-        <section className="pitch">
-          <article className="pitch-card glass">
+        <section className="pitch" id="how">
+          <article className="pitch-card glass" id="bright-lines">
             <span className="eyebrow">Bright-line</span>
             <h3>Lar never streams or trades.</h3>
             <p>
@@ -76,10 +81,11 @@ export default function HomePage() {
           </article>
           <article className="pitch-card glass">
             <span className="eyebrow">Your data</span>
-            <h3>Client-side crypto. Local-first. No selling, no training.</h3>
+            <h3>Privacy by architecture, not by promise.</h3>
             <p>
-              Connector keys are encrypted in your browser with AES-256-GCM + PBKDF2-600k —
-              ciphertext-only in localStorage, plaintext never leaves the device. Read the source.
+              Your memory, notes, and keys are sealed on your device with AES-256-GCM — a key only
+              your passphrase unlocks. Ciphertext-only at rest, plaintext never leaves the device.
+              We couldn&rsquo;t sell or train on your data if we wanted to.
             </p>
           </article>
         </section>
@@ -90,7 +96,7 @@ export default function HomePage() {
             <strong>Lar</strong> · heylar.ai —{' '}
             <span>read-only finance · no advice · no audio hosting</span>
           </div>
-          <div>© 2026 · Open source, permissive licenses only</div>
+          <div>© 2026 · Privacy-first · permissive licenses only</div>
         </footer>
       </div>
     </>

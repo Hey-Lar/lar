@@ -1,6 +1,7 @@
 import { Icon } from '@lar/ui';
 
 export function Nav() {
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'https://staging.heylar.ai';
   return (
     <nav className="nav glass" aria-label="Primary">
       <a className="brand" href="/">
@@ -12,7 +13,7 @@ export function Nav() {
       <div className="nav-links">
         <a href="#how">How it works</a>
         <a href="#bright-lines">Bright-lines</a>
-        <a className="btn primary" href="http://localhost:4200/">
+        <a className="btn primary" href={portalUrl}>
           Open the portal
         </a>
       </div>
