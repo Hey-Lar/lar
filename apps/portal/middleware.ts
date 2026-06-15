@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { refreshSession } from './lib/supabase/middleware';
 
 /**
  * Edge middleware: security headers (Nosecone-style) + per-request CSP
@@ -75,7 +76,7 @@ function setSecurityHeaders(res: NextResponse, csp: string): void {
   }
 }
 
-export function middleware(req: NextRequest): NextResponse {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   // base64(random UUID) — short, URL-safe enough for an HTTP header value.
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const csp = buildCsp(nonce);
@@ -88,7 +89,12 @@ export function middleware(req: NextRequest): NextResponse {
 
   const res = NextResponse.next({ request: { headers: reqHeaders } });
   setSecurityHeaders(res, csp);
-  return res;
+
+  // Refresh the Supabase auth session on this SAME response (writes auth cookies,
+  // never touches the CSP/nonce headers above). A pure no-op until auth is armed,
+  // so the keyless app — and the CSP contract — behave exactly as before. There is
+  // deliberately NO redirect-to-/login here; per-route gating is `requireUser()`.
+  return refreshSession(req, res);
 }
 
 export const config = {

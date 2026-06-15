@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { NextRequest } from 'next/server';
 import { middleware } from './middleware';
 
+// middleware is async (it appends a no-op Supabase session refresh until auth is armed).
 function run(method = 'GET') {
   return middleware(new NextRequest(new URL('http://localhost/'), { method }));
 }
@@ -18,14 +19,14 @@ describe('security middleware (CSP nonce + headers)', () => {
     process.env = { ...ORIGINAL_ENV };
   });
 
-  it('sets a Content-Security-Policy on the response, carrying a nonce', () => {
-    const csp = run().headers.get('content-security-policy');
+  it('sets a Content-Security-Policy on the response, carrying a nonce', async () => {
+    const csp = (await run()).headers.get('content-security-policy');
     expect(csp).toBeTruthy();
     expect(csp).toContain("default-src 'self'");
     expect(nonceOf(csp)).toBeTruthy();
   });
 
-  it('REGRESSION GUARD: the request-side CSP carries the SAME nonce as the response CSP', () => {
+  it('REGRESSION GUARD: the request-side CSP carries the SAME nonce as the response CSP', async () => {
     // Next.js derives the nonce for its OWN framework <script> tags from the
     // REQUEST `Content-Security-Policy` header. If the middleware sets the CSP
     // only on the response (as it did before fix c38cb71), Next mints a
@@ -33,7 +34,7 @@ describe('security middleware (CSP nonce + headers)', () => {
     // <style> + theme-boot <script> — the browser then blocks our inline tags
     // and the entire visual theme silently collapses. This test fails closed if
     // the request-side CSP is ever dropped again.
-    const res = run();
+    const res = await run();
     const responseCsp = res.headers.get('content-security-policy');
 
     // `NextResponse.next({ request: { headers } })` records the overridden
@@ -50,8 +51,8 @@ describe('security middleware (CSP nonce + headers)', () => {
     expect(nonceOf(responseCsp)).toBe(requestNonce); // response nonce === x-nonce
   });
 
-  it('ships the Nosecone-style hardening headers', () => {
-    const h = run().headers;
+  it('ships the Nosecone-style hardening headers', async () => {
+    const h = (await run()).headers;
     expect(h.get('strict-transport-security')).toContain('max-age=63072000');
     expect(h.get('x-frame-options')).toBe('DENY');
     expect(h.get('x-content-type-options')).toBe('nosniff');
@@ -61,16 +62,26 @@ describe('security middleware (CSP nonce + headers)', () => {
     expect(h.get('cross-origin-resource-policy')).toBe('same-origin');
   });
 
-  it('mints a fresh nonce per request (never reuses one)', () => {
-    const a = nonceOf(run().headers.get('content-security-policy'));
-    const b = nonceOf(run().headers.get('content-security-policy'));
+  it('mints a fresh nonce per request (never reuses one)', async () => {
+    const a = nonceOf((await run()).headers.get('content-security-policy'));
+    const b = nonceOf((await run()).headers.get('content-security-policy'));
     expect(a).toBeTruthy();
     expect(a).not.toBe(b);
   });
 
-  it('surfaces X-Lar-Kill-Switch only when LAR_KILL_SWITCH=1', () => {
-    expect(run().headers.get('x-lar-kill-switch')).toBeNull();
+  it('surfaces X-Lar-Kill-Switch only when LAR_KILL_SWITCH=1', async () => {
+    expect((await run()).headers.get('x-lar-kill-switch')).toBeNull();
     process.env.LAR_KILL_SWITCH = '1';
-    expect(run().headers.get('x-lar-kill-switch')).toBe('1');
+    expect((await run()).headers.get('x-lar-kill-switch')).toBe('1');
+  });
+
+  it('the Supabase session refresh is INERT while auth is unconfigured (no auth cookies, no Set-Cookie)', async () => {
+    // The auth env vars are unset in tests, so refreshSession() must be a pure no-op:
+    // the CSP response passes through untouched and no `sb-*` auth cookie is written.
+    const res = await run();
+    expect(res.headers.get('set-cookie')).toBeNull();
+    expect(res.cookies.getAll().some((c) => c.name.startsWith('sb-'))).toBe(false);
+    // …and the CSP contract still holds, proving the integration didn't disturb it.
+    expect(res.headers.get('content-security-policy')).toContain("default-src 'self'");
   });
 });
