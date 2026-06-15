@@ -106,9 +106,28 @@ Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), G
 (org 2FA, `master` ruleset: no force-push/deletion). Deferred to free/at-deploy:
 PostHog, Sentry, Plausible, Linear.
 
-**Open with Alberto:** he wants the orchestration/autonomy system built _deeper_ (not
-a quick-approved draft) before we wire the between-session Action. Legal/company
-formation + paid tools are explicitly **deferred** (see launch playbook).
+**▶▶ NEXT INCREMENT (start here in a fresh chat):** the orchestration system is BUILT
+
+- disarmed; the privacy spine (`@lar/crypto` keyring + `@lar/store` + sync + backup +
+  the privacy guard) is deep, tested (446 tests / 35 suites), green. **The product's
+  next LEAP is `auth/identity` (Supabase Auth)** → then wire `SyncRemote`→Supabase
+  (ciphertext rows + RLS) → device-pairing crypto → the AI brain. These are all
+  **human-gated** (auth/crypto = the irreversible five). **The single unblock: Alberto
+  runs `doppler login` once** (so the Supabase keys in Doppler pull locally), then
+  scaffold Supabase Auth. Until that's done, do **reversible polish only**: an a11y pass
+  on the new Rooms (Translate/News/Markets-panel/Remember-decisions), parser depth, or
+  marketing. **Do NOT add a 17th rail tab** (16 is the agreed ceiling — route new things
+  behind the global "Hey Lar" bar). Latest honest status:
+  [2026-06-15 audit](https://github.com/Hey-Lar/mission-control/blob/main/audits/2026-06-15-status-audit.md)
+  (~30–33% real).
+
+**To make the fleet truly non-stop (so Alberto never types "continue"):** arm it —
+add repo secret `ANTHROPIC_API_KEY` + variable `FLEET_ENABLED=true`
+([fleet-runbook](https://github.com/Hey-Lar/mission-control/blob/main/governance/fleet-runbook.md)).
+It has the spend-cap + kill-switch a naïve self-loop lacks.
+
+Legal/company formation + paid tools (Supabase Pro/Sentry/PostHog/Linear) are
+explicitly **deferred** (see launch playbook).
 
 ---
 
