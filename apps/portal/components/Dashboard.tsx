@@ -104,7 +104,7 @@ export function Dashboard() {
 
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
-      <main className="stage glass">
+      <main className="stage glass" aria-label={activeLabel}>
         <div key={tab} className="stage-anim">
           <RoomErrorBoundary roomLabel={activeLabel}>
             {tab === 'home' && <OverviewBlock onNavigate={(t) => setTab(t as TabKey)} />}
