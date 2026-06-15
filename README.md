@@ -46,23 +46,46 @@ Every giant (Apple homeOS, Google Home, Amazon Alexa+, Samsung SmartThings) is b
 ## Quickstart
 
 ```bash
-# clone, then just open the prototype
-open prototype/index.html      # macOS
-# or double-click the file
+npm install            # root — npm workspaces + Turborepo
+npm run dev            # portal :4200 + marketing :4201
+npm test               # all package + app tests (vitest, via turbo)
+npm run typecheck      # strict TS across the monorepo
+npm run build          # build every package + both Next apps
 ```
 
-Tap the amber **mic** (bottom-right) to run the "Hey Lar" voice flow: wake → resolve → route to platform.
+The **portal** (`apps/portal`) is the working glass dashboard; **marketing** is
+`apps/marketing`. Tap the amber mic to run the "Hey Lar" flow.
+_(Legacy Phase-0 prototype still at [`prototype/index.html`](prototype/index.html).)_
 
 ---
 
-## Status
+## What's built today (2026-06-15)
 
-- [x] **Phase 0** — name, domain, voice identity, working glass prototype (4 blocks + Hey Lar demo)
-- [ ] **Phase 1** — real voice (Web Speech API) + Odesli track resolution + deep-link out (the Music wedge)
-- [ ] **Phase 2** — AOSP launcher + system media control + on-device intent model
-- [ ] **Phase 3+** — Podcasts, Film/TV, Net Worth, Health; intelligence layer; hardware
+A polished, single-user, **local-only** web app — not yet a product (no accounts, no
+live sync backend, no deploy). The honest map is [`HANDOFF.md`](HANDOFF.md) + the
+[latest status audit](https://github.com/Hey-Lar/mission-control/blob/main/audits/2026-06-15-status-audit.md)
+(~30–33% real).
 
-See [`docs/04-budget-roadmap.md`](docs/04-budget-roadmap.md) for the full roadmap.
+**🟢 Real + tested (446 tests / 35 turbo suites green):**
+
+- **Privacy spine** — `@lar/crypto` (AES-256-GCM key-hierarchy) + `@lar/store`: a
+  local-first, **end-to-end-encrypted** document store with a **multi-device sync
+  engine** (ciphertext-only on the wire), **encrypted backup/restore**, and a sev-0
+  no-plaintext guard.
+- **~16 Rooms** + **11 keyless "route-outward" connectors** (music, podcasts, books,
+  film/TV, dictionary, places, weather, translate, news, finance, filings). The
+  **Remember** Room is a private, on-device encrypted "personal-context layer" (notes
+  - decisions journal + digest).
+- Design system (`@lar/ui`), per-handler authz + nonce-CSP, and the `.claude/` agent
+  fleet + a (disarmed) CI build runner.
+
+**🔴 Not built yet (the actual product):** accounts/auth, the real sync backend
+(Supabase), the AI brain, mobile, deploy, payments, the company. **Next leap =
+auth/identity** — see [`HANDOFF.md`](HANDOFF.md).
+
+**Three repos:** [`Hey-Lar/lar`](.) (product) · `Hey-Lar/mission-control` (private ops
+— roadmap, audits, strategy; strategy docs moved out of this repo) · `Hey-Lar/governance`
+(constitution).
 
 ---
 
