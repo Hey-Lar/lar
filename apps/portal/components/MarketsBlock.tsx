@@ -121,7 +121,9 @@ export function MarketsBlock() {
             <h1 className="h1">Markets</h1>
           </div>
         </div>
-        <p className="err">Unable to load analytics: {error}</p>
+        <p className="err" role="alert">
+          Unable to load analytics: {error}
+        </p>
       </div>
     );
   }
@@ -135,7 +137,9 @@ export function MarketsBlock() {
             <h1 className="h1">Markets</h1>
           </div>
         </div>
-        <p className="lead">Loading…</p>
+        <p className="lead" role="status" aria-live="polite">
+          Loading markets…
+        </p>
       </div>
     );
   }
@@ -244,8 +248,9 @@ export function MarketsBlock() {
           </div>
         </div>
 
-        {/* P10/P50/P90 horizontal band bar */}
-        <div style={{ marginTop: 18, position: 'relative' }}>
+        {/* P10/P50/P90 horizontal band bar — decorative: the P10/P50/P90 figures are
+            already read out textually in the stat row above, so hide the graphic from SR. */}
+        <div style={{ marginTop: 18, position: 'relative' }} aria-hidden="true">
           <div
             style={{
               height: 10,
@@ -310,15 +315,30 @@ export function MarketsBlock() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
+          <table
+            style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}
+            aria-label="Holdings — current vs target weights, read-only"
+          >
             <thead>
               <tr style={{ color: 'var(--ink-faint)', textAlign: 'left' }}>
-                <th style={thStyle}>Symbol</th>
-                <th style={thStyle}>Name</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Value</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Current</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Target</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Drift</th>
+                <th scope="col" style={thStyle}>
+                  Symbol
+                </th>
+                <th scope="col" style={thStyle}>
+                  Name
+                </th>
+                <th scope="col" style={{ ...thStyle, textAlign: 'right' }}>
+                  Value
+                </th>
+                <th scope="col" style={{ ...thStyle, textAlign: 'right' }}>
+                  Current
+                </th>
+                <th scope="col" style={{ ...thStyle, textAlign: 'right' }}>
+                  Target
+                </th>
+                <th scope="col" style={{ ...thStyle, textAlign: 'right' }}>
+                  Drift
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -390,7 +410,8 @@ export function MarketsBlock() {
       {/* ── Allocation bar card ── */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="eyebrow">Allocation · current weights</div>
-        <div className="alloc-bar" style={{ marginTop: 14, height: 16 }}>
+        {/* Decorative: each slice's symbol + weight is listed as text in the legend below. */}
+        <div className="alloc-bar" style={{ marginTop: 14, height: 16 }} aria-hidden="true">
           {allocSlices.map((s) => (
             <span
               key={s.key}
