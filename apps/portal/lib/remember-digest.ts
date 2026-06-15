@@ -112,3 +112,33 @@ export function summarizeRemember(items: RememberItem[], nowMs: number): Digest 
 export function recentItems(items: RememberItem[], limit = 5): RememberItem[] {
   return [...items].sort((a, b) => itemMs(b) - itemMs(a)).slice(0, Math.max(0, limit));
 }
+
+export interface OpenCommitment {
+  id: string;
+  text: string;
+  rationale?: string;
+  createdAt: string;
+  /** Whole days since it was logged (≥ 0). */
+  ageDays: number;
+}
+
+/**
+ * Open commitments — unresolved decisions, OLDEST first. The research's "unkept
+ * commitments" retrospective: surfaces what you decided but haven't closed, and how
+ * long it's been sitting. Pure + deterministic (caller passes `nowMs`).
+ */
+export function openCommitments(items: RememberItem[], nowMs: number): OpenCommitment[] {
+  return items
+    .filter((i) => i.kind === 'decision' && i.status !== 'resolved')
+    .map((i) => {
+      const ms = itemMs(i);
+      return {
+        id: i.id,
+        text: i.text,
+        rationale: i.rationale,
+        createdAt: i.createdAt,
+        ageDays: Math.max(0, Math.floor((nowMs - ms) / DAY_MS)),
+      };
+    })
+    .sort((a, b) => b.ageDays - a.ageDays);
+}
