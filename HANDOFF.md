@@ -97,7 +97,7 @@ build" as a working capability until the fleet is armed + has shipped a green PR
   read-only/no-advice bright-lines. 4 tests.
 - **Marketing fixes:** killed stale localhost + wrong-repo links + the dead staging
   CTA; led with the privacy moat.
-- Each increment: typecheck + full test (**208 tests across 20 files; `npm test` = 35 turbo
+- Each increment: typecheck + full test (**249 tests across 21 files; `npm test` = 35 turbo
   tasks green** — "tasks" are pipeline nodes, not suites) + lint +
   `next build` 14/14 + prod-boot smoke, green, pushed. Independently re-verified by a
   fresh **pm-auditor** audit (2026-06-15) that caught + fixed several stale over-claims.
@@ -201,8 +201,8 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **71 unit tests green *at this Phase-1 milestone* (current verified total is **208**
-  across 20 test files — see the night-build + privacy-spine sections below);
+- **71 unit tests green *at this Phase-1 milestone* (current verified total is **249**
+  across 21 test files — see the night-build + privacy-spine sections below);
   typecheck + prettier clean
   (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
   for both apps.** Coverage gained this session: `@lar/ui` 8 themes
