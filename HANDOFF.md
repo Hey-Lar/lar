@@ -143,6 +143,27 @@ explicitly **deferred** (see launch playbook).
 
 ---
 
+## Shipped this session (2026-06-15 → 06-16)
+
+11 commits, all verified (typecheck + suite 35/35 + build + lint), pushed to `master`:
+
+1. **Auth + sync foundation (6 commits)** — Supabase Auth as an INERT, reviewable draft
+   (config guard / browser+server clients / `requireUser()` via `getClaims()` / session
+   refresh wired into the nonce-CSP middleware without breaking the theme / passwordless
+   `/login` + `/auth/{confirm,signout}` / RLS migration `0001_lar_sync.sql` / `supabaseRemote()`
+   adapter / `docs/20-auth.md` + arming checklist). Does nothing until Alberto arms it.
+2. **a11y(markets)** — announced load/error, labelled the holdings table, hid decorative bars.
+3. **classifyRoom** (`lib/room-router.ts`, 41 tests) — the "Hey Lar" bar now routes to ALL
+   internal Rooms (weather/news/agenda/markets/wealth/health/translate/remember/connect),
+   not just a hardcoded weather case; media/lookups still defer to `/api/lar`.
+4. **Marketing launch-readiness** — production SEO + a branded `next/og` OG card; robots.txt,
+   sitemap.xml, and an amber favicon.
+
+**Honesty fix:** corrected the unverified "446 tests" claim → **249 tests / 21 files**
+(recounted per-workspace; `35` = turbo _tasks_, not suites).
+
+---
+
 ## Current state (update every increment)
 
 **Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — pushed to
