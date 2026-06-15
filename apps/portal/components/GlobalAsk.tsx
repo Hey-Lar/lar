@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@lar/ui';
 import { AskBar } from './AskBar';
 import type { SpeechRecognitionLike } from '../lib/useAskLar';
+import { classifyRoom, type RoomRoute } from '../lib/room-router';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,9 +36,6 @@ interface LarResult {
   resolution: AnyResolution | null;
   note?: string;
 }
-
-// Weather special-case (client-side, no /api/lar call)
-const WEATHER_RE = /\b(weather|forecast|temperature|rain|sunny|how (warm|cold|hot))\b/i;
 
 // ---------------------------------------------------------------------------
 // summarise
@@ -108,7 +106,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
   const [listening, setListening] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<LarResult | null>(null);
-  const [weatherRoute, setWeatherRoute] = useState(false);
+  const [roomRoute, setRoomRoute] = useState<RoomRoute | null>(null);
 
   const inflightRef = useRef<AbortController | null>(null);
 
@@ -122,15 +120,17 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
   function run(transcript: string) {
     if (!transcript.trim()) return;
 
-    // Weather special-case — handle client-side, never post to /api/lar
-    if (WEATHER_RE.test(transcript)) {
-      setWeatherRoute(true);
+    // Internal-Room request (weather, news, agenda, markets, …)? Route client-side
+    // — never post to /api/lar (which would otherwise default it to a music search).
+    const room = classifyRoom(transcript);
+    if (room) {
+      setRoomRoute(room);
       setResult(null);
       setErr(null);
       return;
     }
 
-    setWeatherRoute(false);
+    setRoomRoute(null);
     inflightRef.current?.abort();
     const ctrl = new AbortController();
     inflightRef.current = ctrl;
@@ -207,8 +207,8 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
         Hey Lar — ask for anything
       </div>
       <div className="note" style={{ marginBottom: 12 }}>
-        Try: &ldquo;play Mr Brightside&rdquo;, &ldquo;define serendipity&rdquo;, &ldquo;where can I
-        watch Dune&rdquo;, &ldquo;directions to Time Out Market&rdquo;
+        Try: &ldquo;play Mr Brightside&rdquo;, &ldquo;what&rsquo;s my net worth&rdquo;,
+        &ldquo;translate good morning to French&rdquo;, &ldquo;where can I watch Dune&rdquo;
       </div>
 
       <AskBar
@@ -223,19 +223,16 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
 
       {err && <div className="err">{err}</div>}
 
-      {/* Weather special-case */}
-      {weatherRoute && !loading && (
-        <div className="np card" key="weather">
-          <div className="eyebrow">Routing you to Weather</div>
-          <div className="np-title" style={{ marginTop: 8 }}>
-            Live local forecast
-          </div>
+      {/* Internal-Room routing card (weather, news, agenda, markets, wealth, …) */}
+      {roomRoute && !loading && (
+        <div className="np card" key={roomRoute.tab}>
+          <div className="eyebrow">Routing you to {roomRoute.label}</div>
           <button
             className="chip"
             style={{ marginTop: 12, cursor: 'pointer', border: 'none', background: 'none' }}
-            onClick={() => onNavigate('weather')}
+            onClick={() => onNavigate(roomRoute.tab)}
           >
-            Open Weather <Icon name="route" size={14} className="chip-arrow" />
+            Open {roomRoute.label} <Icon name="route" size={14} className="chip-arrow" />
           </button>
         </div>
       )}
@@ -272,7 +269,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
       )}
 
       {/* resolution:null (note branch) or no summary for a known kind */}
-      {result && !summary && !weatherRoute && (
+      {result && !summary && !roomRoute && (
         <div className="note" style={{ padding: '10px 0' }}>
           {result.note ?? "I couldn't route that — try one of the tabs."}
         </div>
