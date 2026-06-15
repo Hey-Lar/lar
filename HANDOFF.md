@@ -87,9 +87,19 @@ build" as a working capability until the fleet is armed + has shipped a green PR
   `importBackup` — bundles the wrapped keyring + sealed records into one portable
   ciphertext-only blob (download / carry to a new device; restore + passphrase
   reconstitutes the store). The data-portability half of the "recovery" decision; no
-  new crypto. 7 tests (`@lar/store` now 33: 17 store + 9 sync + 7 backup).
-- Each increment: typecheck + full test (now 33 task-suites) + lint + `next build`
-  10/10 + prod-boot smoke (tab + `--hearth` theming), green, committed, pushed.
+  new crypto. 7 tests. Wired into the Remember UI (Back up / Restore).
+- **Privacy guard** (`@lar/store` `privacy.test.ts`): one sev-0 end-to-end test — no
+  plaintext/passphrase leaks across disk → sync wire → 2nd device → backup blob, and
+  the data still decrypts. **`@lar/store` total: 34** (17 store + 9 sync + 7 backup +
+  1 guard).
+- **Markets document-grounding** (`@lar/connector-filings` → SEC EDGAR / IR / Yahoo /
+  FRED): a "Read the primary source" panel — route-outward, educational, inside the
+  read-only/no-advice bright-lines. 4 tests.
+- **Marketing fixes:** killed stale localhost + wrong-repo links + the dead staging
+  CTA; led with the privacy moat.
+- Each increment: typecheck + full test (**now 35 turbo suites / 446 tests**) + lint +
+  `next build` 10/10 + prod-boot smoke, green, pushed. Independently re-verified by a
+  fresh **pm-auditor** audit (2026-06-15) that caught + fixed several stale over-claims.
 
 **Accounts configured (2026-06-14):** Vercel Pro (team `hey-lar`, GitHub connected),
 Supabase (EU `eu-west-1`, keys in Doppler), Doppler (`hey-lar` project + CLI), GitHub
