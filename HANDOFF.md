@@ -47,7 +47,8 @@ Quality over paperwork.
 built — `@lar/crypto` gained a `Keyring` (key hierarchy: random master key wrapped by
 a PBKDF2 passphrase key; 10 keyring tests) and a new package **`@lar/store`**
 (collection/id/JSON document store, AES-256-GCM sealed, ciphertext-only at rest,
-pluggable adapter, offline, no backend; 17 store tests — 27 new this session).
+pluggable adapter, offline, no backend; 17 store tests at first — **`@lar/store` is now
+34** with sync + backup + the privacy guard, below).
 Surfaced in the portal as the **Remember** tab (`RememberBlock.tsx`).
 
 **Sync foundation built (2026-06-14):** `@lar/store` is now sync-aware — records carry
@@ -63,7 +64,10 @@ build the device-pairing flow. **Sync decisions LOCKED (2026-06-14):** backend =
 Supabase ciphertext store · key-transfer = **both** (pairing code + recovery phrase) ·
 LWW v1.
 
-**Autonomous night build (2026-06-14→15) — reversible-only, all green, pushed:**
+**Overnight build (2026-06-14→15) — reversible-only, all green, pushed.** _(Honest
+note: this was driven INTERACTIVELY by Claude in-session, not the CI fleet — the fleet
+is built but **disarmed** and has never run a real increment. Don't cite "autonomous
+build" as a working capability until the fleet is armed + has shipped a green PR.)_
 
 - **Remember depth** (`apps/portal/lib/remember-digest.ts` + `RememberBlock`): the
   Room is now a "personal-context layer" — notes **+ a decisions journal** (rationale,
@@ -156,7 +160,9 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **71 unit tests green (+2 gated live); typecheck + prettier clean
+- **71 unit tests green *at this Phase-1 milestone* (current total is **446**
+  across 35 turbo suites — see the night-build + privacy-spine sections below);
+  typecheck + prettier clean
   (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
   for both apps.** Coverage gained this session: `@lar/ui` 8 themes
   specs (D1), `apps/portal/lib/synthetic-ohlc` 9 (D4),

@@ -1,7 +1,7 @@
 import { Icon } from '@lar/ui';
 
 export function Nav() {
-  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'https://staging.heylar.ai';
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? '#how';
   return (
     <nav className="nav glass" aria-label="Primary">
       <a className="brand" href="/">
