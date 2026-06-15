@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { summarizeRemember, recentItems, type RememberItem } from './remember-digest';
+import {
+  summarizeRemember,
+  recentItems,
+  openCommitments,
+  type RememberItem,
+} from './remember-digest';
 
 const NOW = Date.parse('2026-06-14T12:00:00Z'); // a fixed "now" (UTC)
 const day = (d: string, h = '09:00:00') => `${d}T${h}Z`;
@@ -92,5 +97,31 @@ describe('recentItems', () => {
     const snapshot = items.map((i) => i.id);
     recentItems(items);
     expect(items.map((i) => i.id)).toEqual(snapshot);
+  });
+});
+
+describe('openCommitments', () => {
+  it('returns only unresolved decisions (notes + resolved excluded), oldest first', () => {
+    const items = [
+      note('n1', day('2026-06-01')), // not a decision
+      decision('old-open', day('2026-06-04'), 'open'), // 10 days
+      decision('resolved', day('2026-06-02'), 'resolved'), // excluded
+      decision('new-open', day('2026-06-13')), // undefined status = open, 1 day
+    ];
+    const open = openCommitments(items, NOW);
+    expect(open.map((c) => c.id)).toEqual(['old-open', 'new-open']); // oldest → newest
+    expect(open[0]!.ageDays).toBe(10);
+    expect(open[1]!.ageDays).toBe(1);
+  });
+
+  it('carries the rationale and never reports a negative age', () => {
+    const open = openCommitments([decision('d', day('2026-06-20'), 'open')], NOW); // future date
+    expect(open[0]!.rationale).toBe('because');
+    expect(open[0]!.ageDays).toBe(0); // clamped, not negative
+  });
+
+  it('is empty when nothing is open', () => {
+    expect(openCommitments([decision('d', day('2026-06-01'), 'resolved')], NOW)).toEqual([]);
+    expect(openCommitments([], NOW)).toEqual([]);
   });
 });

@@ -24,7 +24,7 @@ import {
   importBackup,
 } from '@lar/store';
 import type { EncryptedStore } from '@lar/store';
-import { summarizeRemember, type RememberItem } from '../lib/remember-digest';
+import { summarizeRemember, openCommitments, type RememberItem } from '../lib/remember-digest';
 
 const NAMESPACE = 'lar.remember.';
 const COLLECTION = 'notes';
@@ -104,6 +104,20 @@ function RememberInner() {
     return summarizeRemember(items, Date.now());
   }, [notes, decisions]);
   const peak = Math.max(1, ...digest.last7Days.map((d) => d.count));
+  const oldestOpen = useMemo(() => {
+    const open = openCommitments(
+      decisions.map((d) => ({
+        id: d.id,
+        kind: 'decision' as const,
+        text: d.text,
+        createdAt: d.createdAt,
+        rationale: d.rationale,
+        status: d.status,
+      })),
+      Date.now(),
+    );
+    return open[0] ?? null;
+  }, [decisions]);
   const [restoreMsg, setRestoreMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -403,6 +417,11 @@ function RememberInner() {
         <p className="note" style={{ marginTop: 10 }}>
           Last 7 days · everything here is encrypted on this device. Lar never sees it.
         </p>
+        {oldestOpen && (
+          <p className="note" style={{ marginTop: 8 }}>
+            Still open · oldest: <strong>{oldestOpen.text}</strong> · {oldestOpen.ageDays}d
+          </p>
+        )}
       </div>
 
       <div className="card" style={{ marginTop: 16, marginBottom: 16, maxWidth: 620 }}>
