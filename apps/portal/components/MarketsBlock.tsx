@@ -12,6 +12,7 @@ import { classifySuccessBand } from '@lar/connector-finance';
 import type { MonteCarloResult, DriftState, SuccessBand } from '@lar/connector-finance';
 import { HeroChart } from './HeroChart';
 import { WatchlistBlock, type WatchSymbol } from './WatchlistBlock';
+import { buildPrimarySourceLinks } from '@lar/connector-filings';
 
 // Stable reference time used to seed deterministic synthetic OHLCV. Fixed at
 // build / module load so SSR and CSR agree on the series (no hydration churn,
@@ -406,6 +407,34 @@ export function MarketsBlock() {
                 {s.label} · {(s.pct * 100).toFixed(1)}%
               </span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Read the primary source (route-outward, educational — never a verdict) ── */}
+      <div className="card" style={{ marginTop: 16, marginBottom: 14 }}>
+        <div className="eyebrow" style={{ marginBottom: 8 }}>
+          Read the primary source · {selected}
+        </div>
+        <p className="note" style={{ marginTop: 0, marginBottom: 12 }}>
+          Lar doesn&rsquo;t give a verdict — it routes you to the source so you decide. Educational,
+          not advice.
+        </p>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {buildPrimarySourceLinks(selected).map((s) => (
+            <a
+              key={s.id}
+              className="card"
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'block', textDecoration: 'none' }}
+            >
+              <div style={{ fontWeight: 600 }}>{s.label} →</div>
+              <div className="note" style={{ marginTop: 2 }}>
+                {s.why}
+              </div>
+            </a>
           ))}
         </div>
       </div>

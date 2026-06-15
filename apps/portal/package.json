@@ -13,6 +13,7 @@
   "dependencies": {
     "@lar/connector-books": "*",
     "@lar/connector-dictionary": "*",
+    "@lar/connector-filings": "*",
     "@lar/connector-filmtv": "*",
     "@lar/connector-places": "*",
     "@lar/connector-finance": "*",
