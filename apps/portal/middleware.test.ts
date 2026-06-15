@@ -75,6 +75,21 @@ describe('security middleware (CSP nonce + headers)', () => {
     expect((await run()).headers.get('x-lar-kill-switch')).toBe('1');
   });
 
+  it('connect-src gains the Supabase origin (https + wss) ONLY when auth is configured', async () => {
+    // Unconfigured: the CSP must NOT mention supabase — byte-for-byte as today.
+    expect((await run()).headers.get('content-security-policy')).not.toContain('supabase.co');
+
+    // Armed: the project origin appears for auth/REST (https) + future realtime (wss).
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://demo.supabase.co';
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_demo';
+    const csp = (await run()).headers.get('content-security-policy') ?? '';
+    expect(csp).toContain('connect-src');
+    expect(csp).toContain('https://demo.supabase.co');
+    expect(csp).toContain('wss://demo.supabase.co');
+    // The pre-existing allow-list entries are still there (additive, not replaced).
+    expect(csp).toContain('https://api.song.link');
+  });
+
   it('the Supabase session refresh is INERT while auth is unconfigured (no auth cookies, no Set-Cookie)', async () => {
     // The auth env vars are unset in tests, so refreshSession() must be a pure no-op:
     // the CSP response passes through untouched and no `sb-*` auth cookie is written.

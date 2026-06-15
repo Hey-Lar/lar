@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { supabaseUrl } from './lib/supabase/config';
 import { refreshSession } from './lib/supabase/middleware';
 
 /**
@@ -32,17 +33,35 @@ const IMAGE_HOSTS = ['https://*.mzstatic.com'];
 // Cross-platform link resolver (Odesli) for the music wedge.
 const FETCH_HOSTS = ['https://api.song.link', 'https://itunes.apple.com'];
 
+/**
+ * Supabase auth/sync connect-src origins — ONLY present once auth is armed
+ * (supabaseUrl() is undefined in the draft, so this returns [] and the CSP is
+ * byte-for-byte what it is today). When armed, the browser client needs the
+ * project origin for auth/REST (https) and future realtime sync (wss).
+ */
+function supabaseConnectHosts(): string[] {
+  const url = supabaseUrl();
+  if (!url) return [];
+  try {
+    const origin = new URL(url).origin;
+    return [origin, origin.replace(/^https:/, 'wss:')];
+  } catch {
+    return [];
+  }
+}
+
 function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === 'development';
   // Next dev needs 'unsafe-eval' for HMR. Strip it in prod.
   const scriptExtras = isDev ? "'unsafe-eval'" : '';
+  const connectHosts = [...FETCH_HOSTS, ...supabaseConnectHosts()].join(' ');
   return [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}' ${scriptExtras}`.trim(),
     `style-src 'self' 'nonce-${nonce}' 'unsafe-inline' ${FONT_HOSTS[0]}`,
     `img-src 'self' blob: data: ${IMAGE_HOSTS.join(' ')}`,
     `font-src 'self' ${FONT_HOSTS[1]}`,
-    `connect-src 'self' ${FETCH_HOSTS.join(' ')}`,
+    `connect-src 'self' ${connectHosts}`,
     `frame-ancestors 'none'`,
     `frame-src 'none'`,
     `object-src 'none'`,
