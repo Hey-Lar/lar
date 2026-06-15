@@ -16,7 +16,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '@lar/ui';
-import { webStorageAdapter, openOrCreateStore } from '@lar/store';
+import {
+  webStorageAdapter,
+  openOrCreateStore,
+  exportBackup,
+  backupToBlob,
+  importBackup,
+} from '@lar/store';
 import type { EncryptedStore } from '@lar/store';
 import { summarizeRemember, type RememberItem } from '../lib/remember-digest';
 
@@ -98,6 +104,8 @@ function RememberInner() {
     return summarizeRemember(items, Date.now());
   }, [notes, decisions]);
   const peak = Math.max(1, ...digest.last7Days.map((d) => d.count));
+  const [restoreMsg, setRestoreMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Auto-lock on unmount: drop the master key from memory.
   useEffect(() => {
@@ -215,6 +223,44 @@ function RememberInner() {
     setDecisionWhy('');
   }, []);
 
+  // Download an encrypted, portable backup (ciphertext only — safe to keep/move).
+  const handleBackup = useCallback(async () => {
+    try {
+      const adapter = webStorageAdapter(window.localStorage);
+      const blob = backupToBlob(await exportBackup(adapter, { namespace: NAMESPACE }));
+      const url = URL.createObjectURL(new Blob([blob], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lar-remember-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Backup failed.');
+    }
+  }, []);
+
+  // Restore from a backup file (replaces what's on this device), then unlock with that
+  // backup's passphrase. The file is ciphertext — the passphrase is still required.
+  const handleRestoreClick = useCallback(() => fileInputRef.current?.click(), []);
+
+  const onRestoreFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file
+    if (!file) return;
+    setError('');
+    setRestoreMsg('');
+    try {
+      const text = await file.text();
+      const adapter = webStorageAdapter(window.localStorage);
+      const { records } = await importBackup(adapter, text, { namespace: NAMESPACE });
+      setRestoreMsg(
+        `Restored ${records} item${records === 1 ? '' : 's'}. Now unlock with that backup's passphrase.`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Restore failed — is this a Lar backup file?');
+    }
+  }, []);
+
   // ── Locked screen ──
   if (!unlocked) {
     return (
@@ -271,13 +317,30 @@ function RememberInner() {
             >
               {busy ? 'Unlocking…' : 'Unlock'}
             </button>
+            <button className="btn ghost" type="button" onClick={handleRestoreClick}>
+              Restore from backup…
+            </button>
           </div>
+          {restoreMsg && (
+            <p className="vault-ok" role="status" style={{ marginTop: 10 }}>
+              {restoreMsg}
+            </p>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={(e) => void onRestoreFile(e)}
+            style={{ display: 'none' }}
+          />
         </div>
 
         <div className="note vault-note" role="note" style={{ marginTop: 16, maxWidth: 460 }}>
           Encrypted in THIS browser (AES-256-GCM, 600,000-round PBKDF2) and stored only on this
-          device. No server, no recovery &mdash; if you forget the passphrase, the notes can't be
-          read.
+          device. To move your memory to another device or keep a safe copy, use{' '}
+          <strong>Back up</strong> (when unlocked) and <strong>Restore</strong> here &mdash; the
+          backup file is ciphertext, so the passphrase is still required. Forget the passphrase and
+          even a backup can&rsquo;t be read.
         </div>
       </div>
     );
@@ -291,9 +354,14 @@ function RememberInner() {
           <div className="eyebrow">Unlocked · encrypted on this device</div>
           <h1 className="h1">Remember</h1>
         </div>
-        <button className="btn ghost" type="button" onClick={handleLock}>
-          <Icon name="lock" size={16} /> Lock
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn ghost" type="button" onClick={() => void handleBackup()}>
+            Back up
+          </button>
+          <button className="btn ghost" type="button" onClick={handleLock}>
+            <Icon name="lock" size={16} /> Lock
+          </button>
+        </div>
       </div>
 
       {/* ── Digest: the personal-context layer, computed on-device ── */}
