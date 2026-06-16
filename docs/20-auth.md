@@ -101,3 +101,58 @@ Do these in order. Nothing here is reversible-by-agent, which is why it's yours.
      origin; everything else unchanged).
 
 Until step 4 happens, all of the above is dormant and the keyless app is untouched.
+
+---
+
+## ▶ Full multi-method build — status, roadmap & costs
+
+Alberto chose the **full** auth build. The architecture is provider-agnostic: every OAuth
+method + the default email all land on `/auth/confirm` (PKCE `?code` exchange), and the UI
+shows a method **only when enabled** via `NEXT_PUBLIC_AUTH_METHODS` (default
+`google,email,passkey`). So lighting up a new method is a config toggle, not a rewrite.
+
+| Method              | Code                | Cost                               | Founder setup to go live                                               |
+| ------------------- | ------------------- | ---------------------------------- | ---------------------------------------------------------------------- |
+| ✉️ Email magic link | ✅ built            | Free (Resend SMTP — see `docs/21`) | Enable Email provider; arm SMTP                                        |
+| 🟢 Google           | ✅ built            | Free                               | Google Cloud OAuth client → paste ID/secret into Supabase              |
+| 🍎 Apple            | ✅ built (UI gated) | **$99/yr**                         | Apple Developer → Services ID (= Client ID) + .p8 key + 6-mo secret    |
+| 📱 Phone/SMS        | ✅ built (UI gated) | **Paid SMS** (Twilio…) + CAPTCHA   | SMS provider creds in Supabase; enable Phone                           |
+| 🔑 Passkeys         | ✅ built            | Free (experimental)                | Dashboard → Passkeys: enable + set RP ID (apex `heylar.ai`) once       |
+| 🔐 MFA (TOTP)       | ✅ built            | Free                               | None — on by default; apply `0003_mfa_aal.sql` to enforce              |
+| 🪝 Allow-list       | ✅ built            | Free                               | Apply `0002_alpha_allowlist.sql` + enable the Before-User-Created hook |
+
+**Recommended order:** email → Google → Apple → passkeys → MFA → phone. Email + Google are
+free and validate the whole session/RLS plumbing; Apple/phone are gated on paid accounts.
+
+### New files this build
+
+`lib/supabase/{mfa,passkeys,auth-methods}.ts` · `components/PhoneSignIn.tsx` ·
+`components/account/{TwoFactorCard,PasskeysCard,AccountMethods}.tsx` · `app/account/page.tsx`
+(the security surface) · migrations `0002_alpha_allowlist.sql`, `0003_mfa_aal.sql`.
+
+### Identity linking (important)
+
+Supabase **auto-links the same VERIFIED email** across Google/Apple/email to ONE user — keep
+this ON (it's verified-gated, so safe). **Manual linking stays OFF** until we ship a guarded
+"connect account" flow. All app data keys off the immutable `user.id` (`claims.sub`), never
+email. Keep "Confirm email" ON so no unverified-email identity can be exploited.
+
+### 🔒 Security checklist (verify on first arming)
+
+1. **PKCE is same-device** — open the magic link / OAuth in the SAME browser that started it, or `exchangeCodeForSession` fails. Surface that in UX copy.
+2. **Redirect allow-list** — every `redirectTo` must be in Supabase → URL Configuration → Redirect URLs, or Supabase silently falls back to Site URL.
+3. **OAuth redirect URI = the SUPABASE callback** (`https://<ref>.supabase.co/auth/v1/callback`), NOT the app URL. Apple Client ID = the **Services ID**, not the App ID.
+4. **`getClaims()` server-side, never `getSession()`** — already correct in `auth.ts`/`middleware.ts`. Audit every new server route.
+5. **Secret key never client-side** — only the publishable key reaches the browser (RLS makes it safe). Apple `.p8` + client-secret JWT are credentials (git-ignored, password manager).
+6. **Open-redirect guard** — `/auth/confirm` only honors a same-origin `next` (already enforced). Mirror anywhere a redirect is threaded.
+7. **RLS is the real wall** — client MFA/AAL gating is UX only; AAL2 is enforced in Postgres (`0003`). Verify cross-user isolation with two accounts.
+8. **Allow-list hook** is the only un-bypassable signup gate; needs the `supabase_auth_admin` grant + SELECT policy or it reads zero rows. Phone signups have null email (blocked by design).
+9. **Abuse controls before phone goes public** — CAPTCHA + tight resend/hourly caps (SMS toll-fraud is a real cost attack).
+10. **Apple secret expires every 6 months** — silent total outage when it lapses. Calendar reminder + keep the `.p8`.
+
+### Top risks (from the research synthesis)
+
+Apple's 6-month secret expiry (silent outage) · SMS toll-fraud on an unprotected phone form ·
+built-in email unfit for launch (→ Resend, `docs/21`) · cross-provider identity collisions
+(key off `sub`). Full per-method founder steps, code patterns, and citations live in the
+research blueprint captured in the build commits.

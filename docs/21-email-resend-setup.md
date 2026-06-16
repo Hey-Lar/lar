@@ -150,3 +150,31 @@ You asked what we could integrate. Once the domain's verified, Resend can also p
 - 📣 **Broadcasts** (announcements to your alpha list)
 
 We'll wire these as the product grows — all from the same verified domain + a dedicated API key per use. 👍
+
+---
+
+## 🔧 Best-practice notes (you asked for "the best") — optional, do later
+
+The apex setup above is perfectly fine for the alpha. When you want the gold-standard
+deliverability setup (research-backed), here's what "best" looks like — none of it is needed
+to start:
+
+- 📮 **Use a dedicated sending subdomain, not the apex.** Verify **`auth.heylar.ai`** in Resend
+  for auth mail (and later `notify.heylar.ai` for product mail). This isolates sending
+  reputation so a marketing blast can never hurt your sign-in emails. Sender becomes
+  `noreply@auth.heylar.ai`. (SPF/DKIM are per-host — a subdomain gets its own records.)
+- 🛡️ **Ramp DMARC over weeks, don't jump to enforcement.** Start `p=none` (monitor only) →
+  after ~2–4 weeks of clean reports → `p=quarantine` → then `p=reject; sp=reject`. Always keep
+  `rua=mailto:` so you get the aggregate reports.
+- 🔑 **One least-privilege API key per environment + use** (prod vs preview, auth vs product),
+  each **Sending-access** scoped to its domain. Rotate ~every 90 days.
+- 📡 **Wire delivery/bounce webhooks** (Resend → a Next.js route, verify the Svix signature on
+  the raw body) so hard bounces and complaints auto-suppress and protect your reputation.
+- 🟦 **Stay on Resend's shared IPs.** A dedicated IP only helps at hundreds of thousands of
+  emails/month with steady volume — for an alpha it would _hurt_ deliverability.
+- ✉️ **For richly-branded mail**, use the Supabase _Send Email_ auth hook → a Supabase Edge
+  Function calling Resend's API with **React Email** templates (one template system for both
+  auth and product mail).
+
+These are captured here so "the best" is on record — but the simple Part A–C above is the
+right place to start. 👍
