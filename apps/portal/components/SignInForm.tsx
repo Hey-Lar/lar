@@ -1,16 +1,16 @@
 'use client';
 
 /**
- * SignInForm — passwordless, email magic-link sign-in.
+ * SignInForm — multi-method, passwordless sign-in.
  *
- * Why passwordless: Lar never handles or stores a password (aligns with the
- * privacy-first, never-enter-credentials line). The user gets a one-time link by
- * email; clicking it lands on /auth/confirm, which verifies the token server-side
- * and sets the session cookie. No password ever exists to leak.
+ * Methods:
+ *  - OAuth providers (Google now; Apple slots into OAUTH_PROVIDERS once enabled in
+ *    Supabase) → signInWithOAuth → the browser bounces to the provider and back to
+ *    /auth/confirm with a PKCE ?code.
+ *  - Email magic link → signInWithOtp → a one-time link that also lands on /auth/confirm.
  *
- * This component only renders when Supabase is configured (the /login page gates
- * on isSupabaseConfigured), and it constructs the browser client lazily inside the
- * submit handler — so it can never throw on an unconfigured (draft) build.
+ * Lar never handles or stores a password (privacy-first, never-enter-credentials). The
+ * browser client is built lazily inside handlers, so this never throws on a draft build.
  */
 
 import { useState } from 'react';
@@ -18,13 +18,44 @@ import { Icon } from '@lar/ui';
 import { createClient } from '../lib/supabase/client';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
+type OAuthProvider = 'google' | 'apple';
+
+// OAuth buttons, in display order. Add { id: 'apple', label: 'Continue with Apple' }
+// here the moment the Apple provider is enabled in Supabase — no other code changes.
+const OAUTH_PROVIDERS: ReadonlyArray<{ id: OAuthProvider; label: string }> = [
+  { id: 'google', label: 'Continue with Google' },
+];
+
+function confirmRedirect(): string | undefined {
+  return typeof window !== 'undefined' ? `${window.location.origin}/auth/confirm` : undefined;
+}
 
 export function SignInForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
 
-  async function onSubmit(e: React.FormEvent) {
+  async function signInWithProvider(provider: OAuthProvider) {
+    setStatus('sending');
+    setMessage('');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: confirmRedirect() },
+      });
+      if (error) {
+        setStatus('error');
+        setMessage(error.message);
+      }
+      // On success the browser navigates to the provider — nothing else runs here.
+    } catch (err) {
+      setStatus('error');
+      setMessage(err instanceof Error ? err.message : 'Something went wrong.');
+    }
+  }
+
+  async function onSubmitEmail(e: React.FormEvent) {
     e.preventDefault();
     const address = email.trim();
     if (!address) return;
@@ -32,11 +63,9 @@ export function SignInForm() {
     setMessage('');
     try {
       const supabase = createClient();
-      const emailRedirectTo =
-        typeof window !== 'undefined' ? `${window.location.origin}/auth/confirm` : undefined;
       const { error } = await supabase.auth.signInWithOtp({
         email: address,
-        options: { emailRedirectTo },
+        options: { emailRedirectTo: confirmRedirect() },
       });
       if (error) {
         setStatus('error');
@@ -74,44 +103,85 @@ export function SignInForm() {
     );
   }
 
+  const busy = status === 'sending';
+
   return (
-    <form className="np" onSubmit={onSubmit} noValidate>
+    <div className="np">
       {status === 'error' && (
         <p className="err" role="alert">
-          {message || 'Could not send the link. Please try again.'}
+          {message || 'Could not sign in. Please try again.'}
         </p>
       )}
-      <div className="field">
-        <label htmlFor="signin-email" className="eyebrow">
-          Email
-        </label>
-        <input
-          id="signin-email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          spellCheck={false}
-          placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          disabled={status === 'sending'}
-        />
+
+      {/* OAuth providers */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {OAUTH_PROVIDERS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            className="btn ghost"
+            style={{ width: '100%' }}
+            onClick={() => void signInWithProvider(p.id)}
+            disabled={busy}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
-      <div className="btn-row" style={{ marginTop: 4 }}>
-        <button
-          type="submit"
-          className="btn primary"
-          disabled={status === 'sending' || email.trim().length === 0}
-        >
-          <Icon name="lock" />
-          {status === 'sending' ? 'Sending…' : 'Email me a sign-in link'}
-        </button>
+
+      {/* divider */}
+      <div
+        aria-hidden
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          margin: '18px 0',
+          color: 'var(--ink-faint)',
+          fontSize: 12,
+          fontWeight: 600,
+        }}
+      >
+        <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
+        or
+        <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
       </div>
+
+      {/* Email magic link */}
+      <form onSubmit={onSubmitEmail} noValidate>
+        <div className="field">
+          <label htmlFor="signin-email" className="eyebrow">
+            Email
+          </label>
+          <input
+            id="signin-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={busy}
+          />
+        </div>
+        <div className="btn-row" style={{ marginTop: 4 }}>
+          <button
+            type="submit"
+            className="btn primary"
+            disabled={busy || email.trim().length === 0}
+          >
+            <Icon name="lock" />
+            {busy ? 'Working…' : 'Email me a sign-in link'}
+          </button>
+        </div>
+      </form>
+
       <p className="lead" style={{ fontSize: 13.5, marginTop: 18, marginBottom: 0 }}>
-        No password. Lar emails you a one-time link — nothing to remember, nothing to leak.
+        No passwords, ever — sign in with Google or a one-time email link.
       </p>
-    </form>
+    </div>
   );
 }
