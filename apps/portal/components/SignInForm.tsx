@@ -16,6 +16,7 @@
 import { useState } from 'react';
 import { Icon } from '@lar/ui';
 import { createClient } from '../lib/supabase/client';
+import { passkeysSupported, signInWithPasskey } from '../lib/supabase/passkeys';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 type OAuthProvider = 'google' | 'apple';
@@ -52,6 +53,24 @@ export function SignInForm() {
     } catch (err) {
       setStatus('error');
       setMessage(err instanceof Error ? err.message : 'Something went wrong.');
+    }
+  }
+
+  async function onPasskey() {
+    setStatus('sending');
+    setMessage('');
+    try {
+      const { error } = await signInWithPasskey();
+      if (error) {
+        setStatus('error');
+        setMessage(error.message);
+        return;
+      }
+      // Session is set client-side; bounce home.
+      if (typeof window !== 'undefined') window.location.assign('/');
+    } catch (err) {
+      setStatus('error');
+      setMessage(err instanceof Error ? err.message : 'No passkey available on this device.');
     }
   }
 
@@ -113,7 +132,7 @@ export function SignInForm() {
         </p>
       )}
 
-      {/* OAuth providers */}
+      {/* OAuth providers + passkey */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {OAUTH_PROVIDERS.map((p) => (
           <button
@@ -127,6 +146,18 @@ export function SignInForm() {
             {p.label}
           </button>
         ))}
+        {passkeysSupported() && (
+          <button
+            type="button"
+            className="btn ghost"
+            style={{ width: '100%' }}
+            onClick={() => void onPasskey()}
+            disabled={busy}
+          >
+            <Icon name="lock" />
+            Sign in with a passkey
+          </button>
+        )}
       </div>
 
       {/* divider */}
