@@ -10,5 +10,10 @@ export function createClient() {
   if (!isSupabaseConfigured()) {
     throw new Error('Supabase is not configured (set NEXT_PUBLIC_SUPABASE_URL + key).');
   }
-  return createBrowserClient(supabaseUrl()!, supabaseKey()!);
+  return createBrowserClient(supabaseUrl()!, supabaseKey()!, {
+    // Opt in to the experimental passkey API (registerPasskey / signInWithPasskey).
+    // Harmless to the other flows; the methods stay inert until Passkeys are enabled
+    // in the Supabase dashboard. Experimental — pinned to supabase-js ^2.108.
+    auth: { experimental: { passkey: true } },
+  });
 }
