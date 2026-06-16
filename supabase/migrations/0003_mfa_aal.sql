@@ -24,7 +24,9 @@ create policy "lar_documents require aal2 when enrolled"
     -- pass if the session's aal is in the set required for THIS user:
     --   has >=1 verified factor  -> {aal2}        (must step up)
     --   has no verified factor   -> {aal1, aal2}  (aal1 is fine)
-    array[(select auth.jwt() ->> 'aal')] <@ (
+    -- coalesce: a missing/legacy 'aal' claim is treated as aal1 (never NULL, which would
+    -- make the containment NULL → a RESTRICTIVE deny, locking out un-enrolled users).
+    array[coalesce((select auth.jwt() ->> 'aal'), 'aal1')] <@ (
       select case
         when count(*) > 0 then array['aal2']
         else array['aal1', 'aal2']

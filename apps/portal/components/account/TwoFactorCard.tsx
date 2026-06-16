@@ -8,7 +8,13 @@
 
 import { useState } from 'react';
 import { Icon } from '@lar/ui';
-import { enrollTotp, verifyTotp, listFactors, unenrollFactor } from '../../lib/supabase/mfa';
+import {
+  enrollTotp,
+  verifyTotp,
+  listFactors,
+  unenrollFactor,
+  assuranceState,
+} from '../../lib/supabase/mfa';
 
 interface Factor {
   id: string;
@@ -87,6 +93,12 @@ export function TwoFactorCard({ initialFactors }: { initialFactors: Factor[] }) 
   }
 
   async function remove(id: string) {
+    // Step-up gate: don't let an un-stepped-up (aal1) session strip 2FA. Client-side UX
+    // gate — true enforcement is Supabase's "require AAL2 for sensitive ops" setting.
+    if ((await assuranceState()) === 'needs_challenge') {
+      setError('Complete your 2FA challenge before changing security settings.');
+      return;
+    }
     if (!window.confirm('Remove this authenticator? You may be asked to set up 2FA again.')) return;
     setBusy(true);
     setError(null);

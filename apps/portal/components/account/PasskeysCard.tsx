@@ -15,6 +15,7 @@ import {
   listPasskeys,
   deletePasskey,
 } from '../../lib/supabase/passkeys';
+import { assuranceState } from '../../lib/supabase/mfa';
 
 interface PasskeyRow {
   id: string;
@@ -63,6 +64,11 @@ export function PasskeysCard() {
   }
 
   async function remove(id: string) {
+    // Step-up gate: an un-stepped-up (aal1) session shouldn't be able to delete passkeys.
+    if ((await assuranceState()) === 'needs_challenge') {
+      setError('Complete your 2FA challenge before changing security settings.');
+      return;
+    }
     if (!window.confirm('Delete this passkey? You can no longer sign in with it.')) return;
     setBusy(true);
     setError(null);

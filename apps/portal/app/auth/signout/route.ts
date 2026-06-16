@@ -8,6 +8,12 @@ import { createClient } from '../../../lib/supabase/server';
  */
 export async function POST(request: NextRequest) {
   const { origin } = new URL(request.url);
+  // CSRF defense-in-depth (on top of SameSite=Lax cookies): a cross-site page must not
+  // be able to force a sign-out. Reject when the Origin header is present and mismatched.
+  const reqOrigin = request.headers.get('origin');
+  if (reqOrigin && reqOrigin !== origin) {
+    return NextResponse.json({ error: 'cross-origin' }, { status: 403 });
+  }
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
     await supabase.auth.signOut();
