@@ -97,7 +97,7 @@ build" as a working capability until the fleet is armed + has shipped a green PR
   read-only/no-advice bright-lines. 4 tests.
 - **Marketing fixes:** killed stale localhost + wrong-repo links + the dead staging
   CTA; led with the privacy moat.
-- Each increment: typecheck + full test (**260 tests across 23 files; `npm test` = 35 turbo
+- Each increment: typecheck + full test (**271 tests across 25 files; `npm test` = 35 turbo
   tasks green** — "tasks" are pipeline nodes, not suites) + lint +
   `next build` 14/14 + prod-boot smoke, green, pushed. Independently re-verified by a
   fresh **pm-auditor** audit (2026-06-15) that caught + fixed several stale over-claims.
@@ -166,7 +166,10 @@ explicitly **deferred** (see launch playbook).
    security page (2FA enroll, passkey register/list/delete, connected methods, sign-out scopes).
    **Alpha allow-list** `before_user_created` hook (`0002`). `docs/20-auth.md` full roadmap +
    10-point security checklist; `docs/21` Resend setup (Part A/B/C) + best-practices. An
-   adversarial security-review swarm ran over the whole surface (findings triaged in-session).
+   adversarial security-review swarm (4 agents) ran over the whole surface: it confirmed the
+   hard parts sound (PKCE/CSP/requireUser/RLS/secret-boundary) and its real findings were all
+   FIXED — open-redirect hardening (safe-redirect helper), signout CSRF guard, MFA null-aal
+   coalesce, AAL2 step-up gate on destructive actions, E.164 phone normalization.
    **What Alberto must still do (human-gated):** Resend SMTP (`docs/21`), Google Cloud OAuth,
    apply migrations `0002`/`0003`, Apple ($99) + SMS provider when wanted, flip on methods via
    the env flag. Email + Google are the free first wins.
@@ -234,8 +237,8 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **71 unit tests green *at this Phase-1 milestone* (current verified total is **260**
-  across 23 test files — see the night-build + privacy-spine sections below);
+- **71 unit tests green *at this Phase-1 milestone* (current verified total is **271**
+  across 25 test files — see the night-build + privacy-spine sections below);
   typecheck + prettier clean
   (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
   for both apps.** Coverage gained this session: `@lar/ui` 8 themes
