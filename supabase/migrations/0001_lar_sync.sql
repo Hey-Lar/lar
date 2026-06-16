@@ -136,8 +136,11 @@ as $$
   order by seq asc;
 $$;
 
--- Only signed-in users sync. `anon` gets nothing (RLS would deny anyway).
-revoke all on function public.lar_push(jsonb) from anon;
-revoke all on function public.lar_pull(bigint) from anon;
+-- Only signed-in users sync. Postgres grants EXECUTE to PUBLIC by default, so we
+-- must revoke from PUBLIC (not just `anon`) to actually close the door, then grant
+-- back to `authenticated` only. (RLS already denies anon any rows — this is
+-- defense-in-depth so the logged-out role can't even invoke the functions.)
+revoke execute on function public.lar_push(jsonb) from public;
+revoke execute on function public.lar_pull(bigint) from public;
 grant execute on function public.lar_push(jsonb) to authenticated;
 grant execute on function public.lar_pull(bigint) to authenticated;
