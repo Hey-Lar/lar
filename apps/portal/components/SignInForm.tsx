@@ -17,14 +17,17 @@ import { useState } from 'react';
 import { Icon } from '@lar/ui';
 import { createClient } from '../lib/supabase/client';
 import { passkeysSupported, signInWithPasskey } from '../lib/supabase/passkeys';
+import { isMethodEnabled } from '../lib/supabase/auth-methods';
+import { PhoneSignIn } from './PhoneSignIn';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 type OAuthProvider = 'google' | 'apple';
 
-// OAuth buttons, in display order. Add { id: 'apple', label: 'Continue with Apple' }
-// here the moment the Apple provider is enabled in Supabase — no other code changes.
+// OAuth buttons, in display order. Each only appears when enabled via NEXT_PUBLIC_AUTH_METHODS
+// (see lib/supabase/auth-methods) — so a method the user can't complete never shows.
 const OAUTH_PROVIDERS: ReadonlyArray<{ id: OAuthProvider; label: string }> = [
   { id: 'google', label: 'Continue with Google' },
+  { id: 'apple', label: 'Continue with Apple' },
 ];
 
 function confirmRedirect(): string | undefined {
@@ -124,6 +127,14 @@ export function SignInForm() {
 
   const busy = status === 'sending';
 
+  // Capability gating: a method only shows when enabled (and, for passkeys, supported).
+  const oauthVisible = OAUTH_PROVIDERS.filter((p) => isMethodEnabled(p.id));
+  const showPasskey = isMethodEnabled('passkey') && passkeysSupported();
+  const showEmail = isMethodEnabled('email');
+  const showPhone = isMethodEnabled('phone');
+  const hasButtons = oauthVisible.length > 0 || showPasskey;
+  const hasForms = showEmail || showPhone;
+
   return (
     <div className="np">
       {status === 'error' && (
@@ -133,85 +144,98 @@ export function SignInForm() {
       )}
 
       {/* OAuth providers + passkey */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {OAUTH_PROVIDERS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className="btn ghost"
-            style={{ width: '100%' }}
-            onClick={() => void signInWithProvider(p.id)}
-            disabled={busy}
-          >
-            {p.label}
-          </button>
-        ))}
-        {passkeysSupported() && (
-          <button
-            type="button"
-            className="btn ghost"
-            style={{ width: '100%' }}
-            onClick={() => void onPasskey()}
-            disabled={busy}
-          >
-            <Icon name="lock" />
-            Sign in with a passkey
-          </button>
-        )}
-      </div>
+      {hasButtons && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {oauthVisible.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              className="btn ghost"
+              style={{ width: '100%' }}
+              onClick={() => void signInWithProvider(p.id)}
+              disabled={busy}
+            >
+              {p.label}
+            </button>
+          ))}
+          {showPasskey && (
+            <button
+              type="button"
+              className="btn ghost"
+              style={{ width: '100%' }}
+              onClick={() => void onPasskey()}
+              disabled={busy}
+            >
+              <Icon name="lock" />
+              Sign in with a passkey
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* divider */}
-      <div
-        aria-hidden
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          margin: '18px 0',
-          color: 'var(--ink-faint)',
-          fontSize: 12,
-          fontWeight: 600,
-        }}
-      >
-        <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
-        or
-        <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
-      </div>
+      {/* divider — only between the buttons and the email/phone forms */}
+      {hasButtons && hasForms && (
+        <div
+          aria-hidden
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            margin: '18px 0',
+            color: 'var(--ink-faint)',
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
+          or
+          <span style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
+        </div>
+      )}
 
       {/* Email magic link */}
-      <form onSubmit={onSubmitEmail} noValidate>
-        <div className="field">
-          <label htmlFor="signin-email" className="eyebrow">
-            Email
-          </label>
-          <input
-            id="signin-email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            autoCapitalize="none"
-            spellCheck={false}
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={busy}
-          />
+      {showEmail && (
+        <form onSubmit={onSubmitEmail} noValidate>
+          <div className="field">
+            <label htmlFor="signin-email" className="eyebrow">
+              Email
+            </label>
+            <input
+              id="signin-email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={busy}
+            />
+          </div>
+          <div className="btn-row" style={{ marginTop: 4 }}>
+            <button
+              type="submit"
+              className="btn primary"
+              disabled={busy || email.trim().length === 0}
+            >
+              <Icon name="lock" />
+              {busy ? 'Working…' : 'Email me a sign-in link'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Phone / SMS OTP */}
+      {showPhone && (
+        <div style={{ marginTop: showEmail ? 14 : 0 }}>
+          <PhoneSignIn />
         </div>
-        <div className="btn-row" style={{ marginTop: 4 }}>
-          <button
-            type="submit"
-            className="btn primary"
-            disabled={busy || email.trim().length === 0}
-          >
-            <Icon name="lock" />
-            {busy ? 'Working…' : 'Email me a sign-in link'}
-          </button>
-        </div>
-      </form>
+      )}
 
       <p className="lead" style={{ fontSize: 13.5, marginTop: 18, marginBottom: 0 }}>
-        No passwords, ever — sign in with Google or a one-time email link.
+        No passwords, ever — Lar uses one-time links and trusted providers.
       </p>
     </div>
   );
