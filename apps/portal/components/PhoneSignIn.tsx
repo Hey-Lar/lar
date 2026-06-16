@@ -10,26 +10,33 @@
 import { useState } from 'react';
 import { Icon } from '@lar/ui';
 import { createClient } from '../lib/supabase/client';
+import { toE164 } from '../lib/phone';
 
 export function PhoneSignIn() {
   const [step, setStep] = useState<'phone' | 'code'>('phone');
   const [phone, setPhone] = useState('');
+  // The normalized E.164 value actually sent — reused verbatim for verifyOtp.
+  const [e164, setE164] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
-    const p = phone.trim();
-    if (!p) return;
+    const normalized = toE164(phone);
+    if (!normalized) {
+      setError('Enter your number with country code, e.g. +1 555 123 4567.');
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
-      const { error: err } = await createClient().auth.signInWithOtp({ phone: p });
+      const { error: err } = await createClient().auth.signInWithOtp({ phone: normalized });
       if (err) {
         setError(err.message);
         return;
       }
+      setE164(normalized);
       setStep('code');
     } catch (x) {
       setError(x instanceof Error ? x.message : 'Could not send the code.');
@@ -44,7 +51,7 @@ export function PhoneSignIn() {
     setError(null);
     try {
       const { error: err } = await createClient().auth.verifyOtp({
-        phone: phone.trim(),
+        phone: e164,
         token: code.trim(),
         type: 'sms',
       });
