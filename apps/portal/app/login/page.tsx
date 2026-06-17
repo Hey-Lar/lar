@@ -30,38 +30,37 @@ export default function LoginPage() {
     >
       <section
         className="card"
-        style={{ width: 'min(420px, 92vw)', display: 'flex', flexDirection: 'column' }}
+        style={{
+          width: 'min(424px, 92vw)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '34px 32px',
+        }}
       >
-        <span style={{ display: 'inline-flex', color: 'var(--hearth)', marginBottom: 10 }}>
-          <Icon name="mark" size={30} />
-        </span>
-        <span className="eyebrow">Lar · Sign in</span>
-        <h1 className="h1" style={{ fontSize: 30 }}>
-          {configured ? 'Welcome back' : 'Sign-in isn’t live yet'}
-        </h1>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ display: 'inline-flex', color: 'var(--hearth)', marginBottom: 14 }}>
+            <Icon name="mark" size={34} />
+          </span>
+          <div className="eyebrow">Lar · Sign in</div>
+          <h1 className="h1" style={{ fontSize: 30, margin: '4px 0 0' }}>
+            {configured ? 'Welcome back' : 'Sign-in isn’t live yet'}
+          </h1>
+          <p className="lead" style={{ marginTop: 10, marginBottom: 24 }}>
+            {configured
+              ? 'Sign in to sync your encrypted space across devices — end-to-end encrypted, so the server only ever holds ciphertext.'
+              : 'Lar works fully on this device without an account. Sign-in unlocks encrypted cross-device sync — still being prepared.'}
+          </p>
+        </div>
 
         {configured ? (
-          <>
-            <p className="lead">
-              Sign in to sync your encrypted space across devices. Lar stays end-to-end encrypted —
-              the server only ever holds ciphertext.
-            </p>
-            <SignInForm />
-          </>
+          <SignInForm />
         ) : (
-          <>
-            <p className="lead">
-              Lar works fully on this device without an account. Cross-device sync — which is what
-              sign-in unlocks — is still being prepared, and stays end-to-end encrypted when it
-              arrives.
-            </p>
-            <div className="btn-row">
-              <Link href="/" className="btn ghost">
-                <Icon name="home" />
-                Back to Lar
-              </Link>
-            </div>
-          </>
+          <div className="btn-row" style={{ justifyContent: 'center' }}>
+            <Link href="/" className="btn ghost">
+              <Icon name="home" />
+              Back to Lar
+            </Link>
+          </div>
         )}
       </section>
     </main>
