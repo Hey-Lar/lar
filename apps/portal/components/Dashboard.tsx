@@ -99,7 +99,14 @@ export function Dashboard() {
           </span>
         </button>
         <ThemeToggle />
-        <div className="avatar">AM</div>
+        <a
+          href="/account"
+          className="avatar"
+          aria-label="Account and security"
+          style={{ textDecoration: 'none' }}
+        >
+          AM
+        </a>
       </nav>
 
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
