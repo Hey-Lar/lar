@@ -49,8 +49,15 @@ function Section({ children }: { children: React.ReactNode }) {
 export default function PrivacyPage() {
   return (
     <main
-      className="app"
-      style={{ display: 'grid', placeItems: 'start center', minHeight: '100dvh' }}
+      style={{
+        position: 'relative',
+        zIndex: 2,
+        minHeight: '100dvh',
+        overflowY: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: 24,
+      }}
     >
       <div
         style={{
