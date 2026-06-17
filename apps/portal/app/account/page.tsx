@@ -41,8 +41,15 @@ export default async function AccountSecurityPage() {
 
   return (
     <main
-      className="app"
-      style={{ display: 'grid', placeItems: 'start center', minHeight: '100dvh' }}
+      style={{
+        position: 'relative',
+        zIndex: 2,
+        minHeight: '100dvh',
+        overflowY: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: 24,
+      }}
     >
       <section
         style={{

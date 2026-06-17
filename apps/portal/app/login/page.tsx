@@ -18,13 +18,25 @@ export const metadata = {
 export default function LoginPage() {
   const configured = isSupabaseConfigured();
   return (
-    <main className="app" style={{ display: 'grid', placeItems: 'center', minHeight: '100dvh' }}>
+    <main
+      style={{
+        position: 'relative',
+        zIndex: 2,
+        minHeight: '100dvh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 24,
+      }}
+    >
       <section
         className="card"
-        style={{ width: 'min(440px, 92vw)', display: 'flex', flexDirection: 'column' }}
+        style={{ width: 'min(420px, 92vw)', display: 'flex', flexDirection: 'column' }}
       >
+        <span style={{ display: 'inline-flex', color: 'var(--hearth)', marginBottom: 10 }}>
+          <Icon name="mark" size={30} />
+        </span>
         <span className="eyebrow">Lar · Sign in</span>
-        <h1 className="h1" style={{ fontSize: 32 }}>
+        <h1 className="h1" style={{ fontSize: 30 }}>
           {configured ? 'Welcome back' : 'Sign-in isn’t live yet'}
         </h1>
 
