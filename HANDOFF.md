@@ -97,7 +97,7 @@ build" as a working capability until the fleet is armed + has shipped a green PR
   read-only/no-advice bright-lines. 4 tests.
 - **Marketing fixes:** killed stale localhost + wrong-repo links + the dead staging
   CTA; led with the privacy moat.
-- Each increment: typecheck + full test (**271 tests across 25 files; `npm test` = 35 turbo
+- Each increment: typecheck + full test (**280 tests across 26 files; `npm test` = 35 turbo
   tasks green** — "tasks" are pipeline nodes, not suites) + lint +
   `next build` 14/14 + prod-boot smoke, green, pushed. Independently re-verified by a
   fresh **pm-auditor** audit (2026-06-15) that caught + fixed several stale over-claims.
@@ -173,8 +173,20 @@ explicitly **deferred** (see launch playbook).
    **What Alberto must still do (human-gated):** Resend SMTP (`docs/21`), Google Cloud OAuth,
    apply migrations `0002`/`0003`, Apple ($99) + SMS provider when wanted, flip on methods via
    the env flag. Email + Google are the free first wins.
+6. **Polish + research phase** (overnight, driven by a 6-agent competitor/OSS research swarm).
+   - **Recovery phrase** (`@lar/crypto/recovery.ts` + `Keyring.addRecovery`/`unlockWithRecovery`,
+     9 tests) — BIP39 (`@scure/bip39`, audited) second wrapping of the master key, so a forgotten
+     passphrase is no longer total loss. **CRYPTO = human-gated → reviewable DRAFT;** next is the
+     Recovery-Kit onboarding UI + persisting the 2nd record (was a locked decision).
+   - **MFA step-up** challenge UI (`/account` requires the 2FA code before security controls).
+   - **a11y sweep** — every Room now announces async load/error (role=status/alert/aria-live).
+   - **security.txt** (RFC 9116) on marketing; rail **avatar → /account** accessible link.
+   - The 6-agent research (competitors/sync-CRDT/connectors/voice/trust-UX) found Lar sits in an
+     EMPTY market intersection (Kagi proves the user-funded/never-monetize model works); top
+     un-built gaps it surfaced: recovery (DONE), per-field-LWW/HLC sync, general per-domain
+     ranking + Contexts/Lenses, ConnectorManifest registry, transparency panel, on-device voice.
 
-**Honesty fix:** corrected the unverified "446 tests" claim → **260 tests / 23 files**
+**Honesty fix:** corrected the unverified "446 tests" claim → **280 tests / 26 files**
 (recounted per-workspace; `35` = turbo _tasks_, not suites).
 
 ---
@@ -237,8 +249,8 @@ pnpm later = add `pnpm-workspace.yaml` + `pnpm import`.
   your-data badge) — `connector-finance` now ships `demoSnapshot()` so it's
   rich with no API; `/api/finance` returns real data when `LUMINA_API_BASE` is
   set. `next build` clean; all blocks screenshot-verified on :4200.
-- **71 unit tests green *at this Phase-1 milestone* (current verified total is **271**
-  across 25 test files — see the night-build + privacy-spine sections below);
+- **71 unit tests green *at this Phase-1 milestone* (current verified total is **280**
+  across 26 test files — see the night-build + privacy-spine sections below);
   typecheck + prettier clean
   (`endOfLine: auto` to kill Windows CRLF churn); `next build` clean
   for both apps.** Coverage gained this session: `@lar/ui` 8 themes
