@@ -30,6 +30,11 @@ import {
   randomBytes,
 } from './internal.js';
 import { PBKDF2_ITERATIONS, PBKDF2_ITERATIONS_MAX } from './vault.js';
+import {
+  generateRecoveryPhrase,
+  isValidRecoveryPhrase,
+  normalizeRecoveryPhrase,
+} from './recovery.js';
 
 export type { KeyringRecord, SealedRecord } from './types.js';
 
@@ -97,6 +102,33 @@ export class Keyring {
   async rewrap(newPassphrase: string): Promise<KeyringRecord> {
     assertPassphrase(newPassphrase);
     return wrap(this.#master, newPassphrase);
+  }
+
+  /**
+   * RECOVERY — wrap the SAME master key a SECOND way, under a freshly generated recovery
+   * phrase. Store the returned record beside the passphrase record; show the phrase to the
+   * user ONCE (it never leaves the device, we can't see or reset it). A forgotten passphrase
+   * no longer means total loss. Idempotent to call again to rotate the phrase.
+   */
+  async addRecovery(): Promise<{ phrase: string; record: KeyringRecord }> {
+    const phrase = generateRecoveryPhrase();
+    const record = await wrap(this.#master, normalizeRecoveryPhrase(phrase));
+    return { phrase, record };
+  }
+
+  /**
+   * Unlock from a recovery record + the user's typed recovery phrase. Validates the BIP39
+   * checksum first (a typo → "invalid recovery phrase", not a confusing decrypt error).
+   */
+  static async unlockWithRecovery(record: KeyringRecord, phrase: string): Promise<Keyring> {
+    assertCrypto();
+    const normalized = normalizeRecoveryPhrase(phrase);
+    if (!isValidRecoveryPhrase(normalized)) throw new Error('invalid recovery phrase');
+    try {
+      return await Keyring.unlock(record, normalized);
+    } catch {
+      throw new Error('wrong recovery phrase or corrupted record');
+    }
   }
 
   /** Encrypt bytes with the master key (fresh IV each call). */
