@@ -4,6 +4,7 @@ import { createClient } from '../../lib/supabase/server';
 import { TwoFactorCard } from '../../components/account/TwoFactorCard';
 import { PasskeysCard } from '../../components/account/PasskeysCard';
 import { AccountMethods } from '../../components/account/AccountMethods';
+import { StepUpChallenge } from '../../components/account/StepUpChallenge';
 
 export const metadata = { title: 'Security — Lar' };
 
@@ -21,10 +22,14 @@ export default async function AccountSecurityPage() {
   const claims = data?.claims;
   if (!claims || typeof claims.sub !== 'string') redirect('/login');
 
-  const [identitiesRes, factorsRes] = await Promise.all([
+  const [identitiesRes, factorsRes, aalRes] = await Promise.all([
     supabase.auth.getUserIdentities(),
     supabase.auth.mfa.listFactors(),
+    supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
   ]);
+
+  // Enrolled but this session hasn't stepped up → require the 2FA code before any control.
+  const needsStepUp = aalRes.data?.currentLevel === 'aal1' && aalRes.data?.nextLevel === 'aal2';
 
   // Minimal, serializable props (client components can't take SDK types).
   const connectedProviders = (identitiesRes.data?.identities ?? []).map((i) => i.provider);
@@ -59,9 +64,15 @@ export default async function AccountSecurityPage() {
           </p>
         </div>
 
-        <TwoFactorCard initialFactors={totpFactors} />
-        <PasskeysCard />
-        <AccountMethods connectedProviders={connectedProviders} />
+        {needsStepUp ? (
+          <StepUpChallenge />
+        ) : (
+          <>
+            <TwoFactorCard initialFactors={totpFactors} />
+            <PasskeysCard />
+            <AccountMethods connectedProviders={connectedProviders} />
+          </>
+        )}
       </section>
     </main>
   );
