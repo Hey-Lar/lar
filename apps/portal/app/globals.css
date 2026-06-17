@@ -1202,13 +1202,71 @@ body {
 }
 .ov-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--gap, 18px);
+  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  gap: 12px;
 }
-@media (max-width: 720px) {
+@media (max-width: 560px) {
   .ov-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Tier-3 launcher chips — quiet icon+label navigation, demoted below the hero +
+ * status cards (design research: bind elevation to tier; cut per-tile desc/Open→). */
+.ov-eyebrow-group {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 22px 0 12px;
+}
+.ov-chip {
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid var(--glass-stroke);
+  background: var(--glass);
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: var(--elev-1);
+  -webkit-backdrop-filter: var(--elev-1);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform 0.16s var(--ease),
+    background-color 0.16s var(--ease),
+    box-shadow 0.16s var(--ease);
+}
+@media (hover: hover) {
+  .ov-chip:hover {
+    transform: translateY(-2px);
+    background: var(--glass-strong);
+    box-shadow: var(--shadow-2);
+  }
+}
+.ov-chip .ov-card-t {
+  font-size: 17px;
+  margin: 0;
+}
+.ov-chip.ov-soon {
+  cursor: default;
+  opacity: 0.66;
+}
+.ov-soon-tag {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border: 1px solid var(--glass-stroke);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 .ov-card {
   position: relative;

@@ -202,33 +202,28 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
         </button>
       )}
 
+      <div className="ov-eyebrow-group">Jump to</div>
       <div className="ov-grid">
         {QUICK.map((q, i) => (
           <button
             key={q.tab}
-            className="card ov-card"
+            className="card ov-chip"
             onClick={() => onNavigate(q.tab)}
             style={{ ['--i' as string]: i }}
+            aria-label={`Open ${q.label}`}
           >
             <div className="ov-ico" aria-hidden>
-              <Icon name={q.ico} size={26} />
+              <Icon name={q.ico} size={22} />
             </div>
             <div className="ov-card-t">{q.label}</div>
-            <div className="ov-card-d">{q.desc}</div>
-            <div className="ov-go">
-              Open <Icon name="route" size={14} className="ov-go-arrow" />
-            </div>
           </button>
         ))}
-        <div className="card ov-card ov-soon" style={{ ['--i' as string]: QUICK.length }}>
+        <div className="card ov-chip ov-soon" style={{ ['--i' as string]: QUICK.length }}>
           <div className="ov-ico" aria-hidden>
-            <Icon name="smart-home" size={26} />
+            <Icon name="smart-home" size={22} />
           </div>
           <div className="ov-card-t">Home</div>
-          <div className="ov-card-d">Lights, climate &amp; scenes over Matter</div>
-          <div className="ov-go dim">
-            Android phase <Icon name="route" size={14} className="ov-go-arrow" />
-          </div>
+          <span className="ov-soon-tag">Soon</span>
         </div>
       </div>
     </div>
