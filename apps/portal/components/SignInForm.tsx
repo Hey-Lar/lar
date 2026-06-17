@@ -19,6 +19,7 @@ import { createClient } from '../lib/supabase/client';
 import { passkeysSupported, signInWithPasskey } from '../lib/supabase/passkeys';
 import { isMethodEnabled } from '../lib/supabase/auth-methods';
 import { PhoneSignIn } from './PhoneSignIn';
+import { ProviderButton, GoogleG, AppleLogo } from './auth/ProviderButton';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 type OAuthProvider = 'google' | 'apple';
@@ -147,16 +148,14 @@ export function SignInForm() {
       {hasButtons && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {oauthVisible.map((p) => (
-            <button
+            <ProviderButton
               key={p.id}
-              type="button"
-              className="btn ghost"
-              style={{ width: '100%' }}
+              provider={p.id}
+              label={p.label}
+              icon={p.id === 'google' ? <GoogleG /> : <AppleLogo />}
               onClick={() => void signInWithProvider(p.id)}
               disabled={busy}
-            >
-              {p.label}
-            </button>
+            />
           ))}
           {showPasskey && (
             <button
