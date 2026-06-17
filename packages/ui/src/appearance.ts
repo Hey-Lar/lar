@@ -42,7 +42,9 @@ export const APPEARANCE_STORAGE_KEY = 'lar-appearance';
 
 export const DEFAULT_APPEARANCE: Appearance = {
   theme: DEFAULT_THEME,
-  scene: 'living-room',
+  // Premium ambient mesh as the default (the cartoon living-room reads cheap); the
+  // illustrated room stays available as an opt-in scene. Palette refined per design research.
+  scene: 'calm',
   sceneIntensity: 60,
   // Richer default frost so the now-clearer glass tiles still read as glass
   // (the Glass-intensity slider scales all three elevation rungs from this).
@@ -50,9 +52,9 @@ export const DEFAULT_APPEARANCE: Appearance = {
   motion: 'system',
 };
 
-/** Narrow an unknown value to a valid `SceneName`, defaulting to the living room. */
+/** Narrow an unknown value to a valid `SceneName`, defaulting to the calm ambient mesh. */
 export function coerceScene(v: unknown): SceneName {
-  return (SCENES as readonly string[]).includes(v as string) ? (v as SceneName) : 'living-room';
+  return (SCENES as readonly string[]).includes(v as string) ? (v as SceneName) : 'calm';
 }
 
 /** Narrow an unknown value to a valid `MotionMode`, defaulting to system. */
