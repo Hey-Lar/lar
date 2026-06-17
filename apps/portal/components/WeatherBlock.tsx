@@ -113,11 +113,15 @@ export function WeatherBlock() {
       </form>
 
       {/* Error */}
-      {error && <div className="err">{error}</div>}
+      {error && (
+        <div className="err" role="alert">
+          {error}
+        </div>
+      )}
 
       {/* Loading */}
       {loading && !error && (
-        <div className="note" style={{ marginBottom: 18 }}>
+        <div className="note" style={{ marginBottom: 18 }} role="status" aria-live="polite">
           Fetching weather for {city}…
         </div>
       )}
