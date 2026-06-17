@@ -642,6 +642,30 @@ body {
   background: linear-gradient(to bottom, var(--glass-scrim), transparent 78%);
   opacity: 0.78;
 }
+/*
+ * Specular EDGE sweep — the "Liquid Glass" rim that lights only the 1px border,
+ * brightest on the light-source side (--light-angle) and fading to nothing. This is
+ * the single biggest "basic → premium" jump per the design research: glass that has a
+ * lit rim reads as a real material, not a translucent rectangle. Masked so only the
+ * border paints (padding-box XOR border-box). Uses ::after (::before is the scrim).
+ */
+.card::after,
+.glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1px;
+  background: linear-gradient(var(--light-angle, 145deg), var(--glass-highlight), transparent 42%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
 /* result / route panels carry a lot of text → frostier fill + full scrim. */
 .np.card {
   background: var(--glass-strong);
@@ -659,7 +683,9 @@ body {
   .card::before,
   .ov-card::before,
   .ov-net::before,
-  .np.card::before {
+  .np.card::before,
+  .card::after,
+  .glass::after {
     display: none;
   }
 }
