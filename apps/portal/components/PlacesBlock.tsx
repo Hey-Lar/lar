@@ -38,7 +38,11 @@ export function PlacesBlock() {
         placeholder="Time Out Market Lisbon"
       />
 
-      {ask.msg && <div className="err">{ask.msg}</div>}
+      {ask.msg && (
+        <div className="err" role="status" aria-live="polite">
+          {ask.msg}
+        </div>
+      )}
 
       {ask.res && (
         <div className="np card">

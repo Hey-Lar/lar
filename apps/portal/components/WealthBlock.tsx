@@ -74,7 +74,9 @@ export function WealthBlock() {
             <h1 className="h1">Wealth</h1>
           </div>
         </div>
-        <p className="lead">Loading…</p>
+        <p className="lead" role="status" aria-live="polite">
+          Loading…
+        </p>
       </div>
     );
   }

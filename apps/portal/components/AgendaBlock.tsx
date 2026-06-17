@@ -66,7 +66,9 @@ export function AgendaBlock() {
             <h1 className="h1">Agenda</h1>
           </div>
         </div>
-        <p className="err">Unable to load agenda: {error}</p>
+        <p className="err" role="alert">
+          Unable to load agenda: {error}
+        </p>
       </div>
     );
   }
@@ -80,7 +82,9 @@ export function AgendaBlock() {
             <h1 className="h1">Agenda</h1>
           </div>
         </div>
-        <p className="lead">Loading…</p>
+        <p className="lead" role="status" aria-live="polite">
+          Loading…
+        </p>
       </div>
     );
   }
