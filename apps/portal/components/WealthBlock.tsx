@@ -22,13 +22,14 @@ const eur = (n: number) =>
   }).format(n);
 
 type BucketKey = keyof Snapshot['buckets'];
+// Theme tokens (not baked hexes) so swatches/charts repaint with the theme.
 const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
-  cash: { label: 'Cash', color: '#3aa6a0' },
-  investments: { label: 'Investments', color: '#d98a2b' },
-  property: { label: 'Assets', color: '#6c8cff' },
-  liabilities: { label: 'Liabilities', color: '#d2554d' },
+  cash: { label: 'Cash', color: 'var(--teal)' },
+  investments: { label: 'Investments', color: 'var(--hearth)' },
+  property: { label: 'Assets', color: 'var(--mesh-b)' },
+  liabilities: { label: 'Liabilities', color: 'var(--neg)' },
 };
-const SEV_COLOR = { RED: '#d2554d', AMBER: '#d98a2b', GREEN: '#3aa6a0' } as const;
+const SEV_COLOR = { RED: 'var(--neg)', AMBER: 'var(--hearth)', GREEN: 'var(--teal)' } as const;
 
 const W = 520;
 const H = 88;
@@ -125,12 +126,18 @@ export function WealthBlock() {
           >
             <defs>
               <linearGradient id="wfill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(217,138,43,0.32)" />
-                <stop offset="100%" stopColor="rgba(217,138,43,0)" />
+                <stop offset="0%" stopColor="var(--hearth)" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="var(--hearth)" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path d={`${line} L${W},${H} L0,${H} Z`} fill="url(#wfill)" />
-            <path d={line} fill="none" stroke="#d98a2b" strokeWidth="2.5" strokeLinejoin="round" />
+            <path
+              d={line}
+              fill="none"
+              stroke="var(--hearth)"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
           </svg>
         )}
       </div>
