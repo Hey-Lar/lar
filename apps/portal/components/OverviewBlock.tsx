@@ -203,14 +203,14 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
             aria-label={`Open ${q.label}`}
           >
             <div className="ov-ico" aria-hidden>
-              <Icon name={q.ico} size={22} />
+              <Icon name={q.ico} size={24} />
             </div>
             <div className="ov-card-t">{q.label}</div>
           </button>
         ))}
         <div className="card ov-chip ov-soon" style={{ ['--i' as string]: QUICK.length }}>
           <div className="ov-ico" aria-hidden>
-            <Icon name="smart-home" size={22} />
+            <Icon name="smart-home" size={24} />
           </div>
           <div className="ov-card-t">Home</div>
           <span className="ov-soon-tag">Soon</span>

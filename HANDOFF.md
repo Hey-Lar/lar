@@ -193,6 +193,38 @@ explicitly **deferred** (see launch playbook).
 
 ## Current state (update every increment)
 
+**Latest — 2026-06-18 (CI greened + premium design pass, all pushed to `master`):**
+
+- **CI is green + pristine** (was red on every push). Three root causes fixed:
+  (1) the Test job crashed because the runner pinned **Node 20**, which lacks the
+  global `WebSocket` that `@supabase/realtime-js` now requires → bumped CI +
+  `claude.yml` to **Node 22**; (2) the prod **`npm audit`** failed on a high-sev
+  `hono` advisory (transitive via `@modelcontextprotocol/sdk`) → root **`overrides`
+  pin `hono ^4.12.26`**; (3) a latent flake surfaced once (1)+(2) unblocked the job —
+  `@lar/store` `changePassphrase` chains several deliberately-slow KDFs and blew the
+  5 s vitest default on the loaded runner → added `vitest.config.ts` to **store +
+  crypto** raising `testTimeout` to 30 s. Also bumped `actions/checkout` +
+  `setup-node` to **v5** to clear the Node-20 deprecation warnings. A session-scoped
+  **hourly CI watchdog** (CronCreate `db635920`) polls `master` CI and conservatively
+  fixes CI-infra regressions only.
+- **Premium design pass** (grounded in a multi-agent recon of the curated starred
+  repos + world-class control-center / Liquid-Glass references). Shipped P0–P2:
+  directional single-source **scene** (replaced the generic 4-blob mesh) + vignette
+  - visible grain; **re-lit liquid glass** across all three themes (warm-tinted
+    fills, dimmed specular rim + new bottom counter-light, dark fill lifted
+    0.06→0.085 so panes stop vanishing); real **token ladders** (radius/spacing/type/
+    motion) + declared the previously-undefined `--light-angle`; **tiered hierarchy**
+    (hero net-worth/agenda promoted, launcher chips flat-at-rest); **frosted login**
+    over the scene + provider buttons in the token system; richer 3-stop hearth CTA
+    ramps + new `--hearth-hi`; `tokens.ts` synced to the ladders (RN source-of-truth);
+    wall-touch icon sizes. New `Palette` fields `hearthHi` + `glassRimLo`. Verified in
+    the browser across dark/ember/light. _DESIGN.md not yet updated to match._
+- **`docs/22-recon-learnings.md`** — the strategy half of the recon: per-module
+  keyless/open connector opportunities, the tiered local/cloud AI + skill
+  architecture, and a defensive security-hardening checklist (several **CRITICAL**
+  items worth triaging: non-extractable CryptoKeys, strict nonce CSP, RLS on every
+  table, server-only `service_role`, authenticate the MCP service).
+
 **Repo:** `C:\Users\Amari\Desktop\HeyLar.ai\Lar` — pushed to
 **github.com/Hey-Lar/lar** (private; org `Hey-Lar` on GitHub Enterprise;
 CI + gitleaks run on every push; Dependabot active). Sibling org repos:
