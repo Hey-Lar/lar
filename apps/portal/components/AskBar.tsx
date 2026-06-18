@@ -12,7 +12,7 @@ export function AskBar(props: {
   placeholder: string;
 }) {
   return (
-    <div className="ask">
+    <div className="ask" aria-busy={props.loading}>
       <input
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
@@ -27,10 +27,10 @@ export function AskBar(props: {
         onClick={props.onMic}
         aria-label="Speak to Lar"
       >
-        <Icon name="mic" size={22} />
+        <Icon name="mic" size={24} />
       </button>
       <button className="go" onClick={props.onSubmit} disabled={props.loading}>
-        {props.loading ? '…' : 'Ask Lar'}
+        {props.loading ? <span className="go-spin" aria-hidden /> : 'Ask Lar'}
       </button>
     </div>
   );
