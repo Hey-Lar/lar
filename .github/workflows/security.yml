@@ -21,7 +21,7 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # full history so back-fills are scanned too
       # Run the gitleaks CLI directly (MIT, free) instead of
