@@ -218,7 +218,15 @@ explicitly **deferred** (see launch playbook).
     over the scene + provider buttons in the token system; richer 3-stop hearth CTA
     ramps + new `--hearth-hi`; `tokens.ts` synced to the ladders (RN source-of-truth);
     wall-touch icon sizes. New `Palette` fields `hearthHi` + `glassRimLo`. Verified in
-    the browser across dark/ember/light. _DESIGN.md not yet updated to match._
+    the browser across dark/ember/light. **`DESIGN.md` §1 + changelog updated to match.**
+  - **Round-2 adversarial critique** then caught + fixed real bugs (the listening-mic
+    reduced-motion **strobe**; the `*:focus-visible` 6px **radius clip**; off-theme
+    **ink shadows** on the `.np` result card; `WealthBlock` **baked hexes** bypassing the
+    theme tokens) and shipped payoff polish (activated the inert route-arrow hooks,
+    primary-CTA hover states, an accessible ask **loading spinner + aria-busy**, the rail
+    receded to elev-1, Weather hero temp + result chips tokenized). **Deferred — need a
+    measured on-device check, do SUPERVISED:** the spring-**sliding rail active indicator**
+    (index→Y math is layout-dependent) and a repo-wide **motion-duration token ladder**.
 - **`docs/22-recon-learnings.md`** — the strategy half of the recon: per-module
   keyless/open connector opportunities, the tiered local/cloud AI + skill
   architecture, and a defensive security-hardening checklist (several **CRITICAL**
