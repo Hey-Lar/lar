@@ -74,19 +74,19 @@ export function ProviderButton({
       disabled={disabled}
       style={{
         width: '100%',
-        height: 50,
-        borderRadius: 14,
+        height: 52,
+        borderRadius: 'var(--r-md)',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
         fontFamily: "'Manrope', system-ui, sans-serif",
-        fontSize: 15,
+        fontSize: 'var(--t-label)',
         fontWeight: 600,
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.55 : 1,
-        transition: 'transform .12s var(--ease), box-shadow .12s var(--ease)',
-        boxShadow: '0 1px 2px rgba(16,24,40,.06)',
+        transition: 'transform .12s var(--ease-press), box-shadow .12s var(--ease)',
+        boxShadow: 'var(--shadow-1)',
         ...STYLES[provider],
       }}
     >

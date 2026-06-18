@@ -86,9 +86,10 @@ describe('themes', () => {
   });
 
   it('glass fills stay clearly see-through: dark very low, ember/light clear (well under 0.55)', () => {
-    // dark: white glass sits LOW (0.06) so a near-black body shows through.
-    expect(THEME_PALETTES.dark.glass).toBe('rgba(255,255,255,0.06)');
-    expect(THEME_PALETTES.dark.glassStrong).toBe('rgba(255,255,255,0.11)');
+    // dark: warm-neutral glass sits LOW (0.085) so a near-black body shows
+    // through, but lifted off the old 0.06 so panes no longer vanish on #0e1116.
+    expect(THEME_PALETTES.dark.glass).toBe('rgba(247,242,235,0.085)');
+    expect(THEME_PALETTES.dark.glassStrong).toBe('rgba(247,242,235,0.14)');
     // ember + light: clear glass — the room reads THROUGH the tiles. Fill alpha
     // is well below the old frosted-white 0.55; legibility comes from the
     // behind-text scrim + glass cues, not an opaque fill.
