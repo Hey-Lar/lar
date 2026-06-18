@@ -143,18 +143,8 @@ export function WeatherBlock() {
                 <Icon name={snapshot.current.icon as IconName} size={64} strokeWidth={1.5} />
               </span>
               <div>
-                <div
-                  style={{
-                    fontFamily: "'Fraunces', serif",
-                    fontSize: 'clamp(2.4rem, 4vw, 3.2rem)',
-                    fontWeight: 500,
-                    lineHeight: 1,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  {snapshot.current.tempC}°
-                </div>
-                <div style={{ fontSize: 17, fontWeight: 600, marginTop: 4 }}>
+                <div className="wx-temp">{snapshot.current.tempC}°</div>
+                <div style={{ fontSize: 'var(--t-body-lg)', fontWeight: 600, marginTop: 4 }}>
                   {snapshot.current.label}
                 </div>
                 <div className="note" style={{ marginTop: 4 }}>
