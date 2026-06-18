@@ -85,6 +85,25 @@ Invariant elevation filters (add to `:root`):
 
 > Keep `--glass-2` as a transitional alias; migrate consumers to the named scale.
 
+**Token ladders (shipped 2026-06-19, in `:root` — mirrored in `tokens.ts`):**
+
+```
+--r-sm 14 · --r-md 20 · --r-lg 28 · --r-xl 36 · --r-pill 999   (--radius aliases --r-xl)
+--s1 4 · --s2 8 · --s3 12 · --s4 16 · --s5 20 · --s6 24 · --s7 32 · --s8 40 · --s9 48 · --s10 64
+type (1.25 ratio): --t-display-hero clamp(2.6rem,5.2vw,3.8rem) · --t-display 46 · --t-h1 34 ·
+  --t-h2 27 · --t-h3 21 · --t-body-lg 17 · --t-body 15 · --t-label 14 · --t-caption 13 ·
+  --t-eyebrow 12 · --t-micro 11
+motion: --ease (enter) · --ease-press cubic-bezier(.3,.8,.4,1) · --ease-ambient linear
+--light-angle 145deg   (the single source the glass rim is lit from)
+```
+
+**Per-theme glass tokens (shipped values, re-lit pass):** fills are warm-tinted, not
+pure white — ember `--glass rgba(255,248,238,.30)`, dark lifted to `rgba(247,242,235,.085)`
+so panes don't vanish on `#0e1116`. The specular rim is dimmed (`--glass-highlight`
+.66/.70/.34) and paired with a NEW bottom counter-light `--glass-rim-lo`. Added accent
+`--hearth-hi #f6c878` (gold catch-light for CTA fills). Concrete elevation filters are
+derived from `--glass-blur` (elev-1 = blur×0.6, elev-2 = blur, elev-3 = blur×1.6).
+
 ---
 
 ## 2. Color & contrast
@@ -424,6 +443,18 @@ Cross-tab sync via `storage` events, like the theme.
 
 ## 7. Changelog
 
+- **2026-06-19 — premium design pass + round-2 critique (browser-verified, shipped).**
+  Driven by a multi-agent recon (current code + world-class control-center / Liquid-Glass
+  refs). Added the radius/spacing/type/motion **token ladders** (§1) + `--hearth-hi` /
+  `--glass-rim-lo`; replaced the generic 4-blob scene with a **single directional light**
+  - vignette + visible grain; **re-lit glass** in all three themes (warm-tinted fills,
+    dimmed specular rim + bottom counter-light, dual-inset bevel; dark fill lifted so panes
+    stop vanishing); bound **elevation to tier** (hero cards promoted, launcher chips flat
+    at rest, rail receded to elev-1); frosted login; 3-stop hearth CTAs. Round-2 fixed real
+    bugs: the listening-mic reduced-motion **strobe**, the `*:focus-visible` 6px **radius
+    clip**, off-theme **ink shadows** on the result card, and `WealthBlock` **baked hexes**
+    that bypassed the theme tokens; activated the inert route-arrow hooks; added an
+    accessible ask **loading spinner**. `tokens.ts` synced as the RN source of truth.
 - _init_ — philosophy, tokens, color, glass, iconography, motion, and ambient
   backgrounds/settings authored from the 4-stream design-research pass. Implements
   next as browser-verified increments: icons → glass → backgrounds+settings → motion.

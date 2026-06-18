@@ -1041,6 +1041,17 @@ body {
 .chip:active {
   transform: scale(0.97);
 }
+/* Chip variants (replace ad-hoc inline border/background on result chips). */
+.chip--ghost {
+  border: none;
+  background: none;
+}
+.chip--bordered {
+  border: 1px solid var(--glass-stroke);
+}
+.chip--bordered:hover {
+  background: var(--nav-active-bg);
+}
 /*
  * Route-outward arrows physically lean toward the destination on hover — the
  * brand's core "Lar routes you out" gesture, made tactile. Hooks already exist
@@ -1324,6 +1335,17 @@ body {
 }
 .ov-sec {
   color: var(--teal);
+}
+/* Weather hero temperature — shares the display-numeral treatment (incl. the
+ * --num-shadow legibility lift) instead of a hand-copied inline style. */
+.wx-temp {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--num-shadow);
 }
 /*
  * Hero status cards (net worth + agenda) — Tier 1. Promoted above the quiet

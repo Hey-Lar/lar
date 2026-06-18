@@ -228,8 +228,8 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
         <div className="np card" key={roomRoute.tab}>
           <div className="eyebrow">Routing you to {roomRoute.label}</div>
           <button
-            className="chip"
-            style={{ marginTop: 12, cursor: 'pointer', border: 'none', background: 'none' }}
+            className="chip chip--ghost"
+            style={{ marginTop: 12, cursor: 'pointer' }}
             onClick={() => onNavigate(roomRoute.tab)}
           >
             Open {roomRoute.label} <Icon name="route" size={14} className="chip-arrow" />
@@ -256,8 +256,8 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
             </a>
           )}
           <button
-            className="chip"
-            style={{ marginTop: 10, cursor: 'pointer', border: '1px solid var(--stroke)' }}
+            className="chip chip--bordered"
+            style={{ marginTop: 10, cursor: 'pointer' }}
             onClick={() => onNavigate(summary.tab)}
           >
             Open {summary.label} tab <Icon name="route" size={14} className="chip-arrow" />
