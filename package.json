@@ -31,5 +31,8 @@
     "turbo": "^2.3.4",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "overrides": {
+    "hono": "^4.12.26"
   }
 }
