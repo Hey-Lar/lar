@@ -29,12 +29,12 @@ export default function LoginPage() {
       }}
     >
       <section
-        className="card"
+        className="card card--frost"
         style={{
-          width: 'min(424px, 92vw)',
+          width: 'min(440px, 92vw)',
           display: 'flex',
           flexDirection: 'column',
-          padding: '34px 32px',
+          padding: '40px 32px',
         }}
       >
         <div style={{ textAlign: 'center' }}>
@@ -42,7 +42,7 @@ export default function LoginPage() {
             <Icon name="mark" size={34} />
           </span>
           <div className="eyebrow">Lar · Sign in</div>
-          <h1 className="h1" style={{ fontSize: 30, margin: '4px 0 0' }}>
+          <h1 className="h1" style={{ fontSize: 'var(--t-h1)', margin: '4px 0 0' }}>
             {configured ? 'Welcome back' : 'Sign-in isn’t live yet'}
           </h1>
           <p className="lead" style={{ marginTop: 10, marginBottom: 24 }}>

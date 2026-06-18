@@ -180,18 +180,8 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
           style={{ display: 'block', width: '100%', textAlign: 'left' }}
         >
           <div className="eyebrow">{agendaRunning ? 'Now · agenda' : 'Up next · agenda'}</div>
-          <div
-            style={{
-              fontFamily: "'Fraunces', serif",
-              fontSize: 24,
-              fontWeight: 500,
-              marginTop: 4,
-              color: 'var(--ink)',
-            }}
-          >
-            {agendaNext.title}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-soft)', marginTop: 4 }}>
+          <div className="ov-agenda-t">{agendaNext.title}</div>
+          <div className="ov-agenda-sub">
             {fmtAgendaTime(agendaNext.startMs)} – {fmtAgendaTime(agendaNext.endMs)}
             {agendaNext.location ? ` · ${agendaNext.location}` : ''} · {agenda?.items.length ?? 0}{' '}
             on today's schedule

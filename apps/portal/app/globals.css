@@ -9,8 +9,62 @@
  * that NEVER vary by theme live here.
  */
 :root {
-  --radius: 30px;
+  /*
+   * ── Radius ladder ───────────────────────────────────────────────────────
+   * Four named rungs + a pill, so nested surfaces stay concentric (a --r-lg
+   * card inside the --r-xl stage with a ~gutter reads as one piece of glass).
+   * --radius is kept as a back-compat alias = the outer shell rung.
+   */
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-pill: 999px;
+  --radius: var(--r-xl);
+
+  /*
+   * ── Spacing scale (8pt grid) ────────────────────────────────────────────
+   * One rhythm for the whole shell so gaps/pads relate instead of drifting.
+   */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s7: 32px;
+  --s8: 40px;
+  --s9: 48px;
+  --s10: 64px;
+
+  /*
+   * ── Type scale (1.25 modular ratio) ─────────────────────────────────────
+   * Fraunces (serif) carries display + headings; Manrope (sans) carries body.
+   * Sizes snap to the ladder — no more half-pixel nudging.
+   */
+  --t-display-hero: clamp(2.6rem, 5.2vw, 3.8rem);
+  --t-display: 46px;
+  --t-h1: 34px;
+  --t-h2: 27px;
+  --t-h3: 21px;
+  --t-body-lg: 17px;
+  --t-body: 15px;
+  --t-label: 14px;
+  --t-caption: 13px;
+  --t-eyebrow: 12px;
+  --t-micro: 11px;
+
+  /*
+   * ── Motion curves ───────────────────────────────────────────────────────
+   * --ease drives entrances (easeOutQuint); --ease-press is the snappy tactile
+   * curve for press/active; --ease-ambient paces the slow scene drift.
+   */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-press: cubic-bezier(0.3, 0.8, 0.4, 1);
+  --ease-ambient: linear;
+
+  /* The single light source the whole glass system is lit from (top-left). */
+  --light-angle: 145deg;
 
   /*
    * Ambient-scene knobs (overridable pre-paint by the boot script from
@@ -158,7 +212,10 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.04;
+  /* Visible film grain (0.04 was invisible) blended into the scene so smooth
+   * gradients don't band on a large wall display — a real-material depth cue. */
+  opacity: 0.07;
+  mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 /* warm-mesh's two corner blobs (scoped to .scene; revealed only on warm-mesh) */
@@ -241,13 +298,20 @@ body {
   background-position: center 38%;
 }
 
-/* ── calm — 4 corner-anchored soft radial blobs over --body ──────────────── */
+/*
+ * ── calm (default) — a single, believable directional light over --body ────
+ * Replaces the four symmetric corner blobs (the generic gradient-mesh "tech
+ * demo" tell) with ONE dominant warm bloom from the upper-right (tracking the
+ * light source), a warm reinforcing wash, and a cool counter-tone pooling in
+ * the lower-left shadow side — so the backdrop reads as a lit room, not a flat
+ * gradient. A vignette layer (topmost) darkens the corners ~9% for depth.
+ */
 [data-scene='calm'] .scene-root {
   background-image:
-    radial-gradient(at 18% 22%, var(--mesh-a) 0, transparent 55%),
-    radial-gradient(at 84% 16%, var(--mesh-b) 0, transparent 52%),
-    radial-gradient(at 60% 84%, var(--mesh-c) 0, transparent 55%),
-    radial-gradient(at 6% 90%, var(--mesh-d) 0, transparent 50%);
+    radial-gradient(125% 125% at 50% 36%, transparent 52%, rgba(0, 0, 0, 0.09) 100%),
+    radial-gradient(78% 62% at 82% 2%, var(--hearth-glow) 0, transparent 58%),
+    radial-gradient(64% 60% at 90% 10%, var(--mesh-a) 0, transparent 62%),
+    radial-gradient(72% 72% at 6% 104%, var(--mesh-b) 0, transparent 64%);
 }
 
 /* ── hearth (default) — calm base + faint cool counter-glow + the room + fire ─ */
@@ -420,6 +484,7 @@ body {
   -webkit-backdrop-filter: var(--elev-2);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 1px -0.5px var(--glass-rim-lo),
     var(--shadow-2);
 }
 .glass--clear {
@@ -471,14 +536,15 @@ body {
 .mark {
   width: 56px;
   height: 56px;
-  border-radius: 18px;
+  border-radius: var(--r-md);
   display: grid;
   place-items: center;
   margin-bottom: 16px;
-  font-size: 24px;
   color: #fff;
-  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
-  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+  background: linear-gradient(150deg, var(--hearth-hi), var(--hearth-lo) 45%, var(--hearth));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 20px -6px var(--hearth-glow);
 }
 /* Touch-comfortable nav target: ≥48px tap area, generous icon + label. */
 .navbtn {
@@ -552,7 +618,7 @@ body {
  */
 .stage {
   overflow: auto;
-  border-radius: 36px;
+  border-radius: var(--r-xl);
 }
 .stage.glass {
   background: var(--glass);
@@ -570,35 +636,39 @@ body {
   }
 }
 .block-pad {
-  padding: 40px 44px;
+  /* Fluid stage padding on the 8pt grid + a max content measure so the deck
+   * stays composed (doesn't sprawl edge-to-edge) on a wide wall display. */
+  padding: clamp(32px, 3vw, 48px) clamp(40px, 4vw, 56px);
+  max-width: 1180px;
+  margin-inline: auto;
 }
 .head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
+  margin-bottom: var(--s6);
 }
 .eyebrow {
-  font-size: 12px;
+  font-size: var(--t-eyebrow);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
 .h1 {
   font-family: 'Fraunces', serif;
-  font-size: 46px;
+  font-size: var(--t-display);
   font-weight: 500;
   line-height: 1.04;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.014em;
   margin: 2px 0 0;
 }
 .lead {
   color: var(--ink-soft);
-  font-size: 16.5px;
+  font-size: var(--t-body-lg);
   line-height: 1.55;
-  max-width: 60ch;
-  margin: 0 0 24px;
+  max-width: 64ch;
+  margin: 0 0 var(--s6);
 }
 /*
  * card — a floating frosted object above the clear stage. Glass-recipe look
@@ -609,12 +679,13 @@ body {
   position: relative;
   background: var(--glass);
   border: 1px solid var(--glass-stroke);
-  border-radius: 26px;
-  padding: 26px 28px;
+  border-radius: var(--r-lg);
+  padding: var(--s6) 28px;
   backdrop-filter: var(--elev-1);
   -webkit-backdrop-filter: var(--elev-1);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 1px -0.5px var(--glass-rim-lo),
     var(--shadow-1);
 }
 /*
@@ -658,7 +729,19 @@ body {
   border-radius: inherit;
   pointer-events: none;
   padding: 1px;
-  background: linear-gradient(var(--light-angle, 145deg), var(--glass-highlight), transparent 42%);
+  /*
+   * Two lit edges, not one: a bright grazing highlight on the light-source side
+   * (top-left) AND a faint counter-light catching the opposite lip (bottom-
+   * right). The pair is what reads as a curved pane of real glass rather than a
+   * translucent rectangle with a white top stripe.
+   */
+  background: linear-gradient(
+    var(--light-angle),
+    var(--glass-highlight),
+    transparent 42%,
+    transparent 70%,
+    var(--glass-rim-lo) 100%
+  );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -673,6 +756,28 @@ body {
 .np.card::before {
   background: var(--glass-scrim);
   opacity: 0.5;
+}
+/*
+ * Frosted hero card — the highest, frostiest pane (elev-3 + --glass-strong +
+ * shadow-3). Used for the login front door so the first impression matches the
+ * Control Deck's material quality.
+ */
+.card--frost {
+  background: var(--glass-strong);
+  border-radius: var(--r-xl);
+  backdrop-filter: var(--elev-3);
+  -webkit-backdrop-filter: var(--elev-3);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 1px -0.5px var(--glass-rim-lo),
+    var(--shadow-3);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .card--frost {
+    background: var(--body);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 @media (prefers-reduced-transparency: reduce) {
   .card {
@@ -740,11 +845,11 @@ body {
 .go {
   height: 62px;
   border: none;
-  border-radius: 20px;
+  border-radius: var(--r-md);
   cursor: pointer;
   font-weight: 700;
-  font-size: 16px;
-  transition: transform 0.12s var(--ease);
+  font-size: var(--t-body-lg);
+  transition: transform 0.12s var(--ease-press);
 }
 .mic {
   width: 62px;
@@ -775,8 +880,10 @@ body {
 .go {
   padding: 0 28px;
   color: #fff;
-  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
-  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+  background: linear-gradient(150deg, var(--hearth-hi), var(--hearth-lo) 45%, var(--hearth));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 20px -6px var(--hearth-glow);
 }
 .go:active,
 .mic:active {
@@ -793,7 +900,7 @@ body {
 }
 .err {
   color: var(--neg);
-  font-size: 13.5px;
+  font-size: var(--t-caption);
   font-weight: 600;
   margin-bottom: 14px;
 }
@@ -843,11 +950,13 @@ body {
   text-decoration: none;
   color: #fff;
   font-weight: 700;
-  font-size: 16px;
+  font-size: var(--t-body-lg);
   padding: 14px 24px;
-  border-radius: 16px;
-  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
-  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+  border-radius: var(--r-md);
+  background: linear-gradient(150deg, var(--hearth-hi), var(--hearth-lo) 45%, var(--hearth));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 20px -6px var(--hearth-glow);
 }
 .avail {
   display: flex;
@@ -1030,7 +1139,7 @@ body {
   line-height: 1;
   letter-spacing: -0.02em;
   margin-top: 6px;
-  background: linear-gradient(120deg, var(--hearth), var(--hearth-lo) 55%, #e0a64f);
+  background: linear-gradient(120deg, var(--hearth), var(--hearth-lo) 55%, var(--hearth-hi));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1108,7 +1217,7 @@ body {
 .goal-row {
   display: flex;
   justify-content: space-between;
-  font-size: 13.5px;
+  font-size: var(--t-caption);
   font-weight: 600;
   margin-bottom: 7px;
 }
@@ -1141,7 +1250,7 @@ body {
   flex: none;
 }
 .srow-title {
-  font-size: 13.5px;
+  font-size: var(--t-caption);
   font-weight: 650;
 }
 .srow-detail {
@@ -1167,7 +1276,7 @@ body {
 .ov-clock {
   font-family: 'Fraunces', serif;
   font-size: clamp(2.4rem, 4.5vw, 3.4rem);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -1176,6 +1285,12 @@ body {
 .ov-sec {
   color: var(--teal);
 }
+/*
+ * Hero status cards (net worth + agenda) — Tier 1. Promoted above the quiet
+ * launcher chips by elevation (elev-2 blur + shadow-2), a slightly larger
+ * radius, and a soft warm hearth glow bleeding from the top edge, so the eye
+ * lands here first.
+ */
 .ov-net {
   display: block;
   position: relative;
@@ -1184,21 +1299,25 @@ body {
   cursor: pointer;
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
-  border-radius: 26px;
-  padding: 26px 28px;
-  margin-bottom: 18px;
-  backdrop-filter: var(--elev-1);
-  -webkit-backdrop-filter: var(--elev-1);
+  border-radius: var(--r-lg);
+  padding: var(--s6) 28px;
+  margin-bottom: var(--s4);
+  backdrop-filter: var(--elev-2);
+  -webkit-backdrop-filter: var(--elev-2);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
-    var(--shadow-1);
+    inset 0 3px 8px -5px var(--hearth-glow),
+    inset 0 -1px 1px -0.5px var(--glass-rim-lo),
+    var(--shadow-2);
   transition:
     transform 0.18s var(--ease),
     background-color 0.18s var(--ease),
     box-shadow 0.18s var(--ease);
 }
+/* Hero net-worth numeral — materially larger + heavier than body figures. */
 .gradnum.sm {
-  font-size: clamp(2rem, 3.6vw, 2.8rem);
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  font-weight: 600;
 }
 .ov-grid {
   display: grid;
@@ -1214,12 +1333,12 @@ body {
 /* Tier-3 launcher chips — quiet icon+label navigation, demoted below the hero +
  * status cards (design research: bind elevation to tier; cut per-tile desc/Open→). */
 .ov-eyebrow-group {
-  font-size: 12px;
+  font-size: var(--t-eyebrow);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  margin: 22px 0 12px;
+  margin: var(--s7) 0 var(--s4);
 }
 .ov-chip {
   position: relative;
@@ -1227,16 +1346,18 @@ body {
   text-align: left;
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
-  border-radius: 18px;
-  padding: 16px 18px;
+  border-radius: var(--r-sm);
+  padding: var(--s4) var(--s5);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--s3);
   backdrop-filter: var(--elev-1);
   -webkit-backdrop-filter: var(--elev-1);
-  box-shadow: var(--shadow-1);
+  /* Tier 3 — flat at rest (no drop shadow), only the hairline + top highlight.
+   * Elevation is reserved for the hero; the chips lift only on interaction. */
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
   transition:
-    transform 0.16s var(--ease),
+    transform 0.16s var(--ease-press),
     background-color 0.16s var(--ease),
     box-shadow 0.16s var(--ease);
 }
@@ -1244,11 +1365,17 @@ body {
   .ov-chip:hover {
     transform: translateY(-2px);
     background: var(--glass-strong);
-    box-shadow: var(--shadow-2);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      var(--shadow-2);
   }
 }
+.ov-chip:active {
+  transform: scale(0.98);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+}
 .ov-chip .ov-card-t {
-  font-size: 17px;
+  font-size: var(--t-body-lg);
   margin: 0;
 }
 .ov-chip.ov-soon {
@@ -1274,8 +1401,8 @@ body {
   cursor: pointer;
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
-  border-radius: 26px;
-  padding: 26px 28px;
+  border-radius: var(--r-lg);
+  padding: var(--s6) 28px;
   display: flex;
   flex-direction: column;
   gap: 7px;
@@ -1283,6 +1410,7 @@ body {
   -webkit-backdrop-filter: var(--elev-1);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 1px -0.5px var(--glass-rim-lo),
     var(--shadow-1);
   transition:
     transform 0.18s var(--ease),
@@ -1324,14 +1452,27 @@ body {
 }
 .ov-card-t {
   font-family: 'Fraunces', serif;
-  font-size: 25px;
+  font-size: var(--t-h2);
   font-weight: 500;
   margin-top: 4px;
 }
 .ov-card-d {
-  font-size: 14.5px;
+  font-size: var(--t-label);
   color: var(--ink-soft);
   line-height: 1.45;
+}
+/* Agenda hero title — shared so it tracks the type scale instead of inline px. */
+.ov-agenda-t {
+  font-family: 'Fraunces', serif;
+  font-size: var(--t-h3);
+  font-weight: 500;
+  margin-top: 4px;
+  color: var(--ink);
+}
+.ov-agenda-sub {
+  font-size: var(--t-caption);
+  color: var(--ink-soft);
+  margin-top: var(--s1);
 }
 .ov-go {
   margin-top: 8px;
@@ -1356,7 +1497,7 @@ body {
 .field select {
   height: 52px;
   padding: 0 18px;
-  border-radius: 16px;
+  border-radius: var(--r-md);
   border: 1px solid var(--stroke);
   background: var(--glass);
   font-family: inherit;
@@ -1386,7 +1527,7 @@ body {
 .btn {
   height: 48px;
   padding: 0 22px;
-  border-radius: 16px;
+  border-radius: var(--r-md);
   border: none;
   font-family: inherit;
   font-size: 14px;
@@ -1406,11 +1547,15 @@ body {
 }
 .btn.primary {
   color: #fff;
-  background: linear-gradient(150deg, var(--hearth-lo), var(--hearth));
-  box-shadow: 0 8px 20px -6px var(--hearth-glow);
+  background: linear-gradient(150deg, var(--hearth-hi), var(--hearth-lo) 45%, var(--hearth));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 20px -6px var(--hearth-glow);
 }
 .btn.primary:hover:not(:disabled) {
-  box-shadow: 0 10px 24px -6px var(--hearth-glow);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 10px 24px -6px var(--hearth-glow);
 }
 .btn.ghost {
   color: var(--ink-soft);
@@ -1432,7 +1577,7 @@ body {
 
 /* Success / confirmation message */
 .vault-ok {
-  font-size: 13.5px;
+  font-size: var(--t-caption);
   font-weight: 600;
   color: var(--teal);
   margin-bottom: 8px;
@@ -1447,7 +1592,7 @@ body {
   padding: 14px 18px;
   margin-bottom: 4px;
   line-height: 1.55;
-  font-size: 12.5px;
+  font-size: var(--t-caption);
   color: var(--ink-soft);
 }
 
@@ -1474,7 +1619,7 @@ body {
   line-height: 1;
 }
 .vault-stored-label {
-  font-size: 13.5px;
+  font-size: var(--t-caption);
   font-weight: 650;
   color: var(--ink);
 }
@@ -1761,7 +1906,7 @@ body {
     0 0 0 5px var(--hearth-glow);
 }
 .sd-scene-name {
-  font-size: 12.5px;
+  font-size: var(--t-caption);
   font-weight: 650;
   color: var(--ink-soft);
 }

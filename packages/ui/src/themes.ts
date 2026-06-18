@@ -26,6 +26,8 @@ export type Palette = {
   /** Brand accent — amber hearth, shared across themes. */
   hearth: string;
   hearthLo: string;
+  /** Gold catch-light — the brightest hearth stop, for CTA fills + lit edges. */
+  hearthHi: string;
   hearthGlow: string;
   teal: string;
   positive: string;
@@ -42,8 +44,10 @@ export type Palette = {
   glassTint: string;
   /** Glass hairline border (the edge that stops a pane reading as a hole). */
   glassStroke: string;
-  /** 1px inner-top specular highlight on glass. */
+  /** 1px inner-top specular highlight on glass (the lit top-left rim). */
   glassHighlight: string;
+  /** Bottom-right counter-light on glass — the faint reflected lower lip. */
+  glassRimLo: string;
   /** Soft behind-text scrim to protect glyph contrast on clear panes. */
   glassScrim: string;
   /** Elevation shadow rung 1 (resting tiles). */
@@ -97,6 +101,7 @@ export type Palette = {
 const sharedAccents = {
   hearth: '#d98a2b',
   hearthLo: '#f0b357',
+  hearthHi: '#f6c878',
   hearthGlow: 'rgba(217,138,43,0.32)',
   teal: '#3aa6a0',
   positive: '#3aa6a0',
@@ -116,13 +121,18 @@ const ember: Palette = {
   // not frosted-white cards. A small fill bump (.34→.38) + stronger pane cues
   // (stroke / highlight / shadow) keep transparent tiles reading as distinct
   // glass even over the plain wall, where they were nearly vanishing.
-  glass: 'rgba(255,255,255,0.38)',
-  glass2: 'rgba(255,255,255,0.30)',
-  glassStrong: 'rgba(255,255,255,0.52)',
-  glassTint: 'rgba(255,255,255,0.10)',
+  // Warm-tinted clear glass: the fill picks up the room's warmth (cream, not
+  // pure white) so panes read as a single lit material, not white plastic. The
+  // specular rim is dropped from a 0.95 white stripe to a 0.66 grazing reflection
+  // and paired with a faint bottom-right counter-light (glassRimLo).
+  glass: 'rgba(255,248,238,0.30)',
+  glass2: 'rgba(255,248,238,0.24)',
+  glassStrong: 'rgba(255,252,247,0.52)',
+  glassTint: 'rgba(255,248,238,0.10)',
   glassStroke: 'rgba(40,52,68,0.18)',
-  glassHighlight: 'rgba(255,255,255,0.95)',
-  glassScrim: 'rgba(255,255,255,0.66)',
+  glassHighlight: 'rgba(255,255,255,0.66)',
+  glassRimLo: 'rgba(40,52,68,0.10)',
+  glassScrim: 'rgba(255,252,247,0.66)',
   shadow1: '0 1px 2px rgba(40,52,68,.10), 0 10px 24px -8px rgba(40,52,68,.18)',
   shadow2: '0 1px 3px rgba(40,52,68,.12), 0 14px 36px -8px rgba(40,52,68,.22)',
   shadow3: '0 2px 5px rgba(40,52,68,.14), 0 26px 60px -12px rgba(40,52,68,.26)',
@@ -160,12 +170,16 @@ const light: Palette = {
   // Clear glass (cool stone variant) — see ember note above.
   // Clear glass (cool stone variant) — see ember note above. Same small fill
   // bump + stronger pane cues so tiles stay see-through yet read as panes.
+  // Cool-neutral stone glass — kept achromatic (no warm tint) but with the same
+  // dimmed specular rim (0.70, marginally brighter than ember's cream) and a
+  // faint bottom counter-light so panes read as real glass, not frosted plastic.
   glass: 'rgba(255,255,255,0.36)',
   glass2: 'rgba(255,255,255,0.28)',
   glassStrong: 'rgba(255,255,255,0.50)',
   glassTint: 'rgba(255,255,255,0.10)',
   glassStroke: 'rgba(40,52,68,0.17)',
-  glassHighlight: 'rgba(255,255,255,0.95)',
+  glassHighlight: 'rgba(255,255,255,0.70)',
+  glassRimLo: 'rgba(40,52,68,0.10)',
   glassScrim: 'rgba(255,255,255,0.64)',
   shadow1: '0 1px 2px rgba(40,52,68,.10), 0 10px 24px -8px rgba(40,52,68,.17)',
   shadow2: '0 1px 3px rgba(40,52,68,.11), 0 14px 36px -8px rgba(40,52,68,.21)',
@@ -201,12 +215,17 @@ const dark: Palette = {
   inkSoft: '#a8a8a0',
   inkFaint: '#6e6e66',
   body: '#0e1116',
-  glass: 'rgba(255,255,255,0.06)',
-  glass2: 'rgba(255,255,255,0.04)',
-  glassStrong: 'rgba(255,255,255,0.11)',
+  // Dark glass was the weakest surface: a 0.06 white fill over #0e1116 made tiles
+  // nearly vanish. Lift the fill (warm-neutral, not pure white, so it tints toward
+  // the room rather than reading as grey haze), strengthen the stroke + top rim,
+  // and add a dark bottom counter-light so panes read as physical glass on the void.
+  glass: 'rgba(247,242,235,0.085)',
+  glass2: 'rgba(247,242,235,0.06)',
+  glassStrong: 'rgba(247,242,235,0.14)',
   glassTint: 'rgba(10,11,15,0.10)',
-  glassStroke: 'rgba(255,255,255,0.15)',
-  glassHighlight: 'rgba(255,255,255,0.30)',
+  glassStroke: 'rgba(255,255,255,0.20)',
+  glassHighlight: 'rgba(255,255,255,0.34)',
+  glassRimLo: 'rgba(0,0,0,0.30)',
   glassScrim: 'rgba(8,9,13,0.30)',
   shadow1: '0 1px 2px rgba(0,0,0,.24), 0 10px 24px -8px rgba(0,0,0,.44)',
   shadow2: '0 1px 3px rgba(0,0,0,.26), 0 14px 36px -8px rgba(0,0,0,.50)',
@@ -246,6 +265,7 @@ export const CSS_VARS = [
   '--ink-faint',
   '--hearth',
   '--hearth-lo',
+  '--hearth-hi',
   '--hearth-glow',
   '--teal',
   '--pos',
@@ -257,6 +277,7 @@ export const CSS_VARS = [
   '--glass-tint',
   '--glass-stroke',
   '--glass-highlight',
+  '--glass-rim-lo',
   '--glass-scrim',
   '--shadow-1',
   '--shadow-2',
@@ -296,6 +317,7 @@ export function themeCss(): string {
       `--ink-faint: ${p.inkFaint};`,
       `--hearth: ${p.hearth};`,
       `--hearth-lo: ${p.hearthLo};`,
+      `--hearth-hi: ${p.hearthHi};`,
       `--hearth-glow: ${p.hearthGlow};`,
       `--teal: ${p.teal};`,
       `--pos: ${p.positive};`,
@@ -307,6 +329,7 @@ export function themeCss(): string {
       `--glass-tint: ${p.glassTint};`,
       `--glass-stroke: ${p.glassStroke};`,
       `--glass-highlight: ${p.glassHighlight};`,
+      `--glass-rim-lo: ${p.glassRimLo};`,
       `--glass-scrim: ${p.glassScrim};`,
       `--shadow-1: ${p.shadow1};`,
       `--shadow-2: ${p.shadow2};`,
