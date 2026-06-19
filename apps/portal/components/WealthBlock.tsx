@@ -50,6 +50,7 @@ function sparkPath(history: number[]): string {
 export function WealthBlock() {
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [connected, setConnected] = useState<boolean | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -60,7 +61,12 @@ export function WealthBlock() {
         setConnected(Boolean(d.connected));
         setSnap(d.snapshot ?? null);
       })
-      .catch(() => alive && setConnected(false));
+      .catch(() => {
+        if (alive) {
+          setConnected(false);
+          setError(true);
+        }
+      });
     return () => {
       alive = false;
     };
@@ -75,9 +81,15 @@ export function WealthBlock() {
             <h1 className="h1">Wealth</h1>
           </div>
         </div>
-        <p className="lead" role="status" aria-live="polite">
-          Loading…
-        </p>
+        {error ? (
+          <p className="lead" role="alert">
+            Could not load your wealth snapshot — check your connection and try again.
+          </p>
+        ) : (
+          <p className="lead" role="status" aria-live="polite">
+            Loading…
+          </p>
+        )}
       </div>
     );
   }
