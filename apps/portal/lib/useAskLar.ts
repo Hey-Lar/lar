@@ -7,6 +7,7 @@ export interface SpeechRecognitionLike {
   interimResults: boolean;
   maxAlternatives: number;
   start(): void;
+  stop(): void;
   onresult: (e: { results: Array<Array<{ transcript: string }>> }) => void;
   onerror: () => void;
   onend: () => void;
@@ -38,10 +39,20 @@ export function useAskLar<TRes>(opts: {
   // Without this, a rapid "play X" / "play Y" sequence could race and
   // surface the older resolution after the newer one finished.
   const inflightRef = useRef<AbortController | null>(null);
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
 
   useEffect(() => {
     return () => {
       inflightRef.current?.abort();
+      const rec = recRef.current;
+      if (rec) {
+        // Detach handlers before stopping so no callback fires setState after unmount.
+        rec.onresult = () => {};
+        rec.onerror = () => {};
+        rec.onend = () => {};
+        rec.stop();
+        recRef.current = null;
+      }
     };
   }, []);
 
@@ -98,6 +109,7 @@ export function useAskLar<TRes>(opts: {
       return;
     }
     const rec = new SR();
+    recRef.current = rec;
     rec.lang = 'en-US';
     rec.interimResults = false;
     rec.maxAlternatives = 1;
@@ -108,7 +120,10 @@ export function useAskLar<TRes>(opts: {
       run(t);
     };
     rec.onerror = () => setMsg('Mic error — try typing.');
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      recRef.current = null;
+    };
     rec.start();
   }
 
