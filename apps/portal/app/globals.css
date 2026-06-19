@@ -482,11 +482,6 @@ body {
     inset 0 -1px 1px -0.5px var(--glass-rim-lo),
     var(--shadow-2);
 }
-.glass--clear {
-  background: var(--glass);
-  backdrop-filter: var(--elev-1);
-  -webkit-backdrop-filter: var(--elev-1);
-}
 .glass--frost {
   background: var(--glass-strong);
   backdrop-filter: var(--elev-3);
@@ -495,7 +490,6 @@ body {
 
 @media (prefers-reduced-transparency: reduce) {
   .glass,
-  .glass--clear,
   .glass--frost {
     background: var(--body);
     backdrop-filter: none;
@@ -1528,11 +1522,6 @@ body {
   font-size: var(--t-h2);
   font-weight: 500;
   margin-top: 4px;
-}
-.ov-card-d {
-  font-size: var(--t-label);
-  color: var(--ink-soft);
-  line-height: 1.45;
 }
 /* Agenda hero title — shared so it tracks the type scale instead of inline px. */
 .ov-agenda-t {
