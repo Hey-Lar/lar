@@ -21,7 +21,7 @@ interface AgendaPayload {
 const SOURCE_STYLE: Record<AgendaSource, { bg: string; text: string }> = {
   Calendar: { bg: 'rgba(217,138,43,0.15)', text: 'var(--hearth)' },
   Focus: { bg: 'rgba(58,166,160,0.15)', text: 'var(--teal)' },
-  Wealth: { bg: 'rgba(108,140,255,0.18)', text: '#5168cd' },
+  Wealth: { bg: 'rgba(108,140,255,0.18)', text: 'var(--info)' },
   Health: { bg: 'rgba(210,85,77,0.15)', text: 'var(--neg)' },
 };
 
