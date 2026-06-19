@@ -8,7 +8,7 @@
  * Lar stores nothing — no text, no history.
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LANGS, type TranslateResult } from '@lar/connector-translate';
 
 const OUTWARD: ReadonlyArray<{ key: keyof TranslateResult['links']; label: string }> = [
@@ -25,6 +25,9 @@ export function TranslateBlock() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Abort an in-flight translate fetch on unmount.
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   function run() {
     const q = text.trim();

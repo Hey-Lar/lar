@@ -99,6 +99,13 @@ export function MarketsBlock() {
       .then((r) => r.json())
       .then((d: MarketsData) => {
         if (!alive) return;
+        // Guard against a malformed/error payload — the render reads
+        // d.projection.* and d.holdings unconditionally, so a partial response
+        // would throw during render instead of showing the error state.
+        if (!d || !d.projection || !Array.isArray(d.holdings)) {
+          setError('Markets analytics are unavailable right now.');
+          return;
+        }
         setData(d);
       })
       .catch((e: Error) => alive && setError(e.message));
