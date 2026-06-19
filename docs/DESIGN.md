@@ -458,21 +458,3 @@ Cross-tab sync via `storage` events, like the theme.
 - _init_ — philosophy, tokens, color, glass, iconography, motion, and ambient
   backgrounds/settings authored from the 4-stream design-research pass. Implements
   next as browser-verified increments: icons → glass → backgrounds+settings → motion.
-
----
-
-## 6. Ambient backgrounds & customization
-
-> _Pending research stream — to be filled (privacy-safe CSS/SVG "room" scenes,
-> preset list, intensity, the settings panel + persistence). Placeholder._
-
-Direction locked: replace the strong warm mesh with a tasteful ambient scene
-(designed-room / silhouettes), **subtle** orange only, no external fetches,
-user-selectable + persisted pre-paint (like the existing theme-boot).
-
----
-
-## 7. Changelog
-
-- _init_ — philosophy, tokens, color, glass system, iconography authored from the
-  design-research pass; motion + backgrounds pending their streams.
