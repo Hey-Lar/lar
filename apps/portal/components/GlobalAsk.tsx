@@ -109,11 +109,21 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
   const [roomRoute, setRoomRoute] = useState<RoomRoute | null>(null);
 
   const inflightRef = useRef<AbortController | null>(null);
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
 
-  // Abort on unmount
+  // Abort the request + stop speech recognition on unmount
   useEffect(() => {
     return () => {
       inflightRef.current?.abort();
+      const rec = recRef.current;
+      if (rec) {
+        // Detach handlers before stopping so no callback fires setState after unmount.
+        rec.onresult = () => {};
+        rec.onerror = () => {};
+        rec.onend = () => {};
+        rec.stop();
+        recRef.current = null;
+      }
     };
   }, []);
 
@@ -189,6 +199,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
       return;
     }
     const rec = new SR();
+    recRef.current = rec;
     rec.lang = 'en-US';
     rec.interimResults = false;
     rec.maxAlternatives = 1;
@@ -199,7 +210,10 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
       run(t);
     };
     rec.onerror = () => setErr('Mic error — try typing.');
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      recRef.current = null;
+    };
     rec.start();
   }
 
