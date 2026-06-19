@@ -25,11 +25,17 @@ export function AskBar(props: {
       <button
         className={`mic ${props.listening ? 'on' : ''}`}
         onClick={props.onMic}
-        aria-label="Speak to Lar"
+        aria-pressed={props.listening}
+        aria-label={props.listening ? 'Listening — tap to stop' : 'Speak to Lar'}
       >
         <Icon name="mic" size={24} />
       </button>
-      <button className="go" onClick={props.onSubmit} disabled={props.loading}>
+      <button
+        className="go"
+        onClick={props.onSubmit}
+        disabled={props.loading}
+        aria-label={props.loading ? 'Asking Lar…' : undefined}
+      >
         {props.loading ? <span className="go-spin" aria-hidden /> : 'Ask Lar'}
       </button>
     </div>
