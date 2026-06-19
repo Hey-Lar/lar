@@ -180,6 +180,11 @@ export function AgendaBlock() {
             );
           })}
         </ul>
+        {items.length === 0 && (
+          <div className="note" style={{ paddingTop: 4 }}>
+            Nothing scheduled for today.
+          </div>
+        )}
       </div>
 
       <div className="note" style={{ marginTop: 14 }}>

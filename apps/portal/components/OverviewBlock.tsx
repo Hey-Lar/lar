@@ -105,7 +105,9 @@ export function OverviewBlock({ onNavigate }: { onNavigate: (tab: string) => voi
     let alive = true;
     fetch('/api/agenda')
       .then((r) => r.json())
-      .then((d) => alive && setAgenda({ items: d.items, asOfMs: d.asOfMs }))
+      .then((d) => {
+        if (alive && d && Array.isArray(d.items)) setAgenda({ items: d.items, asOfMs: d.asOfMs });
+      })
       .catch(() => {});
     return () => {
       alive = false;
