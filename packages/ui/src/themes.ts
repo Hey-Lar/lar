@@ -30,6 +30,8 @@ export type Palette = {
   hearthHi: string;
   hearthGlow: string;
   teal: string;
+  /** Theme-aware blue accent for non-hearth/teal categories + chart series. */
+  info: string;
   positive: string;
   negative: string;
   /** Page base background sitting under the mesh. */
@@ -104,6 +106,8 @@ const sharedAccents = {
   hearthHi: '#f6c878',
   hearthGlow: 'rgba(217,138,43,0.32)',
   teal: '#3aa6a0',
+  // Blue accent — readable on the light themes; dark overrides to a lighter tint.
+  info: '#4f6fd6',
   positive: '#3aa6a0',
   negative: '#d2554d',
 } as const;
@@ -215,6 +219,7 @@ const dark: Palette = {
   inkSoft: '#a8a8a0',
   inkFaint: '#6e6e66',
   body: '#0e1116',
+  info: '#8aa2ff',
   // Dark glass was the weakest surface: a 0.06 white fill over #0e1116 made tiles
   // nearly vanish. Lift the fill (warm-neutral, not pure white, so it tints toward
   // the room rather than reading as grey haze), strengthen the stroke + top rim,
@@ -268,6 +273,7 @@ export const CSS_VARS = [
   '--hearth-hi',
   '--hearth-glow',
   '--teal',
+  '--info',
   '--pos',
   '--neg',
   '--body',
@@ -320,6 +326,7 @@ export function themeCss(): string {
       `--hearth-hi: ${p.hearthHi};`,
       `--hearth-glow: ${p.hearthGlow};`,
       `--teal: ${p.teal};`,
+      `--info: ${p.info};`,
       `--pos: ${p.positive};`,
       `--neg: ${p.negative};`,
       `--body: ${p.body};`,

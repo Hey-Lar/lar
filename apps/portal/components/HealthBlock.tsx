@@ -27,7 +27,7 @@ function fmt(n: number): string {
 const RING_COLORS: Record<string, string> = {
   move: 'var(--hearth)',
   exercise: 'var(--teal)',
-  stand: '#6c8cff',
+  stand: 'var(--info)',
 };
 
 export function HealthBlock() {

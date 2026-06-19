@@ -67,7 +67,7 @@ const DRIFT_COLOR: Record<DriftState, { bg: string; text: string; label: string 
 // Allocation bar colours (matches model portfolio order)
 // ---------------------------------------------------------------------------
 
-const HOLDING_COLORS = ['#d98a2b', '#3aa6a0', '#6c8cff', '#b0bac7'];
+const HOLDING_COLORS = ['var(--hearth)', 'var(--teal)', 'var(--info)', 'var(--ink-faint)'];
 
 // ---------------------------------------------------------------------------
 // Success-band presentation (label + colour)
@@ -162,7 +162,7 @@ export function MarketsBlock() {
   const allocSlices = holdings.map((h, i) => ({
     key: h.symbol,
     pct: h.currentWeight,
-    color: HOLDING_COLORS[i] ?? '#cdd6e4',
+    color: HOLDING_COLORS[i] ?? 'var(--ink-faint)',
     label: h.symbol,
   }));
 
@@ -430,7 +430,10 @@ export function MarketsBlock() {
         <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>
           {allocSlices.map((s, i) => (
             <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span className="swatch" style={{ background: HOLDING_COLORS[i] ?? '#cdd6e4' }} />
+              <span
+                className="swatch"
+                style={{ background: HOLDING_COLORS[i] ?? 'var(--ink-faint)' }}
+              />
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)' }}>
                 {s.label} · {(s.pct * 100).toFixed(1)}%
               </span>
