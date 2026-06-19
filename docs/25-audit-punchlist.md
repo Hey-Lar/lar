@@ -7,14 +7,19 @@
 > the list below. **Human-gated items (auth/crypto/middleware/CSP/MCP) are DRAFT-ONLY**
 > — the founder decides; agents don't auto-change them.
 
-## ✅ Done in this pass
+## ✅ Done (worked through across the session)
 
-- **Nav rail scroll** (`globals.css .rail`) — 16 tabs + chrome exceeded `100vh` and
-  clipped the bottom controls on a wall tablet; now `overflow-y:auto; min-height:0`.
-- **Ask stale-fetch race** (`GlobalAsk.tsx`) — the Room branch returned without
-  aborting an in-flight `/api/lar`, so a late resolution rendered a 2nd card; now aborts first.
-- **Ask a11y live regions** — error → `role="alert"`; routing/result cards →
-  `role="status" aria-live="polite"`.
+- **Nav rail scroll** — 16 tabs + chrome exceeded `100vh`, clipping the bottom controls; now `overflow-y:auto`.
+- **Ask stale-fetch race** — the Room branch returned without aborting `/api/lar` → double card; aborts first.
+- **Ask a11y** — error `role="alert"`, result cards `aria-live`, send-button name while loading, mic as a labeled toggle.
+- **WealthBlock loads-forever** on a fetch error → real error state.
+- **SpeechRecognition leak** (GlobalAsk + useAskLar) → stop + detach handlers on unmount.
+- **Async states** — TranslateBlock abort-on-unmount; OverviewBlock agenda gated on `Array.isArray`; MarketsBlock malformed-payload guard (was throwing mid-render); AgendaBlock empty-state.
+- **Dead CSS** — removed `.glass--clear` + `.ov-card-d` (grep-verified no consumers).
+- **Theme-aware `--info` accent** added; the theme-broken blues (`#5168cd`/`#6c8cff`) + neutral fallbacks tokenized
+  (NOT the audit's `--mesh-b`, which is a background token — verified `var()` resolves in SVG attrs on the target).
+- **RememberBlock live digest** — the digest memos froze at mount on an always-on display; added a 60s `nowMs` tick.
+- **DESIGN.md** — deleted the stale duplicate `## 6`/`## 7` sections.
 
 ## 🔧 Auto-implement queue (safe, confirmed — work through in passes)
 
