@@ -124,6 +124,11 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
     // — never post to /api/lar (which would otherwise default it to a music search).
     const room = classifyRoom(transcript);
     if (room) {
+      // Abort any in-flight /api/lar first, else its late resolution would
+      // render a second (result) card alongside this room card.
+      inflightRef.current?.abort();
+      inflightRef.current = null;
+      setLoading(false);
       setRoomRoute(room);
       setResult(null);
       setErr(null);
@@ -221,11 +226,15 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
         placeholder="Ask Lar anything…"
       />
 
-      {err && <div className="err">{err}</div>}
+      {err && (
+        <div className="err" role="alert">
+          {err}
+        </div>
+      )}
 
       {/* Internal-Room routing card (weather, news, agenda, markets, wealth, …) */}
       {roomRoute && !loading && (
-        <div className="np card" key={roomRoute.tab}>
+        <div className="np card" key={roomRoute.tab} role="status" aria-live="polite">
           <div className="eyebrow">Routing you to {roomRoute.label}</div>
           <button
             className="chip chip--ghost"
@@ -239,7 +248,7 @@ export function GlobalAsk({ onNavigate }: { onNavigate: (tab: string) => void })
 
       {/* Resolved result with a usable summary */}
       {summary && (
-        <div className="np card" key={summary.title ?? 'note'}>
+        <div className="np card" key={summary.title ?? 'note'} role="status" aria-live="polite">
           <div className="eyebrow">Routing you to {summary.label}</div>
           <div className="np-title" style={{ marginTop: 8 }}>
             {summary.title}

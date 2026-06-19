@@ -510,6 +510,12 @@ body {
   align-items: center;
   padding: 20px 0;
   gap: 8px;
+  /* 16 nav items + the mark + settings/theme/avatar exceed 100vh on a wall
+   * tablet; scroll the rail rather than clipping the bottom controls. */
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: thin;
   /* Chrome recedes: the rail sits one rung below the content it frames
    * (elev-1 + shadow-1) instead of out-glassing the stage at the .glass
    * default elev-2 + shadow-2. Defined after .glass so it overrides. */
