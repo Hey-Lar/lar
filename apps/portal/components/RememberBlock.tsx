@@ -86,6 +86,14 @@ function RememberInner() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
+  // Live clock (60s) so the digest's 7-day window + open-commitment age stay
+  // current on an always-on wall display instead of freezing at mount time.
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   // Deterministic on-device digest over notes + decisions (the personal-context layer).
   const digest = useMemo(() => {
     const items: RememberItem[] = [
@@ -101,8 +109,8 @@ function RememberInner() {
         }),
       ),
     ];
-    return summarizeRemember(items, Date.now());
-  }, [notes, decisions]);
+    return summarizeRemember(items, nowMs);
+  }, [notes, decisions, nowMs]);
   const peak = Math.max(1, ...digest.last7Days.map((d) => d.count));
   const oldestOpen = useMemo(() => {
     const open = openCommitments(
@@ -114,10 +122,10 @@ function RememberInner() {
         rationale: d.rationale,
         status: d.status,
       })),
-      Date.now(),
+      nowMs,
     );
     return open[0] ?? null;
-  }, [decisions]);
+  }, [decisions, nowMs]);
   const [restoreMsg, setRestoreMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
