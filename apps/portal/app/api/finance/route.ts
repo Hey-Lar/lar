@@ -18,12 +18,14 @@ export async function GET(req: Request) {
     try {
       const snapshot = await fetchFinanceSnapshot(base);
       return NextResponse.json({ ok: true, connected: true, snapshot });
-    } catch (e) {
+    } catch {
+      // Don't leak the upstream error detail (it can carry the API base/URL) to
+      // the client — fall back to demo data with a generic flag.
       return NextResponse.json({
         ok: true,
         connected: false,
         snapshot: demoSnapshot(),
-        error: (e as Error).message,
+        error: 'upstream-unavailable',
       });
     }
   }
