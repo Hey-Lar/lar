@@ -9,7 +9,7 @@ This is the playbook to hand to **Claude Code**. Open Claude Code in the repo ro
 ## 0. Prerequisites (do once, on your machine)
 
 - **Claude Code:** native installer (recommended) or `npm install -g @anthropic-ai/claude-code` (needs Node 18+). Requires a paid plan — **Claude Pro ($20/mo) is enough**; Max for heavy use. Run `claude` in the repo, authenticate.
-- **Node 20+**, **pnpm** (`npm i -g pnpm`), **git**, **GitHub CLI** (`gh`).
+- **Node 20+** (with **npm** — the repo pins `packageManager: npm`), **git**, **GitHub CLI** (`gh`).
 - Accounts: **GitHub**, **Vercel**, **Supabase**, **Anthropic API key** (for orchestration).
 - (Phase 2 only) **Android Studio**.
 
@@ -29,16 +29,16 @@ gh repo create lar --private --source=. --push
 
 ---
 
-## 2. Scaffold the monorepo (pnpm + Turborepo)
+## 2. Scaffold the monorepo (npm workspaces + Turborepo)
 
 Ask Claude Code to:
 
-- Add `pnpm-workspace.yaml` with `apps/*`, `services/*`, `packages/*`.
+- Add npm workspaces in the root `package.json` (`"workspaces": ["apps/*", "services/*", "packages/*"]`).
 - Add Turborepo (`turbo.json`) with `dev`, `build`, `lint`, `typecheck` pipelines.
 - Root `package.json` scripts proxy to turbo.
 - Shared `tsconfig.base.json`, ESLint + Prettier, strict TypeScript.
 
-**Acceptance:** `pnpm install` works; `pnpm dev` and `pnpm build` run (even if empty).
+**Acceptance:** `npm install` works; `npm run dev` and `npm run build` run (even if empty).
 
 ---
 

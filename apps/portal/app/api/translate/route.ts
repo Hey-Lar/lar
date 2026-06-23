@@ -24,7 +24,13 @@ export async function GET(req: Request) {
     const result = await resolveTranslate(q, from, to);
     return NextResponse.json({ ok: true, result });
   } catch (err) {
-    const error = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ ok: false, error }, { status: 400 });
+    // Don't echo raw upstream detail to the client (forward-looking: an
+    // authenticated upstream could carry a key/URL). Log server-side, return a
+    // friendly generic message.
+    console.error('[api/translate] resolve failed:', err);
+    return NextResponse.json(
+      { ok: false, error: 'Translation is temporarily unavailable.' },
+      { status: 400 },
+    );
   }
 }

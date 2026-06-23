@@ -11,34 +11,46 @@ lar/                          ← single GitHub repo (private)
 ├── apps/                     # deployable surfaces
 │   ├── marketing/            # Next.js landing      → Vercel
 │   ├── portal/               # Next.js web hub      → Vercel
-│   └── android/              # Kotlin/Compose OS    → Google Play
+│   └── android/              # Kotlin/Compose OS    → Google Play  (Phase 2 — not yet present)
 ├── services/
-│   ├── conductor/            # orchestration: deterministic core + model routing
+│   ├── mcp/                  # orchestration: deterministic core + model routing
+│   │                         #   (ships today as services/mcp; any "conductor" naming
+│   │                         #    is a founder decision — see note below)
 │   └── supabase/             # schema, RLS policies, edge functions
 ├── packages/
 │   ├── shared/               # the structured-action contract, TS types, constants
 │   ├── ui/                   # glass components + design tokens
-│   └── connectors/           # one module per block
-│       ├── music/
-│       ├── film/
-│       ├── podcasts/
+│   └── connectors/           # one module per block (11 today)
 │       ├── books/
+│       ├── dictionary/
+│       ├── filings/
+│       ├── filmtv/
 │       ├── finance/          # read-only aggregation — cleanly ISOLATED module
-│       └── health/
+│       ├── music/
+│       ├── news/
+│       ├── places/
+│       ├── podcasts/
+│       ├── translate/
+│       └── weather/
 ├── docs/
 ├── design/
 └── prototype/                # current Phase 0 HTML (reference)
 ```
 
+> **Naming note:** the orchestration service exists today as `services/mcp`. The earlier
+> docs called it `conductor`; whether to rename to `conductor` (or keep `mcp`) is a founder
+> decision, not an agent rename. The text below preserves the "conductor pattern" concept
+> while pointing the path at the real folder.
+
 ## Why monorepo (now)
 
-- The **action contract** in `packages/shared` is consumed by web, Android, conductor, and the Zapier/MCP layer — trivial to share in a monorepo, duplicated/versioned hell across repos.
+- The **action contract** in `packages/shared` is consumed by web, Android, the orchestration service (`services/mcp`), and the Zapier/MCP layer — trivial to share in a monorepo, duplicated/versioned hell across repos.
 - Atomic commits across surfaces; one place for Claude Code to reason over.
 - Independent deploys still work: Vercel deploys each `apps/*` from its subfolder; Android builds from its folder.
 
 ## Tooling
 
-- JS/TS: **pnpm workspaces + Turborepo**.
+- JS/TS: **npm workspaces + Turborepo** (`packageManager: npm`, lockfile `package-lock.json`).
 - Android: a folder in the monorepo, **or** its own repo (see below).
 
 ## The one defensible early split

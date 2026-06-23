@@ -99,6 +99,13 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, kind: 'music', action: routed, resolution });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 });
+    // Log detail server-side; return a generic, secret-free message. The future
+    // cloud-escalation path (LAR_ANTHROPIC_KEY) must never leak key/upstream
+    // detail to the client — mirror the /api/finance bright-line.
+    console.error('[api/lar] request failed:', e);
+    return NextResponse.json(
+      { ok: false, error: 'Something went wrong. Please try again.' },
+      { status: 500 },
+    );
   }
 }
