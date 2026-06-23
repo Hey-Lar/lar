@@ -23,7 +23,12 @@ export async function GET(req: Request) {
     const snapshot = await resolveWeather(q);
     return NextResponse.json({ ok: true, snapshot });
   } catch (err) {
-    const error = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ ok: false, error }, { status: 500 });
+    // Log detail server-side; return a friendly generic message rather than the
+    // raw upstream error (forward-looking leak guard, matches /api/finance).
+    console.error('[api/weather] resolve failed:', err);
+    return NextResponse.json(
+      { ok: false, error: 'Weather is temporarily unavailable.' },
+      { status: 500 },
+    );
   }
 }

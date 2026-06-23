@@ -16,14 +16,16 @@ _Lar_ = Galician for home/hearth, from the guardian spirit that protects the hom
 - Backend/auth/db: **Supabase** (Postgres + Auth + Row-Level Security + Edge Functions).
 - AI orchestration: server-side functions → **Claude API** (never expose keys client-side).
 - Android app (Phase 2): **Kotlin + Jetpack Compose** (native).
-- Monorepo: **pnpm workspaces + Turborepo**.
+- Monorepo: **npm workspaces + Turborepo** (`packageManager: npm`, lockfile `package-lock.json`).
 
 ## Repo layout
 
 ```
-apps/        marketing/  portal/  android/(phase 2)
-services/    conductor/  supabase/
-packages/    shared/(action contract+types)  ui/  connectors/{music,film,podcasts,books,finance,health}
+apps/        marketing/  portal/  android/(Phase 2 — not yet present)
+services/    mcp/  supabase/        (the orchestration service ships today as services/mcp;
+                                      any "conductor" naming is a founder decision)
+packages/    shared/(action contract+types)  ui/
+             connectors/{books,dictionary,filings,filmtv,finance,music,news,places,podcasts,translate,weather}
 docs/  design/  prototype/
 ```
 
@@ -64,9 +66,9 @@ docs/  design/  prototype/
 
 ## Commands (fill in as scaffolded)
 
-- `pnpm dev` — run dev servers
-- `pnpm build` — build all
-- `pnpm lint` / `pnpm typecheck`
+- `npm run dev` — run dev servers
+- `npm run build` — build all
+- `npm run lint` / `npm run typecheck`
 
 ## Workflow
 

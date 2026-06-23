@@ -28,13 +28,13 @@ _Context: the personal-OS work previously called **Lumina OS** (repo `life-os` /
 
 |                 | Lumina (`life-os`)              | Lar (spec)                             | Porting cost                                                       |
 | --------------- | ------------------------------- | -------------------------------------- | ------------------------------------------------------------------ |
-| Monorepo        | Turborepo + **npm** workspaces  | Turborepo + **pnpm**                   | low (lockfile swap)                                                |
+| Monorepo        | Turborepo + **npm** workspaces  | Turborepo + **npm** workspaces         | none (both on npm)                                                 |
 | Web             | React + **Vite**                | React + **Next.js** (App Router)       | medium (Vite app → Next routes; components port ~as-is)            |
 | Backend         | Hono + pluggable JSON/libsql    | **Supabase** (Postgres + Auth + RLS)   | medium (new auth/RLS; the snapshot pipeline can stay as a service) |
 | Styling         | Tailwind + `@life-os/ui` tokens | Tailwind + `packages/ui`               | **near-zero** (tokens + glass port directly)                       |
 | Design language | 3-theme glass, amber "ember"    | "Liquid Glass, but ours", amber hearth | **already aligned**                                                |
 
-Design + types + the finance logic port cleanly. The deltas are _build tooling_ (Vite→Next, npm→pnpm) and _backend_ (add Supabase auth/RLS). The Control Deck is vanilla HTML/JS, so it can either become a Next client component or remain the **home-display reference** verbatim.
+Design + types + the finance logic port cleanly. The deltas are _build tooling_ (Vite→Next; both monorepos already use npm) and _backend_ (add Supabase auth/RLS). The Control Deck is vanilla HTML/JS, so it can either become a Next client component or remain the **home-display reference** verbatim.
 
 ---
 

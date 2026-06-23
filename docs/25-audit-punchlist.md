@@ -18,39 +18,35 @@
 - **Dead CSS** — removed `.glass--clear` + `.ov-card-d` (grep-verified no consumers).
 - **Theme-aware `--info` accent** added; the theme-broken blues (`#5168cd`/`#6c8cff`) + neutral fallbacks tokenized
   (NOT the audit's `--mesh-b`, which is a background token — verified `var()` resolves in SVG attrs on the target).
-- **RememberBlock live digest** — the digest memos froze at mount on an always-on display; added a 60s `nowMs` tick.
-- **DESIGN.md** — deleted the stale duplicate `## 6`/`## 7` sections.
+- **RememberBlock live digest** — the digest memos froze at mount on an always-on display; added a 60s `nowMs` tick. _(commit `5992ef3`)_
+- **DESIGN.md** — deleted the stale duplicate `## 6`/`## 7` sections. _(commit `5992ef3`)_
+- **`/api/finance` error leak** — the catch returned the upstream error detail to the client; now a generic message. _(commit `90ab1bb`)_
+- **Tri-theme foreground blues** — `MarketsBlock` (`DRIFT_COLOR`/`SUCCESS_BAND`/`HOLDING_COLORS`),
+  `AgendaBlock` (`#5168cd`) and `HealthBlock` (`#6c8cff`) frozen blues + the `#cdd6e4`/`#b0bac7`
+  neutrals now route through a new theme-aware `--info` accent / `var(--ink-faint)`. _(commit `21fdb03`)_
 
 ## 🔧 Auto-implement queue (safe, confirmed — work through in passes)
 
-- **P1 · resource-leak** — `SpeechRecognition` is never stopped on unmount
-  (`GlobalAsk.mic` + identical `useAskLar.ts:100`); store in a `recRef`, `stop()` it in
-  cleanup, add `stop()/abort()` to the `SpeechRecognitionLike` type. (Both files.)
-- **P1 · async-states** — `WealthBlock` catch leaves `snap=null` → **loads forever**;
-  add an error state + `role="alert"` branch. `OverviewBlock` empty `.catch` → `role="status"`
-  note + gate `setAgenda` on `d.ok && Array.isArray(d.items)`. `MarketsBlock` → set error
-  if `!d.ok||!d.projection` (else line ~148 throws). `AgendaBlock` → empty-state when `items.length===0`.
-- **P1 · tri-theme** — frozen color literals bypass the theme: `MarketsBlock`
-  `DRIFT_COLOR`/`SUCCESS_BAND`/`HOLDING_COLORS`/`#cdd6e4` → `var(--teal/--hearth/--neg/--mesh-b/--ink-faint)`;
-  `AgendaBlock` `#5168cd`; `HealthBlock` `#6c8cff`; `globals.css .avatar` gradient → tokens.
-- **P1 · a11y** — `AskBar .go` add `aria-label` while loading; `mic` add `aria-pressed`+label;
-  `SettingsDrawer` (Escape-only) → focus-trap keyed on open (focus close, trap Tab, restore to `.theme-btn`).
-- **P1 · performance** — `OverviewBlock` 1s `setInterval` re-renders `<GlobalAsk>` every
-  second → extract a `<Clock/>` child; `TranslateBlock` add abort-on-unmount;
-  `useAskLar.ts` type `d` + guard before `as TRes`; `HeroChart` hoist `readThemeColors`
-  out of the per-bar map + mount the theme observer once.
-- **P2 · correctness** — `RememberBlock` digest/oldestOpen read `Date.now()` in a `useMemo`
-  that excludes it → add a 60s `nowMs`; week caption `{history.length}w` (Overview + Wealth)
+- **P1 · tri-theme (remaining)** — `globals.css .avatar` gradient still uses frozen
+  `#cdd6e4`/`#aeb9cc` literals → route through theme tokens. _(The MarketsBlock/AgendaBlock/HealthBlock
+  blues were tokenized in `21fdb03`; only the avatar gradient is left.)_
+- **P1 · a11y (remaining)** — `SettingsDrawer` is Escape-only → add a focus-trap keyed on open
+  (focus close, trap Tab, restore to `.theme-btn`). _(The `AskBar .go`/`mic` labelling shipped in `448698f`.)_
+- **P1 · performance (remaining)** — `OverviewBlock` 1s `setInterval` re-renders `<GlobalAsk>` every
+  second → extract a `<Clock/>` child; `useAskLar.ts` type `d` + guard before `as TRes`; `HeroChart`
+  hoist `readThemeColors` out of the per-bar map + mount the theme observer once.
+  _(The `TranslateBlock` abort-on-unmount shipped in `c2c05b6`.)_
+- **P2 · correctness (remaining)** — week caption `{history.length}w` (Overview + Wealth)
   → `length-1` _(review: confirm intended meaning first)_; `agenda-demo startOfLocalDayMs`
-  uses server TZ → anchor to client local day; `/api/finance` catch → generic message;
-  add guards in `dictionaryapi`/`odesli pageUrl`/`store backup env`.
-- **P2 · cleanup/tests/docs** — delete dead code (`larPreset` in `tailwind-preset.ts`+`index.ts`
-  _if truly unused — verify the Tailwind consumers first_, `.glass--clear`, `.ov-card-d`+`QUICK.desc`,
-  `'search'` in `registry.ts`); responsive tweaks (Weather grids, `.app`, `.ask input`);
-  motion (`will-change` on `[data-open]` only, drop `stage-anim` will-change, scene-drift
-  translate-only); add finance tests (`allocationSlices`/`normalizeSnapshot`/retirement-zero/
-  contribution-untargeted) + music tests (intent thresholds, `pickPlatform` fallback); fix
-  README/HANDOFF/DESIGN counts + delete the duplicate `DESIGN.md §6/§7`.
+  uses server TZ → anchor to client local day; add guards in `dictionaryapi`/`odesli pageUrl`/`store backup env`.
+  _(The `RememberBlock` `nowMs` tick shipped in `5992ef3`; the `/api/finance` generic-message catch in `90ab1bb`.)_
+- **P2 · cleanup/tests/docs (remaining)** — delete dead code (`larPreset` in `tailwind-preset.ts`+`index.ts`
+  _if truly unused — verify the Tailwind consumers first_, `QUICK.desc`, `'search'` in `registry.ts`);
+  responsive tweaks (Weather grids, `.app`, `.ask input`); motion (`will-change` on `[data-open]` only,
+  drop `stage-anim` will-change, scene-drift translate-only); add finance tests (`allocationSlices`/
+  `normalizeSnapshot`/retirement-zero/contribution-untargeted) + music tests (intent thresholds,
+  `pickPlatform` fallback); fix README/HANDOFF/DESIGN counts.
+  _(The `.glass--clear`/`.ov-card-d` dead-CSS removal shipped in `7e16ab3`; the duplicate `DESIGN.md §6/§7` in `5992ef3`.)_
 
 ## 🔒 Draft-only — human-gated (founder review; agents do NOT auto-change)
 
