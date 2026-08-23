@@ -1,6 +1,7 @@
 import SwiftUI
 import WebKit
 import AVFoundation
+import Speech
 
 /// Lar — the glass UI in a WKWebView, its "Hey Lar" pill wired to a local
 /// Qwen3 model served by Ollama on the host Mac. Replies stream token-by-token
@@ -17,11 +18,18 @@ struct ContentView: View {
                 .ignoresSafeArea()
             if lar.listening {
                 HStack(spacing: 10) {
-                    TextField("Ask Lar…", text: $prompt)
+                    Button { lar.startListening() } label: {
+                        Image(systemName: lar.micActive ? "waveform.circle.fill" : "mic.circle")
+                            .font(.title2)
+                            .foregroundStyle(lar.micActive ? .green : .primary)
+                            .symbolEffect(.pulse, isActive: lar.micActive)
+                    }
+                    TextField(lar.micActive ? "Listening…" : "Ask Lar…", text: $prompt)
                         .font(.system(.body, design: .monospaced))
                         .focused($focused)
                         .onSubmit(send)
                         .submitLabel(.send)
+                        .onChange(of: lar.transcript) { _, t in if !t.isEmpty { prompt = t } }
                     Button { lar.voiceOn.toggle() } label: {
                         Image(systemName: lar.voiceOn ? "speaker.wave.2.fill" : "speaker.slash")
                             .font(.body)
@@ -39,6 +47,8 @@ struct ContentView: View {
                 .onAppear { focused = true }
             }
         }
+        .overlay { EdgeGlow(active: lar.micActive || lar.speaking, speaking: lar.speaking) }
+        .onAppear { lar.startWakeWatch() }
         .overlay(alignment: .bottomTrailing) {
             Menu {
                 Section("Engines · local") {
@@ -51,6 +61,12 @@ struct ContentView: View {
                     Button { lar.voiceOn.toggle() } label: {
                         Label(lar.voiceOn ? "Mute Lar's voice" : "Unmute Lar's voice",
                               systemImage: lar.voiceOn ? "speaker.slash" : "speaker.wave.2")
+                    }
+                    Button { lar.wakeEnabled.toggle() } label: {
+                        Label(lar.wakeUnavailable ? "Wake word: needs a real iPhone"
+                              : lar.wakeEnabled ? "Wake word: on  (\u{201C}Hey Lar\u{201D})" : "Wake word: off",
+                              systemImage: lar.wakeUnavailable ? "iphone.slash"
+                              : lar.wakeEnabled ? "ear" : "ear.trianglebadge.exclamationmark")
                     }
                     Button { lar.newConversation() } label: {
                         Label("New conversation", systemImage: "arrow.counterclockwise")
@@ -74,17 +90,56 @@ struct ContentView: View {
         let q = prompt.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return }
         prompt = ""
+        if lar.micActive { lar.stopListening(send: false) }
         lar.ask(q)
     }
 }
 
-final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler {
+final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegate {
     @Published var listening = false
     @Published var busy = false
     @Published var voiceOn = true
     @Published var llmUp = false
+    @Published var micActive = false
+    @Published var transcript = ""
+    @Published var speaking = false {
+        didSet { pushLive() }
+    }
+    @Published var wakeEnabled = UserDefaults.standard.object(forKey: "wakeEnabled") as? Bool ?? true {
+        didSet {
+            UserDefaults.standard.set(wakeEnabled, forKey: "wakeEnabled")
+            wakeEnabled ? startWakeWatch() : (earMode == .wake ? stopListening(send: false) : ())
+        }
+    }
+    private enum EarMode { case off, wake, capture }
+    private var earMode: EarMode = .off
+    private var lastSpokeAt = Date.distantPast
+    @Published var wakeUnavailable = false
+    private var wakeFailures = 0
+
+    /// mirror live state into the page: the card glows with the phone
+    private func pushLive() {
+        let on = micActive || speaking
+        js("document.querySelector('.card') && document.querySelector('.card').classList.toggle('lar-live', \(on))")
+    }
     @Published var ttsUp = false
     private let voice = AVSpeechSynthesizer()
+
+    override init() {
+        super.init()
+        voice.delegate = self
+    }
+
+    func audioPlayerDidFinishPlaying(_ p: AVAudioPlayer, successfully: Bool) {
+        speaking = false; lastSpokeAt = Date()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { self.startWakeWatch() }
+    }
+    func speechSynthesizer(_ s: AVSpeechSynthesizer, didStart u: AVSpeechUtterance) { speaking = true }
+    func speechSynthesizer(_ s: AVSpeechSynthesizer, didFinish u: AVSpeechUtterance) {
+        speaking = false; lastSpokeAt = Date()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { self.startWakeWatch() }
+    }
+    func speechSynthesizer(_ s: AVSpeechSynthesizer, didCancel u: AVSpeechUtterance) { speaking = false }
     private var player: AVAudioPlayer?
     weak var webView: WKWebView?
 
@@ -104,6 +159,167 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler {
     Only use tags when the user asks you to do or show something. \
     Example - user says goodnight: "[SCENE:wind][ON:dnd][ON:lock] Warm light on, notifications held until 7:00, door locked. Sleep well, Alberto."
     """
+
+    // ── hands-free: tap Hey Lar, speak, silence sends ──
+    private let audioEngine = AVAudioEngine()
+    private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-IE"))
+        ?? SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    private var recRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recTask: SFSpeechRecognitionTask?
+    private var silenceTimer: Timer?
+
+    /// continuous, quiet loop that only listens for its own name
+    func startWakeWatch() {
+        guard wakeEnabled, !wakeUnavailable, earMode == .off, !speaking else { return }
+        SFSpeechRecognizer.requestAuthorization { st in
+            guard st == .authorized else { return }
+            AVAudioApplication.requestRecordPermission { ok in
+                guard ok else { return }
+                DispatchQueue.main.async {
+                    guard self.earMode == .off, !self.speaking else { return }
+                    self.earMode = .wake
+                    self.beginCapture()
+                }
+            }
+        }
+    }
+
+    /// "hey lar", "hi lar", or just "lar" — then the rest is the question
+    private func handleWakePartial(_ text: String) {
+        guard Date().timeIntervalSince(lastSpokeAt) > 1.0 else { return }
+        let lower = text.lowercased()
+        guard let m = lower.range(of: #"(?:\bhey\b|\bhi\b)?[,.!\s]*\blar\b[,.!\s]*"#,
+                                  options: .regularExpression) else { return }
+        let rest = String(text[m.upperBound...]).trimmingCharacters(in: .whitespaces)
+        earMode = .capture
+        listening = true
+        transcript = rest
+        micActive = true
+        pushLive()
+        bumpSilence(seconds: rest.isEmpty ? 4 : 1.8)
+    }
+
+    func startListening() {
+        guard !micActive || earMode == .wake else { stopListening(send: !transcript.isEmpty); return }
+        if earMode == .wake { stopListening(send: false) }   // hand the mic from wake to capture
+        player?.stop()
+        if voice.isSpeaking { voice.stopSpeaking(at: .immediate) }
+        SFSpeechRecognizer.requestAuthorization { st in
+            guard st == .authorized else {
+                DispatchQueue.main.async {
+                    self.reply("HEY LAR", "I can't hear yet",
+                               "Speech recognition permission was not granted. You can still type.")
+                }
+                return
+            }
+            AVAudioApplication.requestRecordPermission { ok in
+                DispatchQueue.main.async {
+                    guard ok else { return }
+                    self.earMode = .capture
+                    self.beginCapture()
+                }
+            }
+        }
+    }
+
+    private func beginCapture() {
+        NSLog("LAR beginCapture mode=%d", earMode == .wake ? 1 : 2)
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playAndRecord, mode: .default,
+                                    options: [.defaultToSpeaker, .duckOthers])
+            try session.setActive(true, options: .notifyOthersOnDeactivation)
+
+            let req = SFSpeechAudioBufferRecognitionRequest()
+            req.shouldReportPartialResults = true
+            if recognizer?.supportsOnDeviceRecognition == true {
+                req.requiresOnDeviceRecognition = true   // local-first when the OS can
+            }
+            recRequest = req
+
+            let node = audioEngine.inputNode
+            let fmt = node.outputFormat(forBus: 0)
+            node.removeTap(onBus: 0)
+            node.installTap(onBus: 0, bufferSize: 1024, format: fmt) { [weak self] buf, _ in
+                self?.recRequest?.append(buf)
+            }
+            audioEngine.prepare()
+            try audioEngine.start()
+
+            recTask = recognizer?.recognitionTask(with: req) { [weak self] res, err in
+                guard let self else { return }
+                if let r = res {
+                    DispatchQueue.main.async {
+                        switch self.earMode {
+                        case .wake:
+                            self.wakeFailures = 0
+                            self.handleWakePartial(r.bestTranscription.formattedString)
+                        case .capture:
+                            self.transcript = r.bestTranscription.formattedString
+                            self.bumpSilence()
+                            if r.isFinal { self.stopListening(send: true) }
+                        case .off: break
+                        }
+                    }
+                }
+                if err != nil {
+                    DispatchQueue.main.async {
+                        let wasWake = self.earMode == .wake
+                        let hadText = !self.transcript.isEmpty
+                        self.stopListening(send: self.earMode == .capture && hadText)
+                        if wasWake {
+                            self.wakeFailures += 1
+                            if self.wakeFailures >= 3 {
+                                // the Simulator has no dictation service; a real iPhone does
+                                self.wakeUnavailable = true
+                                NSLog("LAR wake watch unavailable (speech service errors)")
+                            } else {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.startWakeWatch() }
+                            }
+                        } else if !hadText {
+                            self.reply("HEY LAR", "I couldn't hear that",
+                                "Dictation isn't available in the Simulator. On a real iPhone you would just speak - here, typing works.")
+                        }
+                    }
+                }
+            }
+            NSLog("LAR engine started, mode=%d", earMode == .wake ? 1 : 2)
+            if earMode == .capture {
+                micActive = true
+                pushLive()
+                bumpSilence(seconds: 5)   // generous window before you start talking
+            }
+            transcript = ""
+        } catch {
+            NSLog("LAR capture error: %@", error.localizedDescription)
+            reply("HEY LAR", "Microphone trouble", error.localizedDescription)
+        }
+    }
+
+    /// quiet for a moment after speech = the question is finished
+    private func bumpSilence(seconds: Double = 1.6) {
+        silenceTimer?.invalidate()
+        silenceTimer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: false) { [weak self] _ in
+            guard let self, self.micActive else { return }
+            self.stopListening(send: !self.transcript.isEmpty)
+        }
+    }
+
+    func stopListening(send: Bool) {
+        silenceTimer?.invalidate(); silenceTimer = nil
+        audioEngine.inputNode.removeTap(onBus: 0)
+        audioEngine.stop()
+        recRequest?.endAudio(); recRequest = nil
+        recTask?.cancel(); recTask = nil
+        let wasCapture = earMode == .capture
+        earMode = .off
+        micActive = false
+        pushLive()
+        let q = transcript.trimmingCharacters(in: .whitespaces)
+        transcript = ""
+        if send, !q.isEmpty { ask(q) }
+        else if wasCapture { DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.startWakeWatch() } }
+    }
 
     /// ping both local engines; the menu shows the result live
     func checkEngines() {
@@ -125,7 +341,13 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler {
     }
 
         func userContentController(_ c: WKUserContentController, didReceive m: WKScriptMessage) {
-        if m.name == "lar" { DispatchQueue.main.async { self.listening.toggle() } }
+        if m.name == "lar" {
+            DispatchQueue.main.async {
+                self.listening.toggle()
+                if self.listening { self.startListening() }
+                else { self.stopListening(send: false) }
+            }
+        }
     }
 
     func ask(_ q: String) {
@@ -265,6 +487,8 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler {
             guard (resp as? HTTPURLResponse)?.statusCode == 200, data.count > 1000 else { return false }
             return await MainActor.run {
                 self.player = try? AVAudioPlayer(data: data)
+                self.player?.delegate = self
+                self.speaking = self.player != nil
                 self.player?.play()
                 return self.player != nil
             }
@@ -297,6 +521,37 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler {
         if let b = best { print("Lar voice:", b.name, b.language, b.quality.rawValue) }
         return best
     }()
+}
+
+/// the Apple-Intelligence-style breathing border: alive while Lar listens,
+/// calmer while she speaks, gone when idle. Purely decorative, never blocks touch.
+struct EdgeGlow: View {
+    var active: Bool
+    var speaking: Bool
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { tl in
+            let t = tl.date.timeIntervalSinceReferenceDate
+            let angle = Angle.degrees((t * 40).truncatingRemainder(dividingBy: 360))
+            let breathe = 1 + 0.18 * sin(t * (speaking ? 2.2 : 3.4))
+            let colors: [Color] = [.blue, .purple, .pink, .orange, .yellow, .cyan, .blue]
+            let grad = AngularGradient(colors: colors, center: .center, angle: angle)
+            ZStack {
+                RoundedRectangle(cornerRadius: 56, style: .continuous)
+                    .strokeBorder(grad, lineWidth: (speaking ? 6 : 10) * breathe)
+                    .blur(radius: speaking ? 8 : 12)
+                RoundedRectangle(cornerRadius: 56, style: .continuous)
+                    .strokeBorder(grad, lineWidth: 2.5)
+                    .blur(radius: 0.6)
+                    .opacity(0.9)
+            }
+        }
+        .padding(1)
+        .ignoresSafeArea()
+        .opacity(active ? 1 : 0)
+        .animation(.easeInOut(duration: 0.45), value: active)
+        .allowsHitTesting(false)
+    }
 }
 
 struct LarWebView: UIViewRepresentable {
