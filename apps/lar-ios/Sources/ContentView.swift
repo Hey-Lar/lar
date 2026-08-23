@@ -68,6 +68,9 @@ struct ContentView: View {
                               systemImage: lar.wakeUnavailable ? "iphone.slash"
                               : lar.wakeEnabled ? "ear" : "ear.trianglebadge.exclamationmark")
                     }
+                    Button { lar.editLayout() } label: {
+                        Label("Edit layout", systemImage: "square.and.pencil")
+                    }
                     Button { lar.newConversation() } label: {
                         Label("New conversation", systemImage: "arrow.counterclockwise")
                     }
@@ -114,6 +117,11 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
     private enum EarMode { case off, wake, capture }
     private var earMode: EarMode = .off
     private var lastSpokeAt = Date.distantPast
+    // sentence-streaming voice: speak while the model is still writing
+    private var sentenceQueue: [String] = []
+    private var neuralBusy = false
+    private var neuralFailed = false
+    private var spokenChars = 0
     @Published var wakeUnavailable = false
     private var wakeFailures = 0
 
@@ -131,6 +139,11 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
     }
 
     func audioPlayerDidFinishPlaying(_ p: AVAudioPlayer, successfully: Bool) {
+        neuralBusy = false
+        if !sentenceQueue.isEmpty {
+            pumpSpeech()                     // keep the voice rolling, glow stays on
+            return
+        }
         speaking = false; lastSpokeAt = Date()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { self.startWakeWatch() }
     }
@@ -335,6 +348,10 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
         }
     }
 
+    func editLayout() {
+        js("window.larEditMode && window.larEditMode(true)")
+    }
+
     func newConversation() {
         history.removeAll()
         reply("HEY LAR", "Fresh start", "Conversation cleared. The facts stay; the thread is new.")
@@ -352,6 +369,7 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
 
     func ask(_ q: String) {
         busy = true
+        resetSpeech()
         reply("HEY LAR", q, "\u{2026}")
         Task {
             do {
@@ -405,6 +423,10 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
                 if let r = full.range(of: "</think>") { full = String(full[r.upperBound...]); inThink = false }
                 var visible = full
                 // leading command tags: act once each, display never
+                while let junk = visible.range(of: #"^\s*\[[A-Z]+:[a-z|,]+\]\s*"#, options: .regularExpression),
+                      visible.range(of: #"^\s*\[(OPEN|SCENE|ON|OFF):[a-z]+\]\s*"#, options: .regularExpression) == nil {
+                    visible.removeSubrange(junk)
+                }
                 while let r = visible.range(of: #"^\s*\[(OPEN|SCENE|ON|OFF):[a-z]+\]\s*"#, options: .regularExpression) {
                     let tag = String(visible[r]).trimmingCharacters(in: .whitespaces)
                     visible.removeSubrange(r)
@@ -416,6 +438,17 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
                 }
                 if visible.hasPrefix("[") && visible.count < 16 { continue } // a tag may still be forming
                 shown = visible.trimmingCharacters(in: .whitespacesAndNewlines)
+                // speak each finished sentence immediately (min length guards
+                // against "1." style fragments); Apple fallback waits for the end
+                while true {
+                    let tail = String(shown.dropFirst(spokenChars))
+                    guard let r = tail.range(of: #"[.!?](\s|$)"#, options: .regularExpression) else { break }
+                    let cut = tail.distance(from: tail.startIndex, to: r.upperBound)
+                    let sentence = String(tail.prefix(cut))
+                    if sentence.trimmingCharacters(in: .whitespaces).count < 20 { break }
+                    spokenChars += cut
+                    await MainActor.run { self.enqueueSpeech(sentence) }
+                }
                 if Date().timeIntervalSince(lastPaint) > 0.12 {
                     lastPaint = Date()
                     let s = shown
@@ -429,7 +462,11 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
         let s = shown
         await MainActor.run {
             self.reply("HEY LAR", q, s)
-            self.speak(s)
+            if self.neuralFailed || self.spokenChars == 0 {
+                self.speak(s)                    // engine was down: one clean read
+            } else {
+                self.enqueueSpeech(String(s.dropFirst(self.spokenChars)))
+            }
         }
     }
 
@@ -450,6 +487,39 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
             return "window.larToggle && window.larToggle('\(k)', \(parts[0] == "ON"))"
         default: return nil
         }
+    }
+
+    /// hand one sentence to the neural voice; sentences play back-to-back
+    private func enqueueSpeech(_ text: String) {
+        let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard voiceOn, !t.isEmpty, !neuralFailed else { return }
+        sentenceQueue.append(t)
+        pumpSpeech()
+    }
+
+    private func pumpSpeech() {
+        guard !neuralBusy, !sentenceQueue.isEmpty else { return }
+        let next = sentenceQueue.removeFirst()
+        neuralBusy = true
+        Task {
+            if await self.speakNeural(next) { return }   // delegate pumps the next one
+            await MainActor.run {
+                self.neuralFailed = true                  // engine down mid-answer:
+                self.sentenceQueue.removeAll()            // the final Apple read takes over
+                self.neuralBusy = false
+                self.speaking = false
+            }
+        }
+    }
+
+    private func resetSpeech() {
+        sentenceQueue.removeAll()
+        neuralBusy = false
+        neuralFailed = false
+        spokenChars = 0
+        player?.stop()
+        if voice.isSpeaking { voice.stopSpeaking(at: .immediate) }
+        speaking = false
     }
 
     private func reply(_ k: String, _ t: String, _ b: String) {
