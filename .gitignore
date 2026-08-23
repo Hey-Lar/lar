@@ -76,3 +76,4 @@ coverage/
 prototype/index.html
 apps/lar-ios/Web/
 apps/lar-ios/LarApp.xcodeproj/
+prototype/move-data.js
