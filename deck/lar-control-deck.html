@@ -168,12 +168,12 @@
   .hstat span { font-size: 10.5px; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
 
   /* ── the inner "board" paper canvas (shared by data views) ──────────── */
-  .paper { position: relative; margin: 20px clamp(10px, 2vw, 22px) 92px; border-radius: 26px; background: rgba(244, 242, 234, 0.78);
+  .paper { position: relative; margin: 20px clamp(10px, 2vw, 22px) 92px; border-radius: 26px; background: rgba(244, 242, 234, 0.42);
     -webkit-backdrop-filter: blur(30px) saturate(130%); backdrop-filter: blur(30px) saturate(130%);
     box-shadow: 0 30px 70px -30px rgba(24, 42, 66, 0.55), inset 0 1px 0 rgba(255,255,255,0.9);
     padding: clamp(14px, 2.4vw, 24px) clamp(14px, 2.6vw, 26px) clamp(18px, 2.6vw, 28px); }
   .paper-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--hair); margin-bottom: 18px; flex-wrap: wrap; }
-  .crumb { display: inline-flex; align-items: center; gap: 9px; background: #fff; border: 1px solid var(--hair);
+  .crumb { display: inline-flex; align-items: center; gap: 9px; background: rgba(255,255,255,0.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--hair);
     border-radius: 999px; padding: 7px 14px 7px 8px; font-size: 12px; font-weight: 650; box-shadow: 0 4px 14px -8px rgba(22,20,14,0.25); }
   .crumb .dot { width: 22px; height: 22px; border-radius: 999px; background: var(--ink); color: var(--lime);
     display: grid; place-items: center; font-size: 10px; font-weight: 800; }
@@ -220,7 +220,7 @@
   .sticky.dark .glyph { background: var(--lime); color: var(--ink); }
 
   /* white work cards + native details rows */
-  .workcard { background: rgba(255,255,255,0.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--hair); border-radius: 20px; padding: 16px 18px 12px;
+  .workcard { background: rgba(255,255,255,0.62); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--hair); border-radius: 20px; padding: 16px 18px 12px;
     box-shadow: 0 16px 36px -22px rgba(22, 20, 14, 0.35); }
   .workcard + .workcard { margin-top: 14px; }
   .workcard .wk-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-bottom: 9px; border-bottom: 1px solid var(--hair); margin-bottom: 11px; }
