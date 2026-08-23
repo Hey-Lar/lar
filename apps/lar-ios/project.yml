@@ -19,6 +19,7 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Lar listens only while the mic is open, to hear what you ask."
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Turns your voice into the question you asked Lar."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Puts the real sky over your world — weather, sun and seasons follow where you are."
         INFOPLIST_KEY_NSAppTransportSecurity: "{ NSAllowsLocalNetworking = YES; }"
         TARGETED_DEVICE_FAMILY: "1"
         CURRENT_PROJECT_VERSION: 1
