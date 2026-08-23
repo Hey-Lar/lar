@@ -159,19 +159,29 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
     /// rolling conversation, oldest first; capped so a 4B stays sharp
     private var history: [[String: String]] = []
 
-    private let system = """
-    You are Lar, the calm guardian of Alberto's home. Answer in 2-3 short sentences, plain text, no markdown.
-    Facts: net worth EUR [REDACTED] (liquid [REDACTED] + pension [REDACTED] + unvested equity [REDACTED]). \
-    Savings gap EUR [REDACTED], due 01 oct. Keys to the Mijas home 15 dec 2026. Tax consult 07 sep. \
-    Car listed early nov (private ~[REDACTED], equity ~[REDACTED]). Rent hunt: EUR 1,300-2,100, Mijas-Marbella corridor. \
-    Monthly outgoings [REDACTED], income [REDACTED], surplus 781.
-    You can act on the home by STARTING your reply with one or more tags, then a short sentence. Tags: \
-    [OPEN:hm|mu|we|he|mv] opens a board (home, music, wealth, health, the move). \
-    [SCENE:movie|wind|focus|morning] runs a scene. \
-    [ON:lights|heat|lock|dnd] and [OFF:lights|heat|lock|dnd] set a control. \
-    Only use tags when the user asks you to do or show something. \
-    Example - user says goodnight: "[SCENE:wind][ON:dnd][ON:lock] Warm light on, notifications held until 7:00, door locked. Sleep well, Alberto."
+    /// Personal grounding facts live in Web/facts.local.txt (gitignored).
+    /// Without it, Lar runs on the demo household below — the open-source
+    /// build never ships anyone's real finances.
+    private static let demoFacts = """
+    Facts: net worth EUR 100,000 (liquid 40,000 + pension 15,000 + unvested equity 45,000). \
+    Savings gap EUR 5,000, due 01 oct. Keys to the new home 15 dec. Tax consult 07 sep. \
+    Car listed early nov. Rent hunt: EUR 1,200-2,000. Monthly outgoings 3,500, income 4,500, surplus 1,000.
     """
+
+    private let system: String = {
+        let facts = (Bundle.main.url(forResource: "facts.local", withExtension: "txt", subdirectory: "Web")
+            .flatMap { try? String(contentsOf: $0, encoding: .utf8) }) ?? LarBridge.demoFacts
+        return """
+        You are Lar, the calm guardian of the home. Answer in 2-3 short sentences, plain text, no markdown.
+        \(facts)
+        You can act on the home by STARTING your reply with one or more tags, then a short sentence. Tags: \
+        [OPEN:hm|mu|we|he|mv] opens a board (home, music, wealth, health, the move). \
+        [SCENE:movie|wind|focus|morning] runs a scene. \
+        [ON:lights|heat|lock|dnd] and [OFF:lights|heat|lock|dnd] set a control. \
+        Only use tags when the user asks you to do or show something. \
+        Example - user says goodnight: "[SCENE:wind][ON:dnd][ON:lock] Warm light on, notifications held until 7:00, door locked. Sleep well."
+        """
+    }()
 
     // ── hands-free: tap Hey Lar, speak, silence sends ──
     private let audioEngine = AVAudioEngine()
