@@ -69,3 +69,10 @@ coverage/
 
 # typescript incremental build info
 *.tsbuildinfo
+
+# Lar: generated surfaces that embed REAL finance figures — never committed.
+# Rebuild locally: prototype/sync-wealth.mjs (needs ~/Documents/Claude/net-worth)
+# and apps/lar-ios/embed.mjs.
+prototype/index.html
+apps/lar-ios/Web/
+apps/lar-ios/LarApp.xcodeproj/
