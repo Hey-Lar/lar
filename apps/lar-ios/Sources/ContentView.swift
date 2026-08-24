@@ -2,6 +2,7 @@ import SwiftUI
 import WebKit
 import AVFoundation
 import Speech
+import CoreLocation
 
 /// Lar — the glass UI in a WKWebView, its "Hey Lar" pill wired to a local
 /// Qwen3 model served by Ollama on the host Mac. Replies stream token-by-token
@@ -98,7 +99,7 @@ struct ContentView: View {
     }
 }
 
-final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegate {
+final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegate, CLLocationManagerDelegate {
     @Published var listening = false
     @Published var busy = false
     @Published var voiceOn = true
@@ -136,6 +137,36 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
     override init() {
         super.init()
         voice.delegate = self
+        loc.delegate = self
+        loc.desiredAccuracy = kCLLocationAccuracyKilometer
+    }
+
+    // MARK: native location — the shell feeds coordinates into the page so
+    // WKWebView never shows its per-origin geolocation prompt (the bundle
+    // path is the origin, and it changes on every reinstall).
+    private let loc = CLLocationManager()
+    private var lastFix: CLLocationCoordinate2D?
+    func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
+        switch m.authorizationStatus {
+        case .notDetermined: m.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways: m.requestLocation()
+        default: break
+        }
+    }
+    func locationManager(_ m: CLLocationManager, didUpdateLocations fixes: [CLLocation]) {
+        guard let c = fixes.last?.coordinate else { return }
+        lastFix = c
+        pushFix()
+    }
+    func locationManager(_ m: CLLocationManager, didFailWithError e: Error) {}
+    private func pushFix(_ attempt: Int = 0) {
+        guard let c = lastFix else { return }
+        if webView != nil {
+            js("window.larLoc && window.larLoc(\(c.latitude), \(c.longitude))")
+        }
+        // the page may still be loading when the first fix lands — repush a
+        // few times; gotFix is idempotent so extra pushes just repaint
+        if attempt < 5 { DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self.pushFix(attempt + 1) } }
     }
 
     func audioPlayerDidFinishPlaying(_ p: AVAudioPlayer, successfully: Bool) {
