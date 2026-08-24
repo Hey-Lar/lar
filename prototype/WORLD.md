@@ -31,11 +31,18 @@ seasons, geolocation) drives ambience over the flat scene.
   3 kids. Roles share TIPS pools via the same `.actor` delegation; `.vgen`
   redirects the hop animation to the inner group so the outer
   translate/scale transform survives. All fade at dusk (`daycast`).
-- **S3 — livestock & wildlife (+~25).** Cow herd, pigs, goats, deer at the
-  treeline, rabbits, ground birds; simple LOD (distant = fewer parts).
-- **S4 — trades & festival (+~25).** Market stalls row, forge yard, bakery
-  ovens, cart horse, maypole festival set; reaches ~100 with zone-based
-  interaction (click a stall, the stallkeeper answers).
+- **S3 — SHIPPED (+27).** Cow herd of four grazing the west clearing, three
+  pen pigs behind split rails (front rail painted over them), goats on the
+  band edges, three far sheep, three deer on the far ridge (they stay out
+  after dusk, with the rabbits), four foreground rabbits (hop cycle), five
+  pecking hens, a field crow, and a scarecrow whose crow flies off when
+  clicked. LOD per the plan: distant animals are the bare symbol, small.
+- **S4 — SHIPPED (+23, 98 actors total).** Maypole with four ribbon colors
+  and four flower-crowned dancers (dance cycle), bunting line, lute + drum
+  musicians, hay cart with nodding horse, three p-stall market stalls
+  (currentColor awnings: bread / greens / fish) with keepers and patrons,
+  two drifting river ducks, and the forge cat on a barrel. Every S4 actor
+  answers through the shared TIPS pools. The civilisation stands at 98.
 
 Rule for every stage: get the design right first — a stage ships only after
 the wide-composition check passes in the browser at desktop width.
