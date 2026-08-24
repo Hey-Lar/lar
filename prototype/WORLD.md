@@ -1,48 +1,38 @@
-# The Lar World — Pastoral Flat Cartoon civilisation
+# The Lar World — Lar Isle (isometric diorama)
 
-Style bible: flat 2D storybook, thick uniform #141414 outlines, flat fills,
-6-color palette (meadow #5DC152 / dark green #2F7D3A / brown #8B5A2B /
-cream #F5EEDC / sky #9AD4F0 / accent #FFC94D + roof #C0522B), cel two-tone
-shading only, blob shapes, no gradients in the artwork.
+**Style pivot (24 Aug 2026, user-directed):** the flat Pastoral Cartoon world
+(98 actors, preserved at `prototype/backups/index-pastoral-98.html`) was
+replaced by **Lar Isle** — a low-poly isometric floating-island diorama on an
+indigo sky, in the reference style of Monument-Valley-meets-retro-gaming
+dioramas. Characters are now **robot mascots**: cube heads with a rainbow
+gradient rim around a dark faceplate, two glowing dot eyes, cream and matte
+black variants (ChainGPT-mascot reference).
 
-Interaction law: the world NEVER navigates (menus own navigation). Clicking a
-character triggers its reaction animation + a comic speech bubble carrying a
-pastoral finance tip. The sky engine (open-meteo weather, NOAA sun math,
-seasons, geolocation) drives ambience over the flat scene.
+Interaction law (unchanged): the world never navigates; clicking an actor
+plays its reaction and a comic bubble with a finance tip. The real-sky engine
+(open-meteo, NOAA sun math, geolocation via the native bridge, seasons)
+drives day/night: gradient background cross-fade, stars and moon at night,
+robot eyes and the dungeon door glow after dark, clouds fade out.
 
-## Population stages (~100 unique characters)
+## The isle
+- Terrain: generated iso tiles (56/28/40 px grid), two tiers, checkered grass
+  tops with rim highlights, cream cliff faces, slab underside, floating
+  debris cubes, ground shadow.
+- Props (all clickable, TIPS-wired): Game-Boy monument, hearts row, barrel,
+  TNT + apple, coin arch, two apple trees, mushroom, blue well, inset pond,
+  arched dungeon door (warm interior + glow at night), torch, lit windows
+  (night), ladder, waterfall retired in favour of the pond.
+- Robots b1–b5: door greeter (cream), console curator (black), barrel keeper
+  (cream), compounding hero (black, front lawn), tiny USDC bot (cream).
+  Idle hover-bob, head tilt, eye blink; wave + hop on tap.
 
-- **S1 — SHIPPED, then RE-AUTHORED as the high vista (13 hero actors).**
-  v1 (16 ground-level actors) read as childish with no depth; replaced by a
-  1600×1000 high-vantage composition: four receding value-band ridges, castle
-  with waving flags, S-curve river → stone bridge → drifting boat, six
-  patchwork crop fields, far village with church clock, watermill + windmill,
-  orchard, market stall. Comedy cast with real faces: sleeping monk, woodcutter,
-  knight chased by a goose, pig fleeing the farmer, jester juggling, blacksmith,
-  wizard fishing up a boot, goose, dog, + night owl. Depth by scale/overlap
-  only, per the style bible. Wide-composition check passed at desktop width;
-  verified on the iOS build (real-sky engine live: geolocated, clear, 20°).
-- **S2 — SHIPPED (+35 generated villagers, 48 actors total).** Parts-kit
-  generator (hat × tool × tint × idle-anim over the `p-vill` body) living in
-  the page itself, not a sidecar — hand-placed positions for design control,
-  runtime-combined parts. Four depth-band anchor groups (`vg1`–`vg4`) keep
-  paint order = depth: 2 castle guards, 11 field farmers, 4 residents,
-  2 friars by the church, 7 road walkers + a shepherd, 6 market shoppers,
-  3 kids. Roles share TIPS pools via the same `.actor` delegation; `.vgen`
-  redirects the hop animation to the inner group so the outer
-  translate/scale transform survives. All fade at dusk (`daycast`).
-- **S3 — SHIPPED (+27).** Cow herd of four grazing the west clearing, three
-  pen pigs behind split rails (front rail painted over them), goats on the
-  band edges, three far sheep, three deer on the far ridge (they stay out
-  after dusk, with the rabbits), four foreground rabbits (hop cycle), five
-  pecking hens, a field crow, and a scarecrow whose crow flies off when
-  clicked. LOD per the plan: distant animals are the bare symbol, small.
-- **S4 — SHIPPED (+23, 98 actors total).** Maypole with four ribbon colors
-  and four flower-crowned dancers (dance cycle), bunting line, lute + drum
-  musicians, hay cart with nodding horse, three p-stall market stalls
-  (currentColor awnings: bread / greens / fish) with keepers and patrons,
-  two drifting river ducks, and the forge cat on a barrel. Every S4 actor
-  answers through the shared TIPS pools. The civilisation stands at 98.
+## Hard-won rules
+- CSS cannot animate inside `<use>` shadow trees — the robot symbol is
+  inlined per instance at load.
+- CSS animations override plain `opacity` rules: anything hidden by ambience
+  state needs `visibility: hidden; animation: none` (the real-position sun).
+- The page detects the iOS shell (`html.in-app`) and goes edge-to-edge with
+  safe-area insets; web framing hidden.
 
-Rule for every stage: get the design right first — a stage ships only after
-the wide-composition check passes in the browser at desktop width.
+Rule for every change: get the design right first — verify the composition
+in the simulator (iPad Pro 13" is the working target) before shipping.
