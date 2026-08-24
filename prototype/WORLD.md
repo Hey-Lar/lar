@@ -12,9 +12,16 @@ seasons, geolocation) drives ambience over the flat scene.
 
 ## Population stages (~100 unique characters)
 
-- **S1 — SHIPPED (16 hero actors).** Woodcutter, miller, shepherd, 3 sheep,
-  fisherman, goose, baker, blacksmith, dog, 2 ducks, swing kid, roof cat,
-  beehive bees, + owl (night). Ambient: butterflies, smoke, clouds.
+- **S1 — SHIPPED, then RE-AUTHORED as the high vista (13 hero actors).**
+  v1 (16 ground-level actors) read as childish with no depth; replaced by a
+  1600×1000 high-vantage composition: four receding value-band ridges, castle
+  with waving flags, S-curve river → stone bridge → drifting boat, six
+  patchwork crop fields, far village with church clock, watermill + windmill,
+  orchard, market stall. Comedy cast with real faces: sleeping monk, woodcutter,
+  knight chased by a goose, pig fleeing the farmer, jester juggling, blacksmith,
+  wizard fishing up a boot, goose, dog, + night owl. Depth by scale/overlap
+  only, per the style bible. Wide-composition check passed at desktop width;
+  verified on the iOS build (real-sky engine live: geolocated, clear, 20°).
 - **S2 — villager generator (+~35).** A parts-kit (bodies × hats × tools ×
   palette tints) in `world-cast.js`; villagers spawned along paths/zones with
   roles (farmers, market folk, monks, guards, kids) and shared tip pools.
