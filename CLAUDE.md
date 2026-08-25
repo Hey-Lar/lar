@@ -27,6 +27,12 @@ services/    mcp/  supabase/        (the orchestration service ships today as se
 packages/    shared/(action contract+types)  ui/
              connectors/{books,dictionary,filings,filmtv,finance,music,news,places,podcasts,translate,weather}
 docs/  design/  prototype/
+deck/        lar-control-deck.html (founder status artifact) + deck-data.json
+             (its centralised backend — single source of truth; see deck/README.md.
+             Maintained by the deck fleet: deck-conductor · deck-steward ·
+             deck-telemetry · deck-board · deck-publisher in .claude/agents/,
+             mirrored as model-agnostic Goose recipes in .goose/recipes/ —
+             keep both sides in sync in the same commit)
 ```
 
 ## The spine
