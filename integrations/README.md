@@ -2,10 +2,10 @@
 
 The local engines Lar talks to. Everything runs on the Mac; nothing leaves it.
 
-| engine | port | serves | app path |
-|---|---|---|---|
+| engine                                 | port  | serves                                                   | app path                 |
+| -------------------------------------- | ----- | -------------------------------------------------------- | ------------------------ |
 | **LLM** — Qwen3-4B-instruct via Ollama | 11434 | `/v1/chat/completions` (streamed NDJSON via `/api/chat`) | `apps/lar-ios` LarBridge |
-| **Voice** — Kokoro-82M via mlx-audio | 8000 | `/v1/audio/speech` (OpenAI-compatible, wav) | LarBridge `speakNeural` |
+| **Voice** — Kokoro-82M via mlx-audio   | 8000  | `/v1/audio/speech` (OpenAI-compatible, wav)              | LarBridge `speakNeural`  |
 
 ## One command
 
@@ -25,7 +25,7 @@ integrations/tts/install.sh          # venv at ~/.lar-tts with every dep pinned
 
 ## Hard-won notes
 
-- Use `qwen3:4b-instruct`. The bare `qwen3:4b` tag is the 2507 *thinking* build —
+- Use `qwen3:4b-instruct`. The bare `qwen3:4b` tag is the 2507 _thinking_ build —
   it streams chain-of-thought as content and ignores `/no_think`.
 - The TTS venv needs `misaki num2words spacy` installed SEPARATELY — the
   `misaki[en]` extra pins curated-tokenizers, which does not build on py3.14.
