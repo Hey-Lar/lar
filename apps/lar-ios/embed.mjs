@@ -2,8 +2,11 @@
    Called by net-worth/update.mjs (step 4.5) and runnable standalone. */
 import { readFileSync, writeFileSync } from "node:fs";
 
-const SRC = "/Users/jones/Documents/projects/heylar_ai/Lar/prototype/index.html";
-const OUT = new URL("./Web/lar.html", import.meta.url).pathname;
+/* Both live in this repo, so resolve them relative to this file — an absolute
+   path here only ever worked on one machine. URLs pass straight to fs and stay
+   correct on Windows, where .pathname would yield "/C:/...". */
+const SRC = new URL("../../prototype/index.html", import.meta.url);
+const OUT = new URL("./Web/lar.html", import.meta.url);
 
 let s = readFileSync(SRC, "utf8");
 const bridge = `
