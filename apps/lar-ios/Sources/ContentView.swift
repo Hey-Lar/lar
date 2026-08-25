@@ -3,6 +3,7 @@ import WebKit
 import AVFoundation
 import Speech
 import CoreLocation
+import Network
 
 /// Lar — the glass UI in a WKWebView, its "Hey Lar" pill wired to a local
 /// Qwen3 model served by Ollama on the host Mac. Replies stream token-by-token
@@ -49,45 +50,8 @@ struct ContentView: View {
             }
         }
         .overlay { EdgeGlow(active: lar.micActive || lar.speaking, speaking: lar.speaking) }
-        .onAppear { lar.startWakeWatch() }
-        .overlay(alignment: .bottomTrailing) {
-            Menu {
-                Section("Engines · local") {
-                    Label("Qwen3 4B \(lar.llmUp ? "· up" : "· down")",
-                          systemImage: lar.llmUp ? "brain.head.profile" : "exclamationmark.triangle")
-                    Label("Kokoro voice \(lar.ttsUp ? "· up" : "· down")",
-                          systemImage: lar.ttsUp ? "waveform" : "speaker.slash")
-                }
-                Section {
-                    Button { lar.voiceOn.toggle() } label: {
-                        Label(lar.voiceOn ? "Mute Lar's voice" : "Unmute Lar's voice",
-                              systemImage: lar.voiceOn ? "speaker.slash" : "speaker.wave.2")
-                    }
-                    Button { lar.wakeEnabled.toggle() } label: {
-                        Label(lar.wakeUnavailable ? "Wake word: needs a real iPhone"
-                              : lar.wakeEnabled ? "Wake word: on  (\u{201C}Hey Lar\u{201D})" : "Wake word: off",
-                              systemImage: lar.wakeUnavailable ? "iphone.slash"
-                              : lar.wakeEnabled ? "ear" : "ear.trianglebadge.exclamationmark")
-                    }
-                    Button { lar.editLayout() } label: {
-                        Label("Edit layout", systemImage: "square.and.pencil")
-                    }
-                    Button { lar.newConversation() } label: {
-                        Label("New conversation", systemImage: "arrow.counterclockwise")
-                    }
-                }
-            } label: {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 15))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .frame(width: 40, height: 40)
-                    .background(.black.opacity(0.55), in: Circle())
-            }
-            .padding(.trailing, 14)
-            .padding(.bottom, 30)
-            .onAppear { lar.checkEngines() }
-            .onTapGesture { lar.checkEngines() }
-        }
+        .onAppear { lar.startWakeWatch(); lar.checkEngines() }
+
     }
 
     private func send() {
@@ -139,6 +103,54 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
         voice.delegate = self
         loc.delegate = self
         loc.desiredAccuracy = kCLLocationAccuracyKilometer
+        startHouseNet()
+        // belt and braces: if no fix landed shortly after launch, ask again
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) { [weak self] in
+            guard let self, self.lastFix == nil else { return }
+            self.loc.startUpdatingLocation()
+            self.loc.requestLocation()
+        }
+    }
+
+    // MARK: house network — Bonjour discovery of what already lives on the
+    // LAN (the simulator shares the Mac's network). Results feed the page's
+    // Link tab via window.larNet; nothing ever leaves the network.
+    private var netBrowsers: [NWBrowser] = []
+    private var netFound: [String: String] = [:]   // "name|type" -> type
+    private func startHouseNet() {
+        let types = ["_hap._tcp", "_googlecast._tcp", "_airplay._tcp", "_raop._tcp",
+                     "_ipp._tcp", "_spotify-connect._tcp", "_companion-link._tcp"]
+        for t in types {
+            let b = NWBrowser(for: .bonjour(type: t, domain: nil), using: NWParameters())
+            b.browseResultsChangedHandler = { [weak self] results, _ in
+                guard let self else { return }
+                for r in results {
+                    if case let .service(name, type, _, _) = r.endpoint {
+                        self.netFound[name + "|" + type] = type
+                    }
+                }
+                self.pushHouseNet()
+            }
+            b.start(queue: .main)
+            netBrowsers.append(b)
+        }
+    }
+    private var netPushT: Timer?
+    private func pushHouseNet() {
+        netPushT?.invalidate()
+        netPushT = Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            let items = self.netFound.keys.sorted().map { key -> [String: String] in
+                let parts = key.split(separator: "|", maxSplits: 1).map(String.init)
+                return ["name": parts[0], "type": parts.count > 1 ? parts[1] : ""]
+            }
+            if let data = try? JSONSerialization.data(withJSONObject: items),
+               let json = String(data: data, encoding: .utf8) {
+                let safe = json.replacingOccurrences(of: "\\", with: "\\\\")
+                                .replacingOccurrences(of: "'", with: "\\'")
+                self.js("window.larNet && window.larNet(JSON.parse('\(safe)'))")
+            }
+        }
     }
 
     // MARK: native location — the shell feeds coordinates into the page so
@@ -149,7 +161,9 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
     func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
         switch m.authorizationStatus {
         case .notDetermined: m.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse, .authorizedAlways: m.requestLocation()
+        case .authorizedWhenInUse, .authorizedAlways:
+            m.distanceFilter = 500
+            m.startUpdatingLocation()   // keeps working when the sim location changes, and moves to Mijas with the real device
         default: break
         }
     }
@@ -158,7 +172,9 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
         lastFix = c
         pushFix()
     }
-    func locationManager(_ m: CLLocationManager, didFailWithError e: Error) {}
+    func locationManager(_ m: CLLocationManager, didFailWithError e: Error) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) { m.startUpdatingLocation() }
+    }
     private func pushFix(_ attempt: Int = 0) {
         guard let c = lastFix else { return }
         if webView != nil {
@@ -400,6 +416,12 @@ final class LarBridge: NSObject, ObservableObject, WKScriptMessageHandler, AVAud
 
         func userContentController(_ c: WKUserContentController, didReceive m: WKScriptMessage) {
         if m.name == "lar" {
+            if let body = m.body as? [String: Any], let type = body["type"] as? String {
+                if type == "voice" {
+                    DispatchQueue.main.async { self.voiceOn = (body["on"] as? Bool) ?? !self.voiceOn }
+                    return
+                }
+            }
             DispatchQueue.main.async {
                 self.listening.toggle()
                 if self.listening { self.startListening() }

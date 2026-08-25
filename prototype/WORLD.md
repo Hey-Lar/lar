@@ -36,3 +36,21 @@ robot eyes and the dungeon door glow after dark, clouds fade out.
 
 Rule for every change: get the design right first — verify the composition
 in the simulator (iPad Pro 13" is the working target) before shipping.
+
+## Version ledger — 25 Aug 2026 marathon (staging on iPad Pro 13" landscape)
+- v3 space-night: planet w/ city lights, ringed planet, satellite, aurora, denser stars;
+  seasons + weather filters; lighthouse isle; house menu (nav+settings, bespoke icons);
+  mic orb; calm clock (no seconds); UFO/balloon/fish/Game-Boy-blink; dev font menu.
+- v4 unboxed console, tighter Connections, full-bleed body.
+- v5 world pinned to the viewport (no bands, ever).
+- v6 Sora bundled locally as the app face; greeting split from weather.
+- v7 greeting enlarged; continuous CLLocation w/ retry.
+- v8 Tasks view (self care moved out of Home); widget framework (max 5, Wealth first);
+  observatory + garden isles.
+- v9 Letterkenny default sky; v10 bare state-colored mic (idle/live/muted) + ruins isle.
+- v11 ship-port isle w/ dockworker bot; iOS presentation everywhere.
+- v12 all satellite isles rebuilt detailed multi-tile w/ mini bots (obs, space port,
+  lighthouse, garden, ship port, ruins), hover-wobble not drift, world swipe-pan,
+  console box gone, menu-breaking hoisting bug fixed.
+- v13 floating left-rail house menu (collapsible to the icon), Apple-like widgets.
+App icon: miniature of the isle. Deck: reskinned to the night-isle palette.
