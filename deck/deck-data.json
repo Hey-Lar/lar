@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "asOf": "2026-08-25",
+  "generatedBy": "seed — extracted from the hand-baked v1 deck HTML; first deck-steward run replaces this with a measured snapshot",
+  "repo": "Hey-Lar/lar-brain",
+  "notes": [
+    "Seed provenance: every value below transcribes what deck/lar-control-deck.html already displays (the lar-brain overnight-build snapshot). None of it was re-measured at seed time — treat all figures as stale until deck-telemetry refreshes them.",
+    "Overview says 5 packages while Engine lists 6 modules: the sixth (app · src/brain) lives in the app, not packages/*. Kept as displayed."
+  ],
+  "overview": {
+    "headline": "Engine E2EE · app data-driven · privacy PASS · regressions 0 — capture, file, recall and ask all running on real data.",
+    "statusPills": ["Deck live", "main", "overnight build verified end to end"],
+    "justLanded": {
+      "sha": "91af767",
+      "text": "capture files a real note with real auto-links · CI green"
+    },
+    "heroStats": [
+      { "label": "commits", "value": "16" },
+      { "label": "tests green", "value": "208" },
+      { "label": "packages", "value": "5" },
+      { "label": "notes · links", "value": "150 · 312" },
+      { "label": "findings fixed", "value": "42" }
+    ]
+  },
+  "board": {
+    "goal": "Ship a voice-first, E2EE second brain — speak a thought, it files, links and answers back.",
+    "health": "SHIP-HEALTHY — Phase 1 privacy 5/5 invariants · PASS · 14 increments · one night",
+    "queued": [
+      { "title": "Capture → the encrypted store", "note": "persist through @lar/store" },
+      { "title": "Full-screen recall graph", "note": "“the graph is the home”" },
+      { "title": "Ember / light theme variants" },
+      { "title": "Mobile ship — Expo/RN + Skia" }
+    ],
+    "gated": [
+      { "title": "Voice vendors + token-mint", "gate": "confirm your Wispr tier" },
+      { "title": "Cloud Cofounder", "gate": "LAR_ANTHROPIC_KEY, server-side" },
+      { "title": "Armed Supabase auth", "gate": "arming pass per docs/20-auth.md" },
+      { "title": "Live web / finance adapters", "gate": "finance stays read-only" }
+    ],
+    "done": []
+  },
+  "tracks": {
+    "overallPct": 80,
+    "summary": "4 tracks done of 6 workstreams — everything key-free is done",
+    "items": [
+      {
+        "name": "Track 0 · Foundations",
+        "scope": "crypto · encrypted store · contracts",
+        "pct": 100
+      },
+      {
+        "name": "Track 1 · Brain logic",
+        "scope": "indexer · actions · router · firewall",
+        "pct": 100
+      },
+      { "name": "Track 2 · Voice loop", "scope": "seam + FSM done; vendors gated", "pct": 70 },
+      {
+        "name": "Track 3 · Web 3D graph",
+        "scope": "data-driven + tap-recall; look targets left",
+        "pct": 85
+      },
+      { "name": "Track 4 · Mobile shell", "scope": "web stand-ins; Expo/RN unbuilt", "pct": 25 },
+      { "name": "Design system", "scope": "Warm Cinematic Glass v1, every screen", "pct": 100 }
+    ],
+    "needsYou": {
+      "title": "Needs your eyes — the one thing only you can do",
+      "body": "All WebGL + motion is build/test-verified but can't be screenshot in the harness — the brain, the fly-in, transitions and tap-recall need an on-device look."
+    }
+  },
+  "engine": {
+    "summary": "6 modules, 208 tests",
+    "dataFlow": "crypto → store → brain → voice, with contracts as the shared schema spine.",
+    "modules": [
+      {
+        "name": "@lar/crypto",
+        "tests": 35,
+        "blurb": "PBKDF2-600k · AES-256-GCM · per-note DEK · BIP39 recovery",
+        "deps": [],
+        "exports": "Keyring (create / unlock / rewrap / recovery), encryptSecret / decryptSecret, seal / open.",
+        "guarantee": "The master key lives only in memory; a tampered iteration count fails closed."
+      },
+      {
+        "name": "@lar/store",
+        "tests": 34,
+        "blurb": "Local-first encrypted document store + sync engine + backup",
+        "deps": ["crypto"],
+        "exports": "createStore / openStore, EncryptedStore, SyncEngine, memory + localStorage adapters.",
+        "guarantee": "Adapters only ever see ciphertext — proven by the end-to-end no-leak chain test."
+      },
+      {
+        "name": "@lar/contracts",
+        "tests": 11,
+        "blurb": "The data model: zod Note / Block / Link / Topic + extraction",
+        "deps": ["zod"],
+        "exports": "Note/Block schemas, extractLinks, extractTags, noteText, makeNote.",
+        "guarantee": "A persisted Note never leaks title or body plaintext (the sev-0 test)."
+      },
+      {
+        "name": "@lar/brain",
+        "tests": 50,
+        "blurb": "Indexer · reversible Actions · Router · fail-closed Firewall",
+        "deps": ["contracts", "store"],
+        "exports": "buildIndex, applyActionPlan (exact inverses), route, createFirewall + ledger, captureThought.",
+        "guarantee": "Personal content routes on-device; nothing egresses un-redacted; every action undoes exactly."
+      },
+      {
+        "name": "@lar/voice",
+        "tests": 34,
+        "blurb": "STT / Cofounder / TTS seam + VoiceSession barge-in FSM",
+        "deps": ["brain", "contracts"],
+        "exports": "SttEngine / CofounderStream / Tts interfaces, VoiceSession, deterministic mocks.",
+        "guarantee": "The cloud is reached only on ASK, only after the firewall — and barge-in cancels it mid-flight."
+      },
+      {
+        "name": "app · src/brain",
+        "tests": 44,
+        "blurb": "seed (150 notes) · graph · recall · capture — feeds the 3D brain + chat",
+        "deps": ["brain", "contracts"],
+        "exports": "SEED_NOTES, buildBrainGraph, recall / rankNotes / brainSuggestions, fileThought.",
+        "guarantee": "Deterministic — no clocks, no randomness: the same brain on every reload, every machine."
+      }
+    ]
+  },
+  "ledger": {
+    "summary": "16 commits · privacy gate clean",
+    "phases": ["Hygiene", "Engine", "Design", "Real data", "Interactions", "Review · close"],
+    "commitTypes": { "feat": 8, "design": 2, "polish": 2, "chore": 2, "docs": 1 },
+    "commits": [
+      {
+        "sha": "91af767",
+        "type": "feat",
+        "subject": "capture — the magic moment files a real note with real auto-links",
+        "note": "7 tests"
+      },
+      {
+        "sha": "615fae1",
+        "type": "docs",
+        "subject": "HANDOFF — full Phase-1 state, verified vs gated, next increments"
+      },
+      {
+        "sha": "d0ec966",
+        "type": "feat",
+        "subject": "onboarding — anonymous local-first first-run flow",
+        "note": "focus-trapped dialog"
+      },
+      {
+        "sha": "f271bdd",
+        "type": "polish",
+        "subject": "final-review punch-list — reduce-motion, a11y, tokens, perf",
+        "note": "14 items"
+      },
+      {
+        "sha": "e10cb3d",
+        "type": "feat",
+        "subject": "tap a brain node to open its real note",
+        "note": "crash-safe raycast + recall card"
+      },
+      { "sha": "1154e68", "type": "feat", "subject": "frosted bottom app-nav" }
+    ]
+  }
+}
