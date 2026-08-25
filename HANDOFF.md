@@ -38,6 +38,19 @@ Key ops docs (mission-control, on GitHub):
 **The fleet** (`.claude/agents/`): `planner · builder · reviewer · security · designer
 · docs-scribe` + governance layer `fleet-steward` (meta-orchestrator), `pm-auditor`
 (status/roadmap/tasks → mission-control), `scout` (competition + research).
+**Deck fleet (2026-08-25):** `deck-conductor · deck-steward · deck-telemetry ·
+deck-board · deck-publisher` centralise the Control Deck's backend — every fact
+the published deck (`deck/lar-control-deck.html`) shows now flows from
+`deck/deck-data.json` (schema + rules in `deck/README.md`). Spin off
+**deck-steward** for a full refresh (collect → curate → merge → render and
+republish, one reviewable diff) or **deck-conductor** to build autonomously
+from the Board (one gated increment per run, then a deck refresh; respects the
+kill-switch, tiered autonomy, and the irreversible five). The same five roles
+ship as **model-agnostic Goose recipes** in `.goose/recipes/` (any
+Goose-configured model; ACP-launchable from Builderbot Staged — see
+`.goose/README.md`), with a hard parity rule: a role change touches both files
+in one commit. The seed JSON transcribes the hand-baked v1 deck and is
+stale-by-definition until the first telemetry run.
 
 **Finish-line bar (Alberto's):** a **working alpha on a device, robust, for one real
 external alpha user** — NOT PMF, not a formal audit gauntlet, not a 50-user cohort.
