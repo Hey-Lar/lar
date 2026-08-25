@@ -3,10 +3,20 @@
    figures exactly as net worth.md does, and regenerates the Wealth section of
    index.html between its WEALTH/HEALTH comment markers — plus the home tile.
    Idempotent: same data in, byte-identical page out. */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
-const DATA = "/Users/jones/Documents/Claude/net-worth/data.js";
+/* net worth.md is a separate repo (Hey-Lar/networth-md), so its location is
+   machine-specific: point NETWORTH_DATA at that checkout's data.js. A hardcoded
+   absolute path here only ever worked on one machine. */
+const DATA = process.env.NETWORTH_DATA;
 const PAGE = "index.html";
+
+if (!DATA) {
+  console.error("NETWORTH_DATA is not set — point it at your networth-md checkout's data.js");
+  console.error("  e.g. NETWORTH_DATA=../../networth-md/data.js node sync-wealth.mjs");
+  process.exit(1);
+}
+if (!existsSync(DATA)) { console.error("no data.js at", DATA); process.exit(1); }
 
 /* load NW_DATA without a browser */
 const w = {};
