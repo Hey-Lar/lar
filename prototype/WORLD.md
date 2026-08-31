@@ -15,6 +15,7 @@ drives day/night: gradient background cross-fade, stars and moon at night,
 robot eyes and the dungeon door glow after dark, clouds fade out.
 
 ## The isle
+
 - Terrain: generated iso tiles (56/28/40 px grid), two tiers, checkered grass
   tops with rim highlights, cream cliff faces, slab underside, floating
   debris cubes, ground shadow.
@@ -27,6 +28,7 @@ robot eyes and the dungeon door glow after dark, clouds fade out.
   Idle hover-bob, head tilt, eye blink; wave + hop on tap.
 
 ## Hard-won rules
+
 - CSS cannot animate inside `<use>` shadow trees — the robot symbol is
   inlined per instance at load.
 - CSS animations override plain `opacity` rules: anything hidden by ambience
@@ -38,6 +40,7 @@ Rule for every change: get the design right first — verify the composition
 in the simulator (iPad Pro 13" is the working target) before shipping.
 
 ## Version ledger — 25 Aug 2026 marathon (staging on iPad Pro 13" landscape)
+
 - v3 space-night: planet w/ city lights, ringed planet, satellite, aurora, denser stars;
   seasons + weather filters; lighthouse isle; house menu (nav+settings, bespoke icons);
   mic orb; calm clock (no seconds); UFO/balloon/fish/Game-Boy-blink; dev font menu.
@@ -53,4 +56,4 @@ in the simulator (iPad Pro 13" is the working target) before shipping.
   lighthouse, garden, ship port, ruins), hover-wobble not drift, world swipe-pan,
   console box gone, menu-breaking hoisting bug fixed.
 - v13 floating left-rail house menu (collapsible to the icon), Apple-like widgets.
-App icon: miniature of the isle. Deck: reskinned to the night-isle palette.
+  App icon: miniature of the isle. Deck: reskinned to the night-isle palette.
